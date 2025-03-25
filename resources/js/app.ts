@@ -6,6 +6,7 @@ import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
+import { MotionPlugin } from '@vueuse/motion';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -26,10 +27,14 @@ createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob<DefineComponent>('./pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
+        const vueApp = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
-            .mount(el);
+            .use(MotionPlugin); // Register MotionPlugin globally
+        
+        vueApp.mount(el);
+        
+        return vueApp;
     },
     progress: {
         color: '#4B5563',
@@ -37,4 +42,9 @@ createInertiaApp({
 });
 
 // This will set light / dark mode on page load...
+/* createApp({ render: () => h(App, props) })
+.use(plugin)
+.use(ZiggyVue)
+.mount(el)
+.use(MotionPlugin); // Register MotionPlugin globally*/
 initializeTheme();
