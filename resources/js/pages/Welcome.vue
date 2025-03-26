@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import MainLayout from '@/Layouts/MainLayout.vue';
+
 
 </script>
 
 <template>
-    <MainLayout>
 
         <Head title="Welcome">
             <link rel="preconnect" href="https://rsms.me/" />
@@ -211,5 +210,5 @@ import MainLayout from '@/Layouts/MainLayout.vue';
             </div>
             <div class="h-14.5 hidden lg:block"></div>
         </div>
-    </MainLayout>
+   
 </template>
