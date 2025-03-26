@@ -1,6 +1,6 @@
 <script setup>
 
-import TextLink from '@/Components/TextLink.vue';
+//import T1extLink from '@/Components/T1extLink.vue';
 import { ref } from 'vue';
 
 
@@ -91,34 +91,34 @@ body {
             <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
                 class="sm:hidden bg-gray-100 rounded-lg mt-2">
                 <div class="pt-2 pb-3 space-y-1">
-                    <TextLink
+                    <a
                         class="block py-2 px-3 text-gray-900 text-xl font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                         :href="route('home')" aria-current="page">
                         Menu
-                    </TextLink>
-                    <TextLink
+                    </a>
+                    <a
                         class="block py-2 px-3 text-gray-900 text-xl font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                         :href="route('home')" aria-current="page">
                         Coctail
-                    </TextLink>
+                    </a>
 
-                    <TextLink
+                    <a
                         class="block py-2 px-3 text-gray-900 text-xl font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                         :href="route('home')" aria-current="page">
                         Events
-                    </TextLink>
+                    </a>
 
-                    <TextLink
+                    <a
                         class="block py-2 px-3 text-gray-900 text-xl font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                         :href="route('home')" aria-current="page">
                         Gallery
-                    </TextLink>
+                    </a>
 
-                    <TextLink
+                    <a
                         class="block py-2 px-3 text-gray-900 text-xl font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                         :href="route('home')" aria-current="page">
                         Contact
-                    </TextLink>
+                    </a>
                 </div>
             </div>
         </nav>
