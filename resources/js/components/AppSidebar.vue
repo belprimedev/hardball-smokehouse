@@ -5,9 +5,10 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Moon, Sun } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Moon, Sun, ChevronsUpDown } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { ref } from 'vue';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 // Add dark mode state
 const isDarkMode = ref(false);
@@ -28,6 +29,20 @@ const mainNavItems: NavItem[] = [
         title: 'Reservation',
         href: route('reservation.index'),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Menu',
+        icon: Folder,
+        children: [
+            {
+                title: 'Menu',
+                href: '/menu',
+            },
+            {
+                title: 'Categories',
+                href: route('menu-category.index'),
+            },
+        ],
     },
 ];
 
@@ -61,6 +76,7 @@ const footerNavItems: NavItem[] = [
 
         <SidebarContent>
             <NavMain :items="mainNavItems" />
+            
         </SidebarContent>
 
         <SidebarFooter>

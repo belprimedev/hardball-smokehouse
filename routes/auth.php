@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\MenuCategoryController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -62,5 +63,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/reservation/{reservation}/edit', [ReservationController::class, 'edit'])->name('reservation.edit'); // ✅ Edit Route
         Route::put('/reservation/{reservation}', [ReservationController::class, 'update'])->name('reservation.update'); // ✅ Fix update name
         Route::delete('/reservation/{reservation}', [ReservationController::class, 'destroy'])->name('reservation.destroy');
+
+        Route::resource('menu-category', MenuCategoryController::class);
      
 });
