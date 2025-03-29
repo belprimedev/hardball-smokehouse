@@ -5,13 +5,28 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Moon, Sun } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import { ref } from 'vue';
+
+// Add dark mode state
+const isDarkMode = ref(false);
+
+// Add toggle function
+const toggleDarkMode = () => {
+    isDarkMode.value = !isDarkMode.value;
+    document.documentElement.classList.toggle('dark', isDarkMode.value);
+};
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Reservation',
+        href: route('reservation.index'),
         icon: LayoutGrid,
     },
 ];
@@ -50,6 +65,15 @@ const footerNavItems: NavItem[] = [
 
         <SidebarFooter>
             <NavFooter :items="footerNavItems" />
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton @click="toggleDarkMode">
+                        <component :is="isDarkMode ? Sun : Moon" 
+                                 class="h-4 w-4" />
+                        <span>{{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}</span>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
             <NavUser />
         </SidebarFooter>
     </Sidebar>
