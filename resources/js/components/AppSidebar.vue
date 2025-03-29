@@ -36,10 +36,10 @@ const mainNavItems: NavItem[] = [
         children: [
             {
                 title: 'Menu',
-                href: '/menu',
+                href: route('menu-items.index'),
             },
             {
-                title: 'Categories',
+                title: 'Category',
                 href: route('menu-category.index'),
             },
         ],

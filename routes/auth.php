@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MenuController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\MenuCategoryController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -65,5 +66,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/reservation/{reservation}', [ReservationController::class, 'destroy'])->name('reservation.destroy');
 
         Route::resource('menu-category', MenuCategoryController::class);
+        Route::resource('menu-items', MenuController::class);
      
 });
