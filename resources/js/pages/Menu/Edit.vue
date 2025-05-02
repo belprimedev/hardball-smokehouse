@@ -96,24 +96,24 @@ const updateItem = () => {
                         <div class="grid grid-cols-2 gap-x-2 col-span-3">
                             <div class="mb-4 sm:mb-8 col-span-3">
                                 <label for="hs-feedback-post-comment-name-1" class="block mb-2 text-sm font-medium dark:text-white">Item Name</label>
-                                <input v-model="editingItem.name" type="text" id="hs-feedback-post-comment-name-1" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" placeholder="Item Name" required>
+                                <input v-model="editingItem.name" type="text" id="hs-feedback-post-comment-name-1" class="w-full rounded-md border border-green-600/50 bg-white py-3 px-6 text-base font-medium text-green-800 outline-none focus:border-green-600 focus:shadow-md  dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" placeholder="Item Name" required>
                             </div>
                                         
                             <div class="mb-4 sm:mb-8">
                                 <label for="name" class="block mb-2 text-sm font-medium dark:text-white">Item Price</label>
-                                <input v-model="editingItem.price" type="text" id="name" class="w-full rounded-md border border-green-600/50 bg-white py-3 px-6 text-base font-medium text-green-800 outline-none focus:border-green-600 focus:shadow-md" placeholder="Item Price" required>
+                                <input v-model="editingItem.price" type="text" id="name" class="w-full rounded-md border border-green-600/50 bg-white py-3 px-6 text-base font-medium text-green-800 outline-none focus:border-green-600 focus:shadow-md  dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" placeholder="Item Price" required>
                             </div>
 
                             <div class="mb-4 sm:mb-8">
                                 <label for="categories" class="block mb-2 text-sm font-medium dark:text-white">Category</label>
-                                <select v-model="editingItem.category_id" id="categories" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500">
+                                <select v-model="editingItem.category_id" id="categories" class="w-full rounded-md border border-green-600/50 bg-white py-3 px-6 text-base font-medium text-green-800 outline-none focus:border-green-600 focus:shadow-md  dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
                                     <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
                                 </select>
                             </div>
 
                             <div class="mb-4 sm:mb-8 col-span-3">
                                 <label for="short_label" class="block mb-2 text-sm font-medium dark:text-white">Short Label</label>
-                                <input type="text" v-model="editingItem.short_label" id="short_label" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" placeholder="Short Label/ Featured title" >
+                                <input type="text" v-model="editingItem.short_label" id="short_label" class="w-full rounded-md border border-green-600/50 bg-white py-3 px-6 text-base font-medium text-green-800 outline-none focus:border-green-600 focus:shadow-md  dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" placeholder="Short Label/ Featured title" >
                             </div>
 
                             <div class="mb-4 sm:mb-8 col-span-2">

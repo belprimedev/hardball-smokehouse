@@ -169,11 +169,16 @@ const deleteItem = (id) => {
                                             <td class="px-3 py-4 text-sm text-gray-500">{{ item.special_request }}
                                             </td>
                                             <td class="px-5 flex justify-end h-full mx-auto items-center">
+                                                <a :href="route('reservation.show', { reservation: item.id })"
+                                                    class="bg-yellow-500 rounded-l-md p-2 text-white hover:shadow-lg text-xs font-thin">
+                                                    View
+                                                </a>
                                                 <a :href="route('reservation.edit', { reservation: item.id })"
-                                                    class="bg-orange-500 rounded-l-md p-2 text-white hover:shadow-lg text-xs font-thin">
+                                                    class="bg-orange-500 p-2 text-white hover:shadow-lg text-xs font-thin">
                                                     Edit
                                                 </a>
 
+                                                
                                             
                                                 <a href="#" @click="deleteItem(item.id)"
                                                     class="bg-red-600 rounded-r-md p-2 text-white hover:shadow-lg text-xs font-thin">

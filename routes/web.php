@@ -8,6 +8,10 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
+Route::get('/make-reservation', function () {
+    return Inertia::render('OnlineReservation');
+})->name('make-reservation');
+
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
