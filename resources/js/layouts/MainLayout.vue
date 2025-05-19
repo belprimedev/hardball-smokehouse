@@ -1,7 +1,8 @@
-<script setup>
+<script setup lang="ts">
 
 //import T1extLink from '@/Components/T1extLink.vue';
 import { ref } from 'vue';
+import { Head } from '@inertiajs/vue3';
 
 
 const showingNavigationDropdown = ref(false);
@@ -19,6 +20,12 @@ const showingNavigationDropdown = ref(false);
     font-style: normal;
 }
 
+.knewave-regular {
+    font-family: "Knewave", system-ui;
+    font-weight: 400;
+    font-style: normal;
+}
+
 body {
     margin: 0;
 }
@@ -26,6 +33,17 @@ body {
 
 <template>
     <div class="min-h-screen flex flex-col items-center">
+        <!-- Favicon Meta Tags -->
+        <Head>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Knewave&display=swap" rel="stylesheet">
+            <link rel="icon" type="image/x-icon" href="/favicon.ico">
+            <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+            <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+            <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+            <link rel="manifest" href="/site.webmanifest">
+        </Head>
         <!-- Navigation - Make it fixed or absolute -->
         <nav
             class="fixed bg-gray-900 dark:bg-gray-900 backdrop-filter backdrop-blur-lg bg-opacity-40 firefox:bg-opacity-90 w-full z-50 top-0 start-0 border-b border-emerald-200 dark:border-gray-600">
@@ -60,29 +78,40 @@ body {
                     <ul
                         class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-whit dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                         <li>
-                            <a :href="route('home')"
-                                class="block py-2 px-3 text-white text-3xl font-black title bg-green-700 rounded md:bg-transparent md:text-green-700 md:p-0 md:dark:text-green-500"
+                            <a :href="route('menu')"
+                                :class="[
+                                    'block py-2 px-3 text-gray-300 text-2xl font-black knewave-regular rounded md:bg-transparent md:p-0 md:dark:text-gray-100 md:hover:text-green-700',
+                                    { 'border-b-2 pb-4 border-emerald-600': route().current('menu') }
+                                ]"
                                 aria-current="page">Menu</a>
                         </li>
                         <li>
-                            <a :href="route('home')"
-                                class="block py-2 px-3 text-gray-300 text-3xl font-black title rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                Cocktail</a>
+                            <a :href="route('cocktail')"
+                                :class="[
+                                    'block py-2 px-3 text-gray-300 text-2xl font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700',
+                                    { 'border-b-2 border-yellow-500': route().current('cocktail') }
+                                ]">Cocktail</a>
                         </li>
                         <li>
-                            <a :href="route('home')"
-                                class="block py-2 px-3 text-gray-300 text-3xl font-black title rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                Event</a>
+                            <a :href="route('events')"
+                                :class="[
+                                    'block py-2 px-3 text-gray-300 text-2xl font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700',
+                                    { 'border-b-2 border-yellow-500': route().current('events') }
+                                ]">Events</a>
                         </li>
                         <li>
-                            <a :href="route('home')"
-                                class="block py-2 px-3 text-gray-300 text-3xl font-black title rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                Gallery</a>
+                            <a :href="route('gallery')"
+                                :class="[
+                                    'block py-2 px-3 text-gray-300 text-2xl font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700',
+                                    { 'border-b-2 border-yellow-500': route().current('gallery') }
+                                ]">Gallery</a>
                         </li>
                         <li>
-                            <a :href="route('home')"
-                                class="block py-2 px-3 text-gray-300 text-3xl font-black title rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                Contact</a>
+                            <a :href="route('contact')"
+                                :class="[
+                                    'block py-2 px-3 text-gray-300 text-2xl font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700',
+                                    { 'border-b-2 border-yellow-500': route().current('contact') }
+                                ]">Contact</a>
                         </li>
                     </ul>
                 </div>
@@ -93,30 +122,30 @@ body {
                 <div class="pt-2 pb-3 space-y-1">
                     <a
                         class="block py-2 px-3 text-gray-900 text-xl font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                        :href="route('home')" aria-current="page">
+                        :href="route('menu')" aria-current="page">
                         Menu
                     </a>
                     <a
                         class="block py-2 px-3 text-gray-900 text-xl font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                        :href="route('home')" aria-current="page">
-                        Coctail
+                        :href="route('cocktail')" aria-current="page">
+                        Cocktail
                     </a>
 
                     <a
                         class="block py-2 px-3 text-gray-900 text-xl font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                        :href="route('home')" aria-current="page">
+                        :href="route('events')" aria-current="page">
                         Events
                     </a>
 
                     <a
                         class="block py-2 px-3 text-gray-900 text-xl font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                        :href="route('home')" aria-current="page">
+                        :href="route('gallery')" aria-current="page">
                         Gallery
                     </a>
 
                     <a
                         class="block py-2 px-3 text-gray-900 text-xl font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                        :href="route('home')" aria-current="page">
+                        :href="route('contact')" aria-current="page">
                         Contact
                     </a>
                 </div>
@@ -223,16 +252,16 @@ body {
                         </h4>
 
                         <div class="mt-3 grid space-y-3">
-                            <a :href="route('home')"
+                            <a :href="route('menu')"
                                 class="flex items-center py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Menu</a>
-                            <a :href="route('home')"
+                            <a :href="route('cocktail')"
                                 class="flex items-center py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Cocktail</a>
-                            <a :href="route('home')"
+                            <a :href="route('events')"
                                 class="flex items-center py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Events</a>
-                            <a :href="route('home')"
+                            <a :href="route('gallery')"
                                 class="flex items-center py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Gallery</a>
                             <a :href="route('home')"
@@ -249,19 +278,19 @@ body {
                         </h4>
 
                         <div class="mt-3 grid space-y-3">
-                            <a :href="route('home')"
+                            <a :href="route('about')"
                                 class="block py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 About US</a>
-                            <a :href="route('home')"
+                            <a :href="route('faq')"
                                 class="block py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 FAQ</a>
-                            <a :href="route('home')"
+                            <a :href="route('contact')"
                                 class="block py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 Contact</a>
-                            <a :href="route('home')"
+                            <a :href="route('vacancies')"
                                 class="block py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 Vacancies</a>
-                            <a :href="route('home')"
+                            <a :href="route('terms')"
                                 class="block py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 Terms & Conditions</a>
                         </div>

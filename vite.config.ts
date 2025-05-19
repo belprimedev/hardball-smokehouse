@@ -33,4 +33,12 @@ export default defineConfig({
             plugins: [tailwindcss, autoprefixer],
         },
     },
+    server: {
+        hmr: {
+            host: 'hardball.test',
+        },
+        host: 'hardball.test',
+        port: 5173,
+        strictPort: true,
+    },
 });

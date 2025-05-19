@@ -618,8 +618,8 @@ const slide = reactive([
                 <!-- <h1 class="mb-10 ml-10 lg:text-6xl great-vibes font-bold">Featured Menu</h1> -->
                 <div class="title-area relative z-10">
                     <div class="flex justify-self-center text-center wow mb-7 font-bold text-orange-600" data-wow-delay="0.5s">
-                        <img class="me-1 mx-auto" alt="icon" src="img/icon/titleIcon.svg">HARDBALL SMOKEHOUSE DISHES
-                        <img class="ms-1" alt="icon" src="img/icon/titleIcon.svg">
+                        <img class="me-1 mx-auto" alt="icon" src="/img/icon/titleIcon.svg">HARDBALL SMOKEHOUSE DISHES
+                        <img class="ms-1" alt="icon" src="/img/icon/titleIcon.svg">
                     </div>
                     <h2 class="title wow fadeInUp" data-wow-delay="0.7s">Our Most Popular Deals</h2>
                 </div>
@@ -735,25 +735,25 @@ const slide = reactive([
                         </div>
                         <div class="card1">
                             <div class="container">
-                                <img src="/img/special3.jpeg" alt="special 3" class="img_card">
+                                <img src="/img/dishes2_4.png" alt="special 3" class="img_card">
                             </div>
                         </div>
                     </div>
 
-                    <!-- <div v-motion-slide-visible-bottom :delay="800" :duration="800" class="bg-white rounded-md p-4">
-                            <div class="pb-4">
-                                <p class="text-xs text-left text-green-600">Egg</p>
-                                <div class="flex justify-between">
-                                    <p class="text-lg font-extrabold text-slate-800">Eggs</p>
-                                    <p class="text-lg text-green-600 font-bold">£6.44</p>
-                                </div>
+                    <div v-motion-slide-visible-bottom :delay="800" :duration="800" class="bg-white rounded-md p-4">
+                        <div class="pb-4">
+                            <p class="text-xs text-left text-green-600">Egg</p>
+                            <div class="flex justify-between">
+                                <p class="text-lg font-extrabold text-slate-800">Eggs</p>
+                                <p class="text-lg text-green-600 font-bold">£6.44</p>
                             </div>
-                            <div class="card1">
-                                <div class="container">
-                                    <img src="/img/special4.jpeg" alt="special 4" class="img_card">
-                                </div>
+                        </div>
+                        <div class="card1">
+                            <div class="container">
+                                <img src="/img/portrait1.JPG" alt="special 4" class="img_card">
                             </div>
-                        </div> -->
+                        </div>
+                    </div>
                 </grid>
             </section>
             <!-- ============================= END PARALLAX ======================================================== -->

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Log;
-use App\Models\Menu;
+use Illuminate\Support\Facades\Log;
+use App\Models\MenuItem;
 use Inertia\Inertia;
 use App\Models\MenuCategory;
 use Illuminate\Http\Request;
@@ -13,9 +13,9 @@ class MenuController extends Controller
 {
     public function index()
     {
-        $menuItems = Menu::with('category')
+        $menuItems = MenuItem::with('category')
             ->orderBy('created_at', 'desc') // ✅ Sort by latest first
-            ->paginate(4); // Paginate with 10 items per page
+            ->paginate(10); // Paginate with 10 items per page
         $categories = MenuCategory::all(); 
     
         return Inertia::render('Menu/Index', [
@@ -57,7 +57,7 @@ class MenuController extends Controller
         ]);
         //Log::info($validated); // Log validated results 
     
-        $menuItem = Menu::findOrFail($id);
+        $menuItem = MenuItem::findOrFail($id);
 
         if ($request->hasFile('image')) {
             // Delete old image if exists
@@ -102,7 +102,7 @@ class MenuController extends Controller
         // Debug validated data before insertion
         Log::info('Validated menu item data:', $validated);
 
-        Menu::create($validated);
+        MenuItem::create($validated);
 
         return redirect()->route('menu-items.index')->with('success', 'Menu item created successfully');
     }
@@ -110,7 +110,7 @@ class MenuController extends Controller
 
     public function edit($id)
     {
-        $menuItem = Menu::findOrFail($id);
+        $menuItem = MenuItem::findOrFail($id);
         $categories = MenuCategory::all();
         
         return Inertia::render('Menu/Edit', [
@@ -123,7 +123,7 @@ class MenuController extends Controller
 
     public function destroy($id)
     {
-        $menuItem = Menu::findOrFail($id);
+        $menuItem = MenuItem::findOrFail($id);
         $menuItem->delete();
 
         return redirect()->route('menu-items.index')->with('success', 'Menu item deleted successfully');
