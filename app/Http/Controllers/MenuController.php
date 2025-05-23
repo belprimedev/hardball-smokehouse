@@ -32,16 +32,8 @@ class MenuController extends Controller
 
     public function update(Request $request, $id)
     {
-        //Log::info($request->all()); // Log request data to check values
-    
-        // Ensure checkboxes are always included in the request
-        // $request->merge([
-        //     'is_visible' => $request->has('is_visible'),
-        //     'is_available' => $request->has('is_available'),
-        //     'is_featured' => $request->has('is_featured'),
-        //     'is_chef_special' => $request->has('is_chef_special'),
-        // ]);
-    
+        Log::info('Update request data:', $request->all());
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -53,24 +45,30 @@ class MenuController extends Controller
             'is_available' => 'boolean',
             'is_featured' => 'boolean',
             'is_chef_special' => 'boolean',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
-        //Log::info($validated); // Log validated results 
-    
+        
+        Log::info('Validated data:', $validated);
+        
         $menuItem = MenuItem::findOrFail($id);
-
+        
         if ($request->hasFile('image')) {
+            Log::info('Image file detected');
+            
             // Delete old image if exists
             if ($menuItem->image_path) {
+                Log::info('Deleting old image:', ['path' => $menuItem->image_path]);
                 Storage::disk('public')->delete($menuItem->image_path);
             }
             
             $path = $request->file('image')->store('menu-items', 'public');
+            Log::info('New image stored at:', ['path' => $path]);
             $validated['image_path'] = $path;
         }
 
+        Log::info('Updating menu item with data:', $validated);
         $menuItem->update($validated);
-    
+        
         return redirect()->route('menu-items.index')->with('success', 'Menu item updated successfully');
     }
 
@@ -91,7 +89,7 @@ class MenuController extends Controller
             'is_available' => 'boolean',
             'is_featured' => 'boolean',
             'is_chef_special' => 'boolean',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
 
         if ($request->hasFile('image')) {
@@ -127,5 +125,37 @@ class MenuController extends Controller
         $menuItem->delete();
 
         return redirect()->route('menu-items.index')->with('success', 'Menu item deleted successfully');
+    }
+
+    public function getFeaturedItems()
+    {
+        $featuredItems = MenuItem::where('is_featured', true)
+            ->where('is_visible', true)
+            ->where('is_available', true)
+            ->with('category')
+            ->get();
+
+        return response()->json($featuredItems);
+    }
+
+    public function getChefSpecialItems()
+    {
+        $chefSpecialItems = MenuItem::where('is_chef_special', true)
+            ->where('is_visible', true)
+            ->where('is_available', true)
+            ->with('category')
+            ->get();
+
+        return response()->json($chefSpecialItems);
+    }
+
+    public function getAllMenuItems()
+    {
+        $menuItems = MenuItem::where('is_visible', true)
+            ->where('is_available', true)
+            ->with('category')
+            ->get();
+
+        return response()->json($menuItems);
     }
 }

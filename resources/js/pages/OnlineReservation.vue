@@ -591,12 +591,12 @@ button:hover,
         <Head title="Cocktail Menu" />
 
 
-        <div class="bg-gray-700 mt-4 text-black/50 dark:bg-black dark:text-white/50" style="
+        <div class="bg-gray-700 mt-4 text-black/75 dark:bg-black dark:text-white/50" style="
                 background: linear-gradient(
-                        rgba(0, 0, 0, 0.7),
-                        rgba(0, 0, 0, 0)
+                        rgba(0, 0, 0, 0.9),
+                        rgba(0, 0, 0, 0.4)
                     ),
-                    url('../img/bg11.jpg');
+                    url('../img/landscape5.jpg');
                 background-size: cover;
                 background-position: right;
             ">
@@ -619,7 +619,7 @@ button:hover,
                                 <div class="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-10">
                                     <!-- Title -->
                                     <div class="max-w-5xl pt-20 text-center mx-auto">
-                                        <h1 class="font-bold font-mono bg-clip-text bg-gradient-to-tl from-green-400 to-yellow-400 text-transparent"
+                                        <h1 class="font-bold knewave-regular font-mono bg-clip-text bg-gradient-to-tl from-green-400 to-yellow-400 text-transparent"
                                             style="font-size: 5rem">
                                             Menu
                                         </h1>
@@ -702,7 +702,7 @@ button:hover,
 
             <!-- Parallax Background -->
             <section class="flex flex-col w-full p-24 bg-cover bg-fixed bg-center justify-center items-center"
-                style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/img/bg/reservation1.jpg');">
+                style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/img/bg/store2.jpg');">
                 <div
                     class="sm:pt-10 sm:pb-10 rounded-2xl overflow-hidden relative bg-opacity-0 bg-white/10 backdrop-blur-sm border-2 border-white">
                     <h2 class="ml-4 max-w-xl items-center rounded-full px-4 py-2 mb-4 text-emerald-600 ring-1 ring-inset ring-emerald-600"
@@ -809,7 +809,7 @@ button:hover,
                             <div class="mb-6 max-w-3xl text-center sm:text-center md:mx-auto md:mb-12">
 
                                 <h2
-                                    class="font-heading mb-4 font-bold tracking-tight text-gray-50 dark:text-white text-3xl sm:text-5xl">
+                                    class="font-heading mb-4 knewave-regular font-bold tracking-tight text-gray-50 dark:text-white text-3xl sm:text-5xl">
                                     JOIN US
                                 </h2>
                                 <div class="mt-5 max-w-3xl text-center mx-auto">

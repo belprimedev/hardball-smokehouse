@@ -10,6 +10,12 @@ class MenuItemsSeeder extends Seeder
 {
     public function run(): void
     {
+        // Temporarily disable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        
+        // Clear the table
+        DB::table('menu_items')->delete();
+        
         $now = Carbon::now();
 
         // Get category IDs by name

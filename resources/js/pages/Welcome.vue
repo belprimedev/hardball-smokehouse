@@ -1,9 +1,28 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import MainLayout from '@/layouts/MainLayout.vue';
 import 'vue3-carousel/dist/carousel.css';
-import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
-import { useMotion } from '@vueuse/motion';
+import { Carousel, Slide, Pagination } from 'vue3-carousel';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+
+interface MenuItem {
+    id: number;
+    name: string;
+    description: string | null;
+    price: number;
+    image_path: string | null;
+    category_id: number;
+    is_featured: boolean;
+    is_chef_special: boolean;
+    is_available: boolean;
+    is_visible: boolean;
+    category?: {
+        id: number;
+        name: string;
+        description: string | null;
+    };
+}
 
 //import { Carousel, Slide, Navigation } from '...'; // Need to check the actual import paths, but in the original code, they are components, so assuming they are imported.
 
@@ -29,7 +48,7 @@ const settings = reactive({
 
 itemsToShow: 5,
 
-snapAlign: 'center',
+snapAlign: 'center' as const,
 
 });
 
@@ -39,7 +58,7 @@ const breakpoints = reactive({
 
 itemsToShow: 5,
 
-snapAlign: 'center',
+snapAlign: 'center' as const,
 
 },
 
@@ -47,23 +66,27 @@ snapAlign: 'center',
 
 itemsToShow: 5,
 
-snapAlign: 'start',
+snapAlign: 'start' as const,
 
 },
 
 });
 
-const slide = reactive([
+const featuredItems = ref<MenuItem[]>([]);
 
-{ id: 1, image: '/img/fritters.jpg', name: 'Mixed', details: 'Delicious & Spicy', price: '7.00' },
+onMounted(async () => {
+    try {
+        const response = await axios.get<MenuItem[]>('/api/chef-special-items');
+        featuredItems.value = response.data;
+    } catch (error) {
+        console.error('Error fetching chef special menu items:', error);
+    }
+});
 
-{ id: 2, image: '/img/carousel2.png', name: 'Burger', details: 'Delicious & Spicy', price: '8.12' },
-
-{ id: 3, image: '/img/carousel3.png', name: 'Pasta', details: 'Delicious & Spicy', price: '6.45' },
-
-{ id: 3, image: '/img/carousel4.png', name: 'Hot Rice', details: 'Delicious & Spicy', price: '5.00' },
-
-]);
+const getImageSource = (imagePath: string | null): string => {
+    if (!imagePath) return '/img/dishes2_4.png'; // Default image
+    return `/storage/${imagePath}`;
+};
 
 </script>
 
@@ -389,7 +412,7 @@ const slide = reactive([
                                                         class="pr-3 pt-5 font-black great-vibes bg-clip-text bg-gradient-to-tl from-green-600 to-yellow-600 text-transparent text-4xl md:text-5xl lg:text-[70pt] dark:text-neutral-200">
                                                         Caribbean </h1>
                                                     <p v-motion-slide-visible-right :delay="200" :duration="600"
-                                                        class="text-6xl text-white rubik">Smokehouse</p>
+                                                        class="text-6xl text-white knewave-regular">Smokehouse</p>
 
                                                 </div>
                                                 <!-- End Title -->
@@ -618,62 +641,40 @@ const slide = reactive([
                 <!-- <h1 class="mb-10 ml-10 lg:text-6xl great-vibes font-bold">Featured Menu</h1> -->
                 <div class="title-area relative z-10">
                     <div class="flex justify-self-center text-center wow mb-7 font-bold text-orange-600" data-wow-delay="0.5s">
-                        <img class="me-1 mx-auto" alt="icon" src="/img/icon/titleIcon.svg">HARDBALL SMOKEHOUSE DISHES
+                        <img class="me-1 mx-auto" alt="icon" src="/img/icon/titleIcon.svg">CHEF'S SPECIAL DISHES
                         <img class="ms-1" alt="icon" src="/img/icon/titleIcon.svg">
                     </div>
-                    <h2 class="title wow fadeInUp" data-wow-delay="0.7s">Our Most Popular Deals</h2>
+                    <h2 class="title wow fadeInUp" data-wow-delay="0.7s">Our Chef's Special Selection</h2>
                 </div>
                 <div class="absolute top-2 left-0 float-bob-y d-none d-xxl-block">
                     <img alt="shape" src="/img/shape/burger.png">
                 </div>
 
                 <Carousel :autoplay="3000" :wrap-around="true" v-bind="settings" :breakpoints="breakpoints">
-                    <Slide v-for="item in slide" :key="item.id" style="display: block;padding: 10px;">
-                        <!-- <div class="card bg-gra-500 pb-20 hover:border hover:border-green-500">
-                            <div class="grid grid-cols-6 gap-2">
-                                <div class="grid col-span-2">
-                                    <img :src="item.image" alt="Slide {{ item.id }}" class="h-auto rounded-full" />
-                                </div>
-                                <div class="grid col-span-4 text-yellow-400">
-                                    <p class="heading">
-                                        {{ item.name }}
-                                    </p>
-                                    <p class="text-gray-500 text-left">{{ item.details }}</p>
-
-                                </div>
-                            </div>
-                            <div class="flex my-auto justify-between">
-                                <div>
-                                    <p class="text-sm my-auto align-middle text-gray-500">Regular price:</p>
-                                </div>
-                                <div class="">
-                                    <span class="text-xl font-extrabold text-green-600">£{{ item.price }}</span>
-                                </div>
-                            </div>
-                        </div> -->
+                    <Slide v-for="item in featuredItems" :key="item.id" style="display: block;padding: 10px;">
                         <div class="m-2">
                             <div class="dishes-card style2 border border-orange-100" data-wow-delay="0.2s">
                                 <div class="dishes-thumb mx-auto text-center">
-                                    <img alt="thumb" class="text-center mx-auto" src="/img/dishes2_4.png">
+                                    <img :src="getImageSource(item.image_path)" :alt="item.name" class="text-center mx-auto">
                                     <div class="circle-shape">
                                         <img class="cir36 mx-auto text-center" alt="shape" src="/img/shape/circleShape.png">
                                     </div>
                                 </div>
                                 <div class="dishes-content">
                                     <a href="/menu" data-discover="true">
-                                        <h3>*{{ item.name }}</h3>
+                                        <h3>{{ item.name }}</h3>
                                     </a>
                                     <div class="star">
                                         <img class="text-center mx-auto" alt="icon" src="/img/icon/star2.svg">
                                     </div>
-                                    <div class="text">{{ item.details }}</div>
-                                    <h6>£{{ item.price }}</h6><a class="theme-btn style6" href="/menu"
-                                        data-discover="true"> Try Now <i class="bi bi-basket2"></i></a>
+                                    <div class="text">{{ item.description || 'Delicious & Spicy' }}</div>
+                                    <h6>£{{ item.price }}</h6>
+                                    <a class="theme-btn style6" href="/menu" data-discover="true">
+                                        Try Now <i class="bi bi-basket2"></i>
+                                    </a>
                                 </div>
                             </div>
-
                         </div>
-
                     </Slide>
 
                     <template #addons>
@@ -687,18 +688,24 @@ const slide = reactive([
              <!-- ============================= PARALLAX ======================================================== -->
              <section
                 class="flex flex-col w-full pb-20 h-[650px] bg-cover bg-fixed bg-center justify-center items-center"
-                style=" background-image: url('/img/parallax.jpg');">
+                style="background: linear-gradient(
+                        rgba(0, 0, 0, 0.4),
+                        rgba(0, 0, 0, 0.1)
+                    ),
+                    url('../img/bg6.jpg');
+                background-size: cover;
+                background-position: right;">
                 <h1 class="text-white text-5xl font-semibold my-20 mb-10">
                     Today's Special
                 </h1>
 
                 <grid
                     class="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-8 mx-4 lg:mx-20 text-center lg:my-10 font-bold text-white/90">
-                    <div v-for="item in specialItems" :key="item.id">
+                    <div v-for="item in featuredItems.slice(0, 4)" :key="item.id">
                         <div v-motion-slide-visible-bottom :delay="200" :duration="800"
                             class="bg-white rounded-md p-4 w-full">
                             <div class="pb-4">
-                                <p class="text-xs text-left text-green-600">{{ item.category.name }}</p>
+                                <p class="text-xs text-left text-green-600">{{ item.category?.name }}</p>
                                 <div class="flex justify-between">
                                     <p class="text-lg font-extrabold text-slate-800">{{ item.name }}</p>
                                     <p class="text-lg text-green-600 font-bold">£{{ item.price }}</p>
@@ -707,50 +714,6 @@ const slide = reactive([
                             <div class="container">
                                 <img :src="getImageSource(item.image_path)" :alt="item.name || 'Menu item'"
                                     class="img_card">
-                            </div>
-                        </div>
-                    </div>
-                    <div v-motion-slide-visible-bottom :delay="400" :duration="800" class="bg-white rounded-md p-4">
-                        <div class="pb-4">
-                            <p class="text-xs text-left text-green-600">Pancake</p>
-                            <div class="flex justify-between">
-                                <p class="text-lg font-extrabold text-slate-800">Pancake Stack</p>
-                                <p class="text-lg text-green-600 font-bold">£12.09</p>
-                            </div>
-                        </div>
-                        <div class="card1">
-                            <div class="container">
-                                <img src="/img/portrait1.jpg" alt="special 2" class="img_card">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-motion-slide-visible-bottom :delay="600" :duration="800" class="bg-white rounded-md p-4">
-                        <div class="pb-4">
-                            <p class="text-xs text-left text-green-600">Salad</p>
-                            <div class="flex justify-between">
-                                <p class="text-lg font-extrabold text-slate-800">Vegetarian</p>
-                                <p class="text-lg text-green-600 font-bold">£6.20</p>
-                            </div>
-                        </div>
-                        <div class="card1">
-                            <div class="container">
-                                <img src="/img/dishes2_4.png" alt="special 3" class="img_card">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-motion-slide-visible-bottom :delay="800" :duration="800" class="bg-white rounded-md p-4">
-                        <div class="pb-4">
-                            <p class="text-xs text-left text-green-600">Egg</p>
-                            <div class="flex justify-between">
-                                <p class="text-lg font-extrabold text-slate-800">Eggs</p>
-                                <p class="text-lg text-green-600 font-bold">£6.44</p>
-                            </div>
-                        </div>
-                        <div class="card1">
-                            <div class="container">
-                                <img src="/img/portrait1.JPG" alt="special 4" class="img_card">
                             </div>
                         </div>
                     </div>

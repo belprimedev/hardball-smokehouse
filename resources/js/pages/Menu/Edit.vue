@@ -4,73 +4,87 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import { ref, watchEffect } from 'vue';
 
+interface MenuItem {
+    id: number;
+    name: string;
+    description: string | null;
+    price: number;
+    image_path: string | null;
+    category_id: number;
+    is_featured: boolean;
+    is_chef_special: boolean;
+    is_available: boolean;
+    is_visible: boolean;
+    short_label: string | null;
+    side_note: string | null;
+    image?: File;
+}
+
+interface Category {
+    id: number;
+    name: string;
+}
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Create Menu Item',
-        href: '/menu.create',
+        title: 'Edit Menu Item',
+        href: '/menu-items',
     },
 ];
 
-const props = defineProps({
-  menuItem: Object,
-  categories: Array
-});
+const props = defineProps<{
+    menuItem: MenuItem;
+    categories: Category[];
+}>();
 
-const editingItem = ref({ ...props.menuItem });
+const editingItem = ref<MenuItem>({ ...props.menuItem });
+const imageInput = ref<HTMLInputElement | null>(null);
+const previewImage = ref<string | null>(null);
 
-// Ensure boolean fields have default values (Vue may treat them as undefined)
+// Ensure boolean fields have default values
 watchEffect(() => {
-  editingItem.value.is_visible = !!props.menuItem.is_visible;
-  editingItem.value.is_available = !!props.menuItem.is_available;
-  editingItem.value.is_featured = !!props.menuItem.is_featured;
-  editingItem.value.is_chef_special = !!props.menuItem.is_chef_special;
+    if (props.menuItem) {
+        editingItem.value.is_visible = !!props.menuItem.is_visible;
+        editingItem.value.is_available = !!props.menuItem.is_available;
+        editingItem.value.is_featured = !!props.menuItem.is_featured;
+        editingItem.value.is_chef_special = !!props.menuItem.is_chef_special;
+    }
 });
 
-const imageInput = ref(null);
-const previewImage = ref(null);
-
-const handleImageChange = (e) => {
-    const file = e.target.files[0];
+const handleImageChange = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const file = target.files?.[0];
     if (file) {
         previewImage.value = URL.createObjectURL(file);
         editingItem.value.image = file;
     }
 };
 
-// Update the updateItem function
 const updateItem = () => {
-    console.log('Editing Item Data:', editingItem.value);
-
     const formData = new FormData();
     
     // Add _method field to handle PUT request
     formData.append('_method', 'PUT');
     
-    // Append all form fields with explicit type conversion
-    formData.append('name', editingItem.value.name || '');
-    formData.append('price', editingItem.value.price || '');
-    formData.append('category_id', editingItem.value.category_id || '');
+    // Append all form fields
+    formData.append('name', editingItem.value.name);
+    formData.append('price', editingItem.value.price.toString());
+    formData.append('category_id', editingItem.value.category_id.toString());
     formData.append('description', editingItem.value.description || '');
     formData.append('short_label', editingItem.value.short_label || '');
     formData.append('side_note', editingItem.value.side_note || '');
     
-    // Boolean fields need explicit conversion
+    // Boolean fields
     formData.append('is_visible', editingItem.value.is_visible ? '1' : '0');
     formData.append('is_available', editingItem.value.is_available ? '1' : '0');
     formData.append('is_featured', editingItem.value.is_featured ? '1' : '0');
     formData.append('is_chef_special', editingItem.value.is_chef_special ? '1' : '0');
 
-    // Log FormData contents
-    for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-    }
-
     // Append image if exists
-    if (imageInput.value?.files[0]) {
+    if (imageInput.value?.files?.[0]) {
         formData.append('image', imageInput.value.files[0]);
     }
 
-    // Change to post method but include _method field for PUT
     router.post(route('menu-items.update', editingItem.value.id), formData, {
         onSuccess: () => {
             router.get(route('menu-items.index'));
@@ -85,12 +99,11 @@ const updateItem = () => {
 </script>
 
 <template>
-    <Head title="Reservation" />
+    <Head title="Edit Menu Item" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <div class="py-10 px-6 border border-gray-200 rounded-xl shadow-sm gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5 dark:bg-gray-950 ">
+            <div class="py-10 px-6 border border-gray-200 rounded-xl shadow-sm gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5 dark:bg-gray-950">
                 <form @submit.prevent="updateItem" enctype="multipart/form-data">
                     <div class="grid grid-cols-4 gap-x-4">
                         <div class="grid grid-cols-2 gap-x-2 col-span-3">
@@ -162,13 +175,14 @@ const updateItem = () => {
 
                         <div class="my-4 pt-10 sm:mb-8">
                             <label class="block mb-2 text-sm font-medium dark:text-white">
-                                Featured Image
+                                Item Image
                             </label>
                             <div class="mt-2">
                                 <img 
                                     v-if="previewImage || editingItem.image_path" 
                                     :src="previewImage || `/storage/${editingItem.image_path}`" 
                                     class="w-44 h-44 object-cover rounded-lg mb-2"
+                                    alt="Item preview"
                                 />
                                 <input
                                     ref="imageInput"
@@ -177,6 +191,9 @@ const updateItem = () => {
                                     accept="image/*"
                                     class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                                 />
+                                <p class="mt-1 text-sm text-gray-500">
+                                    Recommended size: 800x600px, max file size: 2MB
+                                </p>
                             </div>
                         </div>
                         </div>

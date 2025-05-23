@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\MenuController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -22,6 +23,10 @@ Route::get('/menu', function () {
         'menuItems' => \App\Models\MenuItem::all(),
     ]);
 })->name('menu');
+
+Route::get('/api/featured-menu-items', [MenuController::class, 'getFeaturedItems']);
+Route::get('/api/chef-special-items', [MenuController::class, 'getChefSpecialItems']);
+Route::get('/api/menu-items', [MenuController::class, 'getAllMenuItems']);
 
 Route::get('/cocktail', function () {
     return Inertia::render('Cocktail');

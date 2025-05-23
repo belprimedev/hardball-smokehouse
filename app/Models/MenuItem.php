@@ -19,9 +19,13 @@ class MenuItem extends Model
         'name',
         'description',
         'price',
+        'image_path',
+        'short_label',
         'side_note',
         'is_featured',
         'is_chef_special',
+        'is_available',
+        'is_visible'
     ];
 
     /**

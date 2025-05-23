@@ -30,7 +30,7 @@ const page = usePage<SharedData>();
                             class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg" 
                             align="end" 
                             side="bottom"
-                            side-offset="0"
+                            :side-offset="0"
                         >
                             <SidebarMenuItem v-for="child in item.children" :key="child.title">
                                 <SidebarMenuButton as-child>
