@@ -360,7 +360,7 @@ const getImageSource = (imagePath: string | null): string => {
             <link rel="preconnect" href="https://rsms.me/" />
             <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
         </Head>
-        <div class="flex min-h-screen flex-col items-center bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] lg:justify-center">
+        <div class="flex min-h-screen flex-col items-center bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] lg:justify-center overflow-x-hidden">
             <!-- <header class="not-has-[nav]:hidden mb-6 w-full max-w-[335px] text-sm lg:max-w-4xl">
                 <nav class="flex items-center justify-end gap-4">
                     <Link v-if="$page.props.auth.user" :href="route('dashboard')"
@@ -380,7 +380,7 @@ const getImageSource = (imagePath: string | null): string => {
                 </nav>
             </header> -->
             <div class="duration-750 starting:opacity-0 flex w-full items-center justify-center opacity-100 transition-opacity lg:grow">
-                <div class="relative w-full">
+                <div class="relative w-full max-w-full">
                     <!-- Background image div -->
                     <div class="absolute inset-0 z-0">
                         <div class="w-full h-screen" style="background-image: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .1)), url('/img/bg1.jpg');background-size: cover;background-position: center;background-repeat: no-repeat;"></div>
@@ -697,7 +697,7 @@ const getImageSource = (imagePath: string | null): string => {
 
              <!-- ============================= PARALLAX ======================================================== -->
              <section
-                class="flex flex-col w-full pb-20 h-auto md:h-[650px] bg-cover bg-fixed bg-center justify-center items-center"
+                class="flex flex-col w-full pb-20 h-auto md:h-[650px] bg-cover bg-fixed bg-center justify-center items-center overflow-hidden"
                 style="background: linear-gradient(
                         rgba(0, 0, 0, 0.4),
                         rgba(0, 0, 0, 0.1)
@@ -707,7 +707,7 @@ const getImageSource = (imagePath: string | null): string => {
                 background-position: center;">
                 <h1 class="text-white text-3xl md:text-5xl font-semibold my-10 md:my-20 mb-10">
                     Today's Special
-                </h1>110009
+                </h1>
 
                 <div
                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-8 mx-8 sm:mx-4 lg:mx-20 text-center lg:my-10 font-bold text-white/90">
