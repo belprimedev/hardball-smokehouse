@@ -148,7 +148,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Menu Categories -->
-        <div class="max-w-[85rem] bg-gray-50 px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+        <div class="max-w-[85rem] bg-gray- px-4 pb-10 sm:px-6 lg:px-8 lg:pb-14 mx-auto">
             <!-- Menu Items by Category -->
             <div class="mt-12 space-y-12">
                 <template v-for="category in filteredCategories" :key="category.id">

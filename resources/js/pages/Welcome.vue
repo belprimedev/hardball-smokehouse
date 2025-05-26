@@ -46,7 +46,7 @@ name: 'App'
 
 const settings = reactive({
 
-itemsToShow: 5,
+itemsToShow: 2,
 
 snapAlign: 'center' as const,
 
@@ -54,9 +54,17 @@ snapAlign: 'center' as const,
 
 const breakpoints = reactive({
 
+320: {
+
+itemsToShow: 2,
+
+snapAlign: 'center' as const,
+
+},
+
 700: {
 
-itemsToShow: 5,
+itemsToShow: 3,
 
 snapAlign: 'center' as const,
 
@@ -375,7 +383,7 @@ const getImageSource = (imagePath: string | null): string => {
                 <div class="relative w-full">
                     <!-- Background image div -->
                     <div class="absolute inset-0 z-0">
-                        <div class="w-full h-screen" style="background-image: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .1)), url('/img/bg1.jpg');background-size:100% 100%;background-repeat: no-repeat;"></div>
+                        <div class="w-full h-screen" style="background-image: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .1)), url('/img/bg1.jpg');background-size: cover;background-position: center;background-repeat: no-repeat;"></div>
                     </div>
 
                     <!-- Content that goes over the background -->
@@ -409,17 +417,17 @@ const getImageSource = (imagePath: string | null): string => {
                                                 <!-- Title -->
                                                 <div class="max-w-2xl text-center mx-auto">
                                                     <h1 v-motion-slide-visible-top :delay="300" :duration="800"
-                                                        class="pr-3 pt-5 font-black great-vibes bg-clip-text bg-gradient-to-tl from-green-600 to-yellow-600 text-transparent text-4xl md:text-5xl lg:text-[70pt] dark:text-neutral-200">
+                                                        class="pr-3 pt-5 font-black great-vibes bg-clip-text bg-gradient-to-tl from-green-600 to-yellow-600 text-transparent text-3xl md:text-5xl lg:text-[70pt] dark:text-neutral-200">
                                                         Caribbean </h1>
                                                     <p v-motion-slide-visible-right :delay="200" :duration="600"
-                                                        class="text-6xl text-white knewave-regular">Smokehouse</p>
+                                                        class="text-4xl md:text-6xl text-white knewave-regular">Smokehouse</p>
 
                                                 </div>
                                                 <!-- End Title -->
 
-                                                <div class="mt-5 max-w-3xl text-center mx-auto">
+                                                <div class="mt-5 max-w-3xl text-center mx-auto px-4">
                                                     <p v-motion-slide-visible-bottom :delay="300" :duration="800"
-                                                        class="text-4xl text-yellow-400 great-vibes font-bold dark:text-neutral-400">
+                                                        class="text-2xl md:text-4xl text-yellow-400 great-vibes font-bold dark:text-neutral-400">
                                                         Come for the food, <span class="font-serif text-red-700">Stay</span> for
                                                         the <span class="font-serif text-green-700">vibes</span>!</p>
                                                 </div>
@@ -431,8 +439,8 @@ const getImageSource = (imagePath: string | null): string => {
 
                                                 <!-- Buttons -->
                                                 <div v-motion-slide-visible-bottom :delay="600" :duration="800"
-                                                    class="mt-8 gap-3 flex justify-center">
-                                                    <a class="inline-flex justify-center items-center gap-x-3 text-center bg-gradient-to-tl from-green-600 to-yellow-600 hover:from-green-600 hover:to-yellow-600 border border-transparent text-white text-sm font-medium rounded-md focus:outline-none focus:ring-1 focus:ring-gray-600 py-3 px-4 dark:focus:ring-offset-gray-800"
+                                                    class="mt-8 gap-3 flex justify-center px-4">
+                                                    <a class="inline-flex justify-center items-center gap-x-3 text-center bg-gradient-to-tl from-green-600 to-yellow-600 hover:from-green-600 hover:to-yellow-600 border border-transparent text-white text-sm font-medium rounded-md focus:outline-none focus:ring-1 focus:ring-gray-600 py-3 px-6 md:px-4 dark:focus:ring-offset-gray-800"
                                                         href="#carousel">
                                                         Get started
                                                         <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg"
@@ -468,65 +476,65 @@ const getImageSource = (imagePath: string | null): string => {
                                     </div>
                                 </div>
                                 <div class="text-gray-700 body-font">
-                                    <div class="max-w-2xl px-10">
+                                    <div class="max-w-2xl px-4 md:px-10">
 
                                         <div class="flex flex-wrap -m-4 text-center">
                                             <div v-motion-slide-visible-right :delay="200" :duration="800"
-                                                class=" px-1 md:w-1/4 sm:w-1/2 w-full">
+                                                class="px-1 w-1/2 md:w-1/4">
                                                 <div
                                                     class="cs-border-change border border-green-300 px-2 py-2 rounded-lg transform transition duration-500 hover:scale-110">
                                                     <svg fill="none" stroke="currentColor" stroke-linecap="round"
                                                         stroke-linejoin="round" stroke-width="2"
-                                                        class="text-green-500 w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">
+                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block" viewBox="0 0 24 24">
                                                         <path d="M8 17l4 4 4-4m-4-5v9"></path>
                                                         <path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"></path>
                                                     </svg>
-                                                    <h2 class="title-font font-medium text-3xl text-white">2.7K</h2>
-                                                    <p class="leading-relaxed">Downloads</p>
+                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">2.7K</h2>
+                                                    <p class="leading-relaxed text-sm md:text-base">Downloads</p>
                                                 </div>
                                             </div>
                                             <div v-motion-slide-visible-right :delay="400" :duration="800"
-                                                class="px-1 md:w-1/4 sm:w-1/2 w-full">
+                                                class="px-1 w-1/2 md:w-1/4">
                                                 <div
                                                     class="cs-border-change border border-green-400 px-2 py-2 rounded-lg transform transition duration-500 hover:scale-110">
                                                     <svg fill="none" stroke="currentColor" stroke-linecap="round"
                                                         stroke-linejoin="round" stroke-width="2"
-                                                        class="text-green-500 w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">
+                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block" viewBox="0 0 24 24">
                                                         <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
                                                         <circle cx="9" cy="7" r="4"></circle>
                                                         <path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75"></path>
                                                     </svg>
-                                                    <h2 class="title-font font-medium text-3xl text-white">1.3K</h2>
-                                                    <p class="leading-relaxed">Users</p>
+                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">1.3K</h2>
+                                                    <p class="leading-relaxed text-sm md:text-base">Users</p>
                                                 </div>
                                             </div>
                                             <div v-motion-slide-visible-right :delay="600" :duration="800"
-                                                class="px-1 md:w-1/4 sm:w-1/2 w-full">
+                                                class="px-1 w-1/2 md:w-1/4">
                                                 <div
                                                     class="cs-border-change border border-green-300 px-2 py-2 rounded-lg transform transition duration-500 hover:scale-110">
                                                     <svg fill="none" stroke="currentColor" stroke-linecap="round"
                                                         stroke-linejoin="round" stroke-width="2"
-                                                        class="text-green-500 w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">
+                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block" viewBox="0 0 24 24">
                                                         <path d="M3 18v-6a9 9 0 0118 0v6"></path>
                                                         <path
                                                             d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z">
                                                         </path>
                                                     </svg>
-                                                    <h2 class="title-font font-medium text-3xl text-white">74</h2>
-                                                    <p class="leading-relaxed">Files</p>
+                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">74</h2>
+                                                    <p class="leading-relaxed text-sm md:text-base">Files</p>
                                                 </div>
                                             </div>
                                             <div v-motion-slide-visible-right :delay="800" :duration="800"
-                                                class="px-1 md:w-1/4 sm:w-1/2 w-full">
+                                                class="px-1 w-1/2 md:w-1/4">
                                                 <div
                                                     class="cs-border-change border border-green-300 px-2 py-2 rounded-lg transform transition duration-500 hover:scale-110">
                                                     <svg fill="none" stroke="currentColor" stroke-linecap="round"
                                                         stroke-linejoin="round" stroke-width="2"
-                                                        class="text-green-500 w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">
+                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block" viewBox="0 0 24 24">
                                                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                                                     </svg>
-                                                    <h2 class="title-font font-medium text-3xl text-white">46</h2>
-                                                    <p class="leading-relaxed">Places</p>
+                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">46</h2>
+                                                    <p class="leading-relaxed text-sm md:text-base">Places</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -543,7 +551,7 @@ const getImageSource = (imagePath: string | null): string => {
         <!-- Card Section -->
         <div id="carousel" class="max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12 mx-auto">
             <!-- Grid -->
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
                 <!-- Card -->
                 <a v-motion-slide-visible-bottom :delay="100" :duration="400"
                     class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition"
@@ -639,12 +647,12 @@ const getImageSource = (imagePath: string | null): string => {
             <section class="py-12 relative">
 
                 <!-- <h1 class="mb-10 ml-10 lg:text-6xl great-vibes font-bold">Featured Menu</h1> -->
-                <div class="title-area relative z-10">
-                    <div class="flex justify-self-center text-center wow mb-7 font-bold text-orange-600" data-wow-delay="0.5s">
-                        <img class="me-1 mx-auto" alt="icon" src="/img/icon/titleIcon.svg">CHEF'S SPECIAL DISHES
-                        <img class="ms-1" alt="icon" src="/img/icon/titleIcon.svg">
+                <div class="title-area relative z-10 px-4">
+                    <div class="flex justify-self-center text-center wow mb-7 font-bold text-orange-600 text-sm md:text-base" data-wow-delay="0.5s">
+                        <img class="me-1 mx-auto w-6 md:w-auto" alt="icon" src="/img/icon/titleIcon.svg">CHEF'S SPECIAL DISHES
+                        <img class="ms-1 w-6 md:w-auto" alt="icon" src="/img/icon/titleIcon.svg">
                     </div>
-                    <h2 class="title wow fadeInUp" data-wow-delay="0.7s">Our Chef's Special Selection</h2>
+                    <h2 class="title wow fadeInUp text-2xl md:text-4xl" data-wow-delay="0.7s">Our Chef's Special Selection</h2>
                 </div>
                 <div class="absolute top-2 left-0 float-bob-y d-none d-xxl-block">
                     <img alt="shape" src="/img/shape/burger.png">
@@ -681,26 +689,28 @@ const getImageSource = (imagePath: string | null): string => {
                         <Pagination />
                     </template>
                 </Carousel>
-                <div class="absolute top-32 right-0 float-bob-x d-none d-xxl-block"><img alt="shape" class=" w-52" src="/img/shape/pizza.png"></div>
+                <div class="absolute bottom-0 right-0 md:top-32 md:right-0 float-bob-x block md:d-none d-xxl-block">
+                    <img alt="shape" class="w-32 md:w-52" src="/img/shape/pizza.png">
+                </div>
             </section>
              <!-- ========== END CAROUSEL ========== -->
 
              <!-- ============================= PARALLAX ======================================================== -->
              <section
-                class="flex flex-col w-full pb-20 h-[650px] bg-cover bg-fixed bg-center justify-center items-center"
+                class="flex flex-col w-full pb-20 h-auto md:h-[650px] bg-cover bg-fixed bg-center justify-center items-center"
                 style="background: linear-gradient(
                         rgba(0, 0, 0, 0.4),
                         rgba(0, 0, 0, 0.1)
                     ),
                     url('../img/bg6.jpg');
                 background-size: cover;
-                background-position: right;">
-                <h1 class="text-white text-5xl font-semibold my-20 mb-10">
+                background-position: center;">
+                <h1 class="text-white text-3xl md:text-5xl font-semibold my-10 md:my-20 mb-10">
                     Today's Special
-                </h1>
+                </h1>110009
 
-                <grid
-                    class="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-8 mx-4 lg:mx-20 text-center lg:my-10 font-bold text-white/90">
+                <div
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-8 mx-2 sm:mx-4 lg:mx-20 text-center lg:my-10 font-bold text-white/90">
                     <div v-for="item in featuredItems.slice(0, 4)" :key="item.id">
                         <div v-motion-slide-visible-bottom :delay="200" :duration="800"
                             class="bg-white rounded-md p-4 w-full">
@@ -711,39 +721,39 @@ const getImageSource = (imagePath: string | null): string => {
                                     <p class="text-lg text-green-600 font-bold">£{{ item.price }}</p>
                                 </div>
                             </div>
-                            <div class="container">
+                            <div class="container flex justify-center">
                                 <img :src="getImageSource(item.image_path)" :alt="item.name || 'Menu item'"
-                                    class="img_card">
+                                    class="img_card w-full h-48 object-cover rounded-md">
                             </div>
                         </div>
                     </div>
-                </grid>
+                </div>
             </section>
             <!-- ============================= END PARALLAX ======================================================== -->
 
 
             <!-- ============================= MARQUEE ======================================================== -->
-            <section class="relative overflow-hidden text-nowrap text-slider text-[60px] py-20">
+            <section class="relative overflow-hidden text-nowrap text-slider text-[30px] md:text-[60px] py-10 md:py-20">
                     <marquee class="marquee-inner to-left">
                         <ul class="marqee-list flex">
                             <li class="flex items-center style1 text-[#bcb8b1]">
                                 <span class="text-slider"></span>
                                 <div class="font-black title hover:text-green-500 hover:border-b-4 hover:leading-tight hover:border-green-500">Curry </div>
-                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-8 h-8 mx-20" />
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
                                 <span class="font-black title tracking-tighter hover:text-red-500 hover:border-b-4 leading-tight hover:border-red-500">JERK CHICKEN</span>
-                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-8 h-8 mx-20" />
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
                                 <span class="font-black title text-slider text-style">BURGER</span>
-                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-8 h-8 mx-20" />
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
                                 <span class="font-black title text-slider text-style">Shrimp Pasta</span>
-                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-8 h-8 mx-20 align-middle justify-self-center" />
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
                                 <span class="font-black title text-slider text-style">Tasty Wings</span>
-                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-8 h-8 mx-20 align-middle justify-self-center" />
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
                                 <span class="font-black title text-slider text-style">ITALIANO FRENCH FRY</span>
-                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-8 h-8 mx-20 align-middle justify-self-center" />
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
                                 <span class="font-black title text-slider text-style">CHICKEN FRY</span>
-                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-8 h-8 mx-20 align-middle justify-self-center" />
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
                                 <span class="font-black title text-slider text-style">CHICKEN PATTY</span>
-                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-8 h-8 mx-20 align-middle justify-self-center" />
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
                                 <span class="font-black title text-slider text-style">GRILLED CHICKEN</span>
                                 <span class="text-slider"></span>
                             </li>
