@@ -710,7 +710,7 @@ const getImageSource = (imagePath: string | null): string => {
                 </h1>110009
 
                 <div
-                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-8 mx-2 sm:mx-4 lg:mx-20 text-center lg:my-10 font-bold text-white/90">
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-8 mx-8 sm:mx-4 lg:mx-20 text-center lg:my-10 font-bold text-white/90">
                     <div v-for="item in featuredItems.slice(0, 4)" :key="item.id">
                         <div v-motion-slide-visible-bottom :delay="200" :duration="800"
                             class="bg-white rounded-md p-4 w-full">
