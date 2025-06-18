@@ -358,8 +358,8 @@ body {
                     <!-- End Social Brands -->
                 </div>
             </div>
-            <div class="absolute bottom-20 left-0 float-bob-y d-none d-xxl-block">
-                <img alt="shape" class="h-52" src="/img/shape/lettuce.png">
+            <div class="absolute bottom-20 left-0 float-bob-y d-none d-xxl-block -z-10">
+                <img alt="shape" class="h-52 opacity-50" src="/img/shape/lettuce.png">
             </div>
             <div class="absolute bottom-0 left-0 d-none d-xxl-block">
                 <img alt="shape" src="/img/shape/shadow.png">

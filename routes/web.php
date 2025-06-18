@@ -4,9 +4,21 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\MenuController;
+use App\Models\MenuItem;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome');
+    $dessertItems = MenuItem::whereHas('category', function ($q) {
+        $q->where('name', 'Dessert');
+    })->get();
+    
+    $menuItems = MenuItem::whereHas('category', function ($q) {
+        $q->whereIn('name', ['Starters', 'Jerk Dishes', 'Curry Dishes', 'Meals']);
+    })->with('category')->get();
+    
+    return Inertia::render('Welcome', [
+        'dessertItems' => $dessertItems,
+        'menuItems' => $menuItems,
+    ]);
 })->name('home');
 
 Route::get('/make-reservation', function () {

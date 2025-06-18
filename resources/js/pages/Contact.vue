@@ -4,7 +4,7 @@ import MainLayout from '@/layouts/MainLayout.vue';
 
 <template>
     <MainLayout>
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 py-12">
+        <div class="min-h-screen bg-gray-900 py-12 gallery-background">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center">
                     <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-8">Contact Us</h1>
@@ -56,4 +56,12 @@ import MainLayout from '@/layouts/MainLayout.vue';
             </div>
         </div>
     </MainLayout>
-</template> 
+</template>
+
+<style scoped>
+.gallery-background {
+    background-color: #01101C;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 0.5px, transparent 0.5px);
+    background-size: 10px 10px;
+}
+</style> 

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import MainLayout from '@/layouts/MainLayout.vue';
 import 'vue3-carousel/dist/carousel.css';
-import { ref, onMounted, computed, watch } from 'vue';
+import { Carousel, Slide, Pagination } from 'vue3-carousel';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 interface MenuItem {
@@ -21,18 +22,19 @@ interface MenuItem {
         name: string;
         description: string | null;
     };
-    side_note?: string;
 }
 
 //import { Carousel, Slide, Navigation } from '...'; // Need to check the actual import paths, but in the original code, they are components, so assuming they are imported.
 
 //import { useMotion } from '@vueuse/motion'; // Assuming useMotion is from VueUse Motion.
 
+import { reactive } from 'vue';
+
 // Handling the name
 
 defineOptions({
 
-    name: 'App'
+name: 'App'
 
 });
 
@@ -41,6 +43,42 @@ defineOptions({
 
 
 // data properties
+
+const settings = reactive({
+
+itemsToShow: 2,
+
+snapAlign: 'center' as const,
+
+});
+
+const breakpoints = reactive({
+
+320: {
+
+itemsToShow: 2,
+
+snapAlign: 'center' as const,
+
+},
+
+700: {
+
+itemsToShow: 3,
+
+snapAlign: 'center' as const,
+
+},
+
+1024: {
+
+itemsToShow: 5,
+
+snapAlign: 'start' as const,
+
+},
+
+});
 
 const featuredItems = ref<MenuItem[]>([]);
 
@@ -53,40 +91,48 @@ onMounted(async () => {
     }
 });
 
-const props = defineProps<{ dessertItems: any[]; menuItems: MenuItem[] }>();
+const getImageSource = (imagePath: string | null): string => {
+    if (!imagePath) return '/img/dishes2_4.png'; // Default image
+    return `/storage/${imagePath}`;
+};
 
-const menuCategories = [
-    { key: 'starters', label: 'Starters' },
-    { key: 'jerk', label: 'Jerk Dishes' },
-    { key: 'curry', label: 'Curry Dishes' },
-    { key: 'meals', label: 'Meals' }
+const dessertItems = [
+  {
+    name: "Vanilla Cupcakes",
+    image: "/img/desserts/cupcake.jpg",
+    ingredients: "Butter/ Olive Oil / Salt",
+    priceHalf: 43,
+    priceFull: 85,
+    note: "Extra Free Juice."
+  },
+  {
+    name: "Lemon Meringue Pie",
+    image: "/img/desserts/lemon.jpg",
+    ingredients: "Mutton / Olive Oil / Salt",
+    priceHalf: 35,
+    priceFull: 71,
+    note: "Extra Free Juice."
+  },
+  {
+    name: "French Fries",
+    image: "/img/desserts/fries.jpg",
+    ingredients: "Mutton / Olive Oil / Salt",
+    priceHalf: 14,
+    priceFull: 29,
+    note: "Extra Free Juice."
+  },
+  {
+    name: "Chocolate Brownie",
+    image: "/img/desserts/brownie.jpg",
+    ingredients: "Mutton / Olive Oil / Salt",
+    priceHalf: 35,
+    priceFull: 75,
+    note: "Extra Free Juice."
+  }
 ];
-const selectedMenuCategory = ref('starters');
 
-const groupedMenuItems = computed<Record<string, MenuItem[]>>(() => {
-    console.log('Raw menuItems:', props.menuItems);
-    const groups: Record<string, MenuItem[]> = { starters: [], jerk: [], curry: [], meals: [] };
-    const items = Array.isArray(props.menuItems) ? props.menuItems : [];
-    for (const item of items) {
-        if (!item.category || !item.category.name) {
-            console.log('Item missing category:', item);
-            continue;
-        }
-        const cat = item.category.name.toLowerCase();
-        console.log('Processing item:', item.name, 'with category:', cat);
-        if (cat.includes('starter')) groups.starters.push(item);
-        else if (cat.includes('jerk')) groups.jerk.push(item);
-        else if (cat.includes('curry')) groups.curry.push(item);
-        else if (cat.includes('meal')) groups.meals.push(item);
-    }
-    console.log('Grouped items:', groups);
-    return groups;
-});
-
-watch(selectedMenuCategory, (val) => {
-    console.log('Selected category:', val);
-    console.log('Items for category:', groupedMenuItems.value[val]);
-});
+const dessertImage = "/img/desserts/cake.jpg"; // The big right-side image
+const dessertSize = ref<'half' | 'full'>('half');
 
 </script>
 
@@ -347,23 +393,35 @@ watch(selectedMenuCategory, (val) => {
 </style>
 
 <template>
-    <MainLayout>
-
+<MainLayout>
         <Head title="Welcome">
             <link rel="preconnect" href="https://rsms.me/" />
             <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
         </Head>
-        <div
-            class="flex min-h-scree flex-col items-center bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] lg:justify-center overflow-x-hidden">
-            
-            <div
-                class="duration-750 starting:opacity-0 flex w-full items-center justify-center opacity-100 transition-opacity lg:grow">
+        <div class="flex min-h-screen flex-col items-center bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] lg:justify-center overflow-x-hidden">
+            <!-- <header class="not-has-[nav]:hidden mb-6 w-full max-w-[335px] text-sm lg:max-w-4xl">
+                <nav class="flex items-center justify-end gap-4">
+                    <Link v-if="$page.props.auth.user" :href="route('dashboard')"
+                        class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]">
+                    Dashboard
+                    </Link>
+                    <template v-else>
+                        <Link :href="route('login')"
+                            class="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]">
+                        Log in
+                        </Link>
+                        <Link :href="route('register')"
+                            class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]">
+                        Register
+                        </Link>
+                    </template>
+                </nav>
+            </header> -->
+            <div class="duration-750 starting:opacity-0 flex w-full items-center justify-center opacity-100 transition-opacity lg:grow">
                 <div class="relative w-full max-w-full">
                     <!-- Background image div -->
                     <div class="absolute inset-0 z-0">
-                        <div class="w-full h-screen"
-                            style="background-image: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .1)), url('/img/bg/bg-5.jpg');background-size: cover;background-position: center;background-repeat: no-repeat;">
-                        </div>
+                        <div class="w-full h-screen" style="background-image: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .1)), url('/img/bg/bg-5.jpg');background-size: cover;background-position: center;background-repeat: no-repeat;"></div>
                     </div>
 
                     <!-- Content that goes over the background -->
@@ -377,10 +435,8 @@ watch(selectedMenuCategory, (val) => {
 
                                 <!-- ========== END HEADER ========== -->
                                 <!-- Hero -->
-                                <div
-                                    class="relative overflow-hidden before:absolute before:top-0 before:start-1/2 before:bg-[url('https://preline.co/assets/svg/examples/polygon-bg-element.svg')] dark:before:bg-[url('https://preline.co/assets/svg/examples-dark/polygon-bg-element.svg')] before:bg-no-repeat before:bg-top before:bg-cover before:size-full before:-z-[1] before:transform before:-translate-x-1/2">
-                                </div>
-
+                                <div class="relative overflow-hidden before:absolute before:top-0 before:start-1/2 before:bg-[url('https://preline.co/assets/svg/examples/polygon-bg-element.svg')] dark:before:bg-[url('https://preline.co/assets/svg/examples-dark/polygon-bg-element.svg')] before:bg-no-repeat before:bg-top before:bg-cover before:size-full before:-z-[1] before:transform before:-translate-x-1/2"></div>
+                                
                                 <div class="overflow-hidden">
                                     <div class="py- mx-auto">
                                         <div class="relative mx-auto max-w-4xl grid space-y-4 sm:space-y-4">
@@ -402,8 +458,7 @@ watch(selectedMenuCategory, (val) => {
                                                         class="pr-3 pt-5 font-black great-vibes bg-clip-text bg-gradient-to-tl from-green-600 to-yellow-600 text-transparent text-3xl md:text-5xl lg:text-[70pt] dark:text-neutral-200">
                                                         Caribbean </h1>
                                                     <p v-motion-slide-visible-right :delay="200" :duration="600"
-                                                        class="text-4xl md:text-6xl text-white knewave-regular">
-                                                        Smokehouse</p>
+                                                        class="text-4xl md:text-6xl text-white knewave-regular">Smokehouse</p>
 
                                                 </div>
                                                 <!-- End Title -->
@@ -411,8 +466,7 @@ watch(selectedMenuCategory, (val) => {
                                                 <div class="mt-5 max-w-3xl text-center mx-auto px-4">
                                                     <p v-motion-slide-visible-bottom :delay="300" :duration="800"
                                                         class="text-2xl md:text-4xl text-yellow-400 great-vibes font-bold dark:text-neutral-400">
-                                                        Come for the food, <span
-                                                            class="font-serif text-red-700">Stay</span> for
+                                                        Come for the food, <span class="font-serif text-red-700">Stay</span> for
                                                         the <span class="font-serif text-green-700">vibes</span>!</p>
                                                 </div>
 
@@ -427,10 +481,9 @@ watch(selectedMenuCategory, (val) => {
                                                     <a class="inline-flex justify-center items-center gap-x-3 text-center bg-gradient-to-tl from-green-600 to-yellow-600 hover:from-green-600 hover:to-yellow-600 border border-transparent text-white text-sm font-medium rounded-md focus:outline-none focus:ring-1 focus:ring-gray-600 py-3 px-6 md:px-4 dark:focus:ring-offset-gray-800"
                                                         href="#carousel">
                                                         Get started
-                                                        <svg class="flex-shrink-0 size-4"
-                                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                            stroke-width="2" stroke-linecap="round"
+                                                        <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg"
+                                                            width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                                             stroke-linejoin="round">
                                                             <path d="m9 18 6-6-6-6" />
                                                         </svg>
@@ -460,7 +513,7 @@ watch(selectedMenuCategory, (val) => {
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <div class="text-gray-700 body-font">
+                                <div class="text-gray-700 body-font">
                                     <div class="max-w-2xl px-4 md:px-10">
 
                                         <div class="flex flex-wrap -m-4 text-center">
@@ -470,14 +523,11 @@ watch(selectedMenuCategory, (val) => {
                                                     class="cs-border-change border border-green-300 px-2 py-2 rounded-lg transform transition duration-500 hover:scale-110">
                                                     <svg fill="none" stroke="currentColor" stroke-linecap="round"
                                                         stroke-linejoin="round" stroke-width="2"
-                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block"
-                                                        viewBox="0 0 24 24">
+                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block" viewBox="0 0 24 24">
                                                         <path d="M8 17l4 4 4-4m-4-5v9"></path>
-                                                        <path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29">
-                                                        </path>
+                                                        <path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"></path>
                                                     </svg>
-                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">
-                                                        2.7K</h2>
+                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">2.7K</h2>
                                                     <p class="leading-relaxed text-sm md:text-base">Downloads</p>
                                                 </div>
                                             </div>
@@ -487,14 +537,12 @@ watch(selectedMenuCategory, (val) => {
                                                     class="cs-border-change border border-green-400 px-2 py-2 rounded-lg transform transition duration-500 hover:scale-110">
                                                     <svg fill="none" stroke="currentColor" stroke-linecap="round"
                                                         stroke-linejoin="round" stroke-width="2"
-                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block"
-                                                        viewBox="0 0 24 24">
+                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block" viewBox="0 0 24 24">
                                                         <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
                                                         <circle cx="9" cy="7" r="4"></circle>
                                                         <path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75"></path>
                                                     </svg>
-                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">
-                                                        1.3K</h2>
+                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">1.3K</h2>
                                                     <p class="leading-relaxed text-sm md:text-base">Users</p>
                                                 </div>
                                             </div>
@@ -504,15 +552,13 @@ watch(selectedMenuCategory, (val) => {
                                                     class="cs-border-change border border-green-300 px-2 py-2 rounded-lg transform transition duration-500 hover:scale-110">
                                                     <svg fill="none" stroke="currentColor" stroke-linecap="round"
                                                         stroke-linejoin="round" stroke-width="2"
-                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block"
-                                                        viewBox="0 0 24 24">
+                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block" viewBox="0 0 24 24">
                                                         <path d="M3 18v-6a9 9 0 0118 0v6"></path>
                                                         <path
                                                             d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z">
                                                         </path>
                                                     </svg>
-                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">
-                                                        74</h2>
+                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">74</h2>
                                                     <p class="leading-relaxed text-sm md:text-base">Files</p>
                                                 </div>
                                             </div>
@@ -522,32 +568,30 @@ watch(selectedMenuCategory, (val) => {
                                                     class="cs-border-change border border-green-300 px-2 py-2 rounded-lg transform transition duration-500 hover:scale-110">
                                                     <svg fill="none" stroke="currentColor" stroke-linecap="round"
                                                         stroke-linejoin="round" stroke-width="2"
-                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block"
-                                                        viewBox="0 0 24 24">
+                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block" viewBox="0 0 24 24">
                                                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                                                     </svg>
-                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">
-                                                        46</h2>
+                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">46</h2>
                                                     <p class="leading-relaxed text-sm md:text-base">Places</p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div> -->
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="h-14.5x hidden lg:block"></div>
+            <div class="h-14.5 hidden lg:block"></div>
         </div>
 
         <!-- Card Section -->
-        <section id="carousel" class="max-w-full px-4 sm:px-6 lg:px-8 lg:pb-32 lg:pt-10 mx-auto bg-white" v-motion-slide-visible-bottom :delay="200" :duration="400">
+        <div id="carousel" class="max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12 mx-auto">
             <!-- Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
                 <!-- Card -->
-                <a v-motion-slide-visible-bottom :delay="200" :duration="400"
+                <a v-motion-slide-visible-bottom :delay="100" :duration="400"
                     class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition"
                     href="#">
                     <div class="p-4 md:p-5">
@@ -591,7 +635,8 @@ watch(selectedMenuCategory, (val) => {
                             </svg>
 
                             <div class="grow ms-5">
-                                <h1 class="group-hover:text-green-600 font-serif text-lg font-extrabold text-slate-800">
+                                <h1
+                                    class="group-hover:text-green-600 font-serif text-lg font-extrabold text-slate-800">
                                     Fresh Healthy Food
                                 </h1>
                                 <p class="text-sm text-gray-500 dark:text-neutral-500">
@@ -604,7 +649,7 @@ watch(selectedMenuCategory, (val) => {
                 <!-- End Card -->
 
                 <!-- Card -->
-                <a v-motion-slide-visible-bottom :delay="200" :duration="400"
+                <a v-motion-slide-visible-bottom :delay="300" :duration="400"
                     class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition"
                     href="#">
                     <div class="p-4 md:p-5">
@@ -633,233 +678,167 @@ watch(selectedMenuCategory, (val) => {
                 <!-- End Card -->
             </div>
             <!-- End Grid -->
-        </section>
+        </div>
         <!-- End Card Section -->
 
-        
-        <!-- ============================= MENU & DISHES ======================================================== -->
-        <section class="relative w-full min-h-[700px] flex" v-motion-slide-visible-bottom :delay="200" :duration="400">
-           
-                <!-- Left: White 1/3 -->
-            <div class="w-full md:w-1/3 bg-white flex flex-col items-center justify-center p-8 z-10 relative">
-                <div class="relative w-full h-full max-w-md flex flex-col items-center md:items-start">
-                    <div class="flex items-center justify-end text-right mb-2">
-                        <svg class="w-16 h-16 text-[#23a04f]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 48 48">
-                            <circle cx="24" cy="24" r="22" stroke="#23a04f" stroke-width="3" fill="none" />
-                            <path d="M16 32h16M24 16v16M32 24H16" stroke="#23a04f" stroke-width="2" stroke-linecap="round" />
-                        </svg>
-                        <span class="text-5xl font-extrabold text-[#23a04f] ml-4">50+</span>
+             <!-- ========== CAROUSEL ========== -->
+            <section class="py-12 relative">
+
+                <!-- <h1 class="mb-10 ml-10 lg:text-6xl great-vibes font-bold">Featured Menu</h1> -->
+                <div class="title-area relative z-10 px-4">
+                    <div class="flex justify-self-center text-center wow mb-7 font-bold text-orange-600 text-sm md:text-base" data-wow-delay="0.5s">
+                        <img class="me-1 mx-auto w-6 md:w-auto" alt="icon" src="/img/icon/titleIcon.svg">CHEF'S SPECIAL DISHES
+                        <img class="ms-1 w-6 md:w-auto" alt="icon" src="/img/icon/titleIcon.svg">
                     </div>
-                    <div class="text-lg font-bold text-black tracking-wide mb-4 flex justify-end justify-items-end text-right">MENU AND DISHES</div>
-                    <div class="hidden md:block">
-                        <img
-                            src="/img/food/portrait5.jpg"
-                            alt="Menu Dish"
-                            class=" w-[350px] max-w-full absolute right-[-80px] top-96 -translate-y-1/2 z-20 border-4 border-green-600 rounded-xl"
-                            style="box-shadow: 0 8px 32px rgba(0,0,0,0.15);"
-                        />
-                    </div>
-                    <div class="block md:hidden">
-                        <img
-                            src="/img/portrait1.jpg"
-                            alt="Menu Dish"
-                            class="rounded-xl shadow-lg w-[350px] max-w-full"
-                        />
-                    </div>
+                    <h2 class="title wow fadeInUp text-2xl md:text-4xl" data-wow-delay="0.7s">Our Chef's Special Selection</h2>
                 </div>
-            </div>
-            <!-- Right: 2/3 with BG image -->
-            <div class="w-full md:w-2/3 relative flex items-center justify-center min-h-[600px]" style="background-image: url('/img/bg/bg-6.jpg'); background-size:auto; background-position: right;">
-                <div class="w-full h-full absolute top-0 left-0 bg-whit rounded-xl" ></div>
-                <div class="relative w-full max-w-2xl p-8 z-10">
-                    <div class="mb-2 text-[#23a04f] font-bold uppercase tracking-wider flex items-center gap-2">
-                        FOOD ITEMS
-                        <span class="w-8 h-0.5 bg-[#23a04f] inline-block"></span>
-                    </div>
-                    <h2 class="text-3xl md:text-5xl font-extrabold mb-6">Starters & Main Dishes</h2>
-                    <!-- Category Tabs -->
-                    <div class="flex gap-2 mb-6">
-                        <button v-for="cat in menuCategories" :key="cat.key" @click="selectedMenuCategory = cat.key"
-                            :class="selectedMenuCategory === cat.key ? 'bg-[#23a04f] text-white' : 'bg-white text-black border'"
-                            class="px-4 py-2 rounded font-semibold transition border border-[#23a04f] focus:outline-none">
-                            {{ cat.label }}
-                        </button>
-                    </div>
-                    <!-- Menu List -->
-                    <ul>
-                        <li v-for="item in groupedMenuItems[selectedMenuCategory]" :key="item.id"
-                            class="flex flex-col md:flex-row md:items-center py-4 border-b border-dashed border-gray-300">
-                            <div class="flex-1">
-                                <span class="font-extrabold text-xl md:text-2xl text-black">{{ item.name }}</span>
-                                <div class="text-gray-500 text-sm italic">{{ item.description }}</div>
-                                <div class="text-gray-400 text-xs mt-1" v-if="item.side_note">{{ item.side_note }}</div>
-                            </div>
-                            <div class="flex gap-4 mt-2 md:mt-0 md:ml-8">
-                                <span class="text-[#23a04f] font-extrabold text-lg md:text-xl">${{ Number(item.price || 0).toFixed(2) }}</span>
-                            </div>
-                        </li>
-                    </ul>
-                    <!-- View Full Menu Link -->
-                    <div class="mt-8 text-center">
-                        <Link :href="route('menu')" class="inline-flex items-center gap-2 px-6 py-3 bg-[#23a04f] text-white font-bold rounded-full hover:bg-[#1d8a42] transition-colors">
-                            View Full Menu
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                            </svg>
-                        </Link>
-                    </div>
+                <div class="absolute top-2 left-0 float-bob-y d-none d-xxl-block">
+                    <img alt="shape" src="/img/shape/burger.png">
                 </div>
-            </div>
-            
-        </section>
-        <!-- ============================= END MENU & DISHES ======================================================== -->
 
-
-        <!-- ============================= MARQUEE ======================================================== -->
-        <section class="relative overflow-hidden text-nowrap text-slider text-[30px] md:text-[60px] py-10 md:py-20" v-motion-slide-visible-bottom :delay="200" :duration="400">
-            <marquee class="marquee-inner to-left">
-                <ul class="marqee-list flex">
-                    <li class="flex items-center style1 text-[#bcb8b1]">
-                        <span class="text-slider"></span>
-                        <div
-                            class="font-black title hover:text-green-500 hover:border-b-4 hover:leading-tight hover:border-green-500">
-                            Curry </div>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span
-                            class="font-black title tracking-tighter hover:text-red-500 hover:border-b-4 leading-tight hover:border-red-500">JERK
-                            CHICKEN</span>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span class="font-black title text-slider text-style">BURGER</span>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span class="font-black title text-slider text-style">Shrimp Pasta</span>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span class="font-black title text-slider text-style">Tasty Wings</span>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span class="font-black title text-slider text-style">ITALIANO FRENCH FRY</span>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span class="font-black title text-slider text-style">CHICKEN FRY</span>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span class="font-black title text-slider text-style">CHICKEN PATTY</span>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span class="font-black title text-slider text-style">GRILLED CHICKEN</span>
-                        <span class="text-slider"></span>
-                    </li>
-                </ul>
-            </marquee>
-        </section>
-        <!-- ============================= END MARQUEE ======================================================== -->
-
-
-        <!-- ============================= EVENTS ======================================================== -->
-        <div id="carousel" class="max-w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-20 mx-auto bg-[#0c4149]" style="background-image: url('/img/shape/divider1.png'); background-size:auto; background-color: #0c4149;background-position: bottom center;background-repeat: repeat-x;background-size: contain;" v-motion-slide-visible-bottom :delay="200" :duration="400">
-            <div class="container w-full mx-auto py-12 px-4 grid grid-cols-1 md:grid-cols-2 gap-6" >
-            <!-- Left Large Card -->
-            <div class="relative rounded-2xl flex flex-col justify-between ax-h-[600px] md:row-span-2 overflow-hidden p-0">
-                <img src="/img/event/dawn-penn.jpg" alt="event" class="w-full h-full object-center" />
-                
-            </div>
-            <!-- Top Right Card -->
-            <div class="relative bg-[#c02523] rounded-2xl flex flex-col justify-between p-8 min-h-[160px] overflow-hidden group cursor-pointer">
-                <Link :href="route('cocktail')" class="absolute inset-0 z-10">
-                <div class="relative p-8 z-20">
-                    <h2 class="text-white text-2xl md:text-3xl font-extrabold leading-tight mb-2">SIGNATURE<br/>COCKTAILS</h2>
-                    <button class="mt-2 px-5 py-2 bg-[#e53935] text-white font-bold rounded-full shadow hover:bg-[#c62828] transition">View Cocktail Menu</button>
-                    <svg class="w-5 h-5 inline ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                </div>
-                <!-- Cocktail Image -->
-                <img src="/img/beverages/cocktail1.png" alt="Signature Cocktails" class="absolute bottom-4 right-4 w-60 h-60 object-contain drop-shadow-xl z-0" />
-                <span class="absolute top-6 right-6 bg-white text-[#23a04f] font-bold px-4 py-2 rounded-full knewave-regular  shadow">Hardball</span>
-                </Link>
-            </div>
-            <!-- Bottom Right Card -->
-            <div class="relative bg-[#ffd600] rounded-2xl flex flex-col justify-between p-8 min-h-[160px] overflow-hidden group cursor-pointer">
-                <Link :href="route('gallery')" class="absolute inset-0 z-10">
-                <div class="relative p-8 z-20">
-                    <h2 class="text-[#0b2341] text-2xl md:text-3xl font-extrabold leading-tight mb-2">OUR<br/>GALLERY</h2>
-                    <div class="flex items-center gap-2 text-[#0b2341] font-semibold group-hover:translate-x-2 transition-transform">
-                        <button class="mt-2 px-5 py-2 bg-[#0c534d] text-white font-bold rounded-full shadow hover:bg-[#23395d] transition">View Gallery</button>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                    </div>
-                </div>
-                <!-- Image Collage -->
-                <div class="absolute right-0 bottom-20 w-80 h-80 transform translate-x-8 translate-y-8 rotate-12">
-                    <div class="grid grid-cols-2 gap-1">
-                        <img src="/img/gallery/store4.jpg" alt="Gallery Preview" class="w-full h-52 object-cover rounded-lg shadow-lg" />
-                        <img src="/img/gallery/store8.jpg" alt="Gallery Preview" class="w-full h-52 object-cover rounded-lg shadow-lg" />
-                        <img src="/img/gallery/event1.jpg" alt="Gallery Preview" class="w-full h-52 object-cover rounded-lg shadow-lg" />
-                        <img src="/img/gallery/food1.jpg" alt="Gallery Preview" class="w-full h-52 object-cover rounded-lg shadow-lg" />
-                    </div>
-                </div>
-                </Link>
-            </div>
-        </div>
-        </div>
-        <!-- ============================= END EVENTS ======================================================== -->
-
-
-        <!-- ============================= Dessert ======================================================== -->
-        <section class="relative bg-white py-28" v-motion-slide-visible-bottom :delay="200" :duration="400">
-            <div class="container mx-auto flex flex-col md:flex-row items-center gap-12">
-                <!-- Left: Dessert List -->
-                <div class="flex-1 w-full">
-                    <div class="flex items-center mb-6">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-[#ffd600] tracking-wide mr-4">DESSERT ITEMS
-                        </h2>
-                        <span class="flex-1 border-t-2 border-[#ffd600]"></span>
-                        <svg class="ml-2" width="40" height="10" viewBox="0 0 40 10" fill="none">
-                            <path d="M0 5h38m0 0l-4-4m4 4l-4 4" stroke="#ffd600" stroke-width="2"
-                                stroke-linecap="round" />
-                        </svg>
-                    </div>
-                    <ul>
-                        <li v-for="item in props.dessertItems" :key="item.id" class="flex items-center mb-8">
-                            <img :src="item.image_path ? '/storage/' + item.image_path : '/img/desserts/default.jpg'" :alt="item.name" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md mr-6" />
-                            <div class="flex-1">
-                                <div class="flex items-center">
-                                    <span class="font-extrabold text-xl md:text-2xl text-gray-900 mr-2">{{ item.name }}</span>
-                                    <span class="flex-1 border-t border-dashed border-gray-400 mx-2"></span>
-                                    <span class="text-[#ffd600] font-extrabold text-lg md:text-xl">${{ Number(item.price || 0).toFixed(2) }}</span>
+                <Carousel :autoplay="3000" :wrap-around="true" v-bind="settings" :breakpoints="breakpoints">
+                    <Slide v-for="item in featuredItems" :key="item.id" style="display: block;padding: 10px;">
+                        <div class="m-2">
+                            <div class="dishes-card style2 border border-orange-100" data-wow-delay="0.2s">
+                                <div class="dishes-thumb mx-auto text-center">
+                                    <img :src="getImageSource(item.image_path)" :alt="item.name" class="text-center mx-auto">
+                                    <div class="circle-shape">
+                                        <img class="cir36 mx-auto text-center" alt="shape" src="/img/shape/circleShape.png">
+                                    </div>
                                 </div>
-                                <div class="text-gray-500 text-sm italic mt-1">{{ item.description }}</div>
-                                <div class="text-gray-400 text-xs mt-1">{{ item.note }}</div>
+                                <div class="dishes-content">
+                                    <a href="/menu" data-discover="true">
+                                        <h3>{{ item.name }}</h3>
+                                    </a>
+                                    <div class="star">
+                                        <img class="text-center mx-auto" alt="icon" src="/img/icon/star2.svg">
+                                    </div>
+                                    <div class="text">{{ item.description || 'Delicious & Spicy' }}</div>
+                                    <h6>£{{ item.price }}</h6>
+                                    <a class="theme-btn style6" href="/menu" data-discover="true">
+                                        Try Now <i class="bi bi-basket2"></i>
+                                    </a>
+                                </div>
                             </div>
-                        </li>
-                    </ul>
+                        </div>
+                    </Slide>
+
+                    <template #addons>
+                        <Pagination />
+                    </template>
+                </Carousel>
+                <div class="absolute bottom-0 right-0 md:top-32 md:right-0 float-bob-x block md:d-none d-xxl-block">
+                    <img alt="shape" class="w-32 md:w-52" src="/img/shape/pizza.png">
                 </div>
-                <!-- Right: Big Dessert Image -->
-                <div class="flex-1 flex justify-center relative">
-                    <!-- Red vertical bar spanning the full section height -->
-                    <div class="absolute left-0 top-0 h-full w-[120px] bg-[#ffd600] z-0"></div>
-                    <div class="relative flex items-center justify-center h-80 w-80 z-10">
-                        <!-- Dessert image -->
-                        <img
-                            src="/img/food/White-Chocolate-Cheesecake.png"
-                            alt="Dessert"
-                            class="w-80 h-80 object-cover rounded-full border-8 border-white shadow-lg z-10"
-                        />
-                        <div class="absolute inset-0 rounded-full border-4 border-[#ffd600] z-20"></div>
+            </section>
+             <!-- ========== END CAROUSEL ========== -->
+             <section class="relative bg-[#faf7f2] py-16">
+  <div class="container mx-auto flex flex-col md:flex-row items-center gap-12">
+    <!-- Left: Dessert List -->
+    <div class="flex-1 w-full">
+      <div class="flex items-center mb-6">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-[#e53935] tracking-wide mr-4">DESSERT ITEMS</h2>
+        <span class="flex-1 border-t-2 border-[#e53935]"></span>
+        <svg class="ml-2" width="40" height="10" viewBox="0 0 40 10" fill="none"><path d="M0 5h38m0 0l-4-4m4 4l-4 4" stroke="#e53935" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="flex gap-4 mb-8">
+        <button @click="dessertSize = 'half'" :class="dessertSize === 'half' ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'" class="px-6 py-2 border border-gray-300 rounded font-semibold transition">Half</button>
+        <button @click="dessertSize = 'full'" :class="dessertSize === 'full' ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'" class="px-6 py-2 border border-gray-300 rounded font-semibold transition">Full</button>
+      </div>
+      <ul>
+        <li v-for="item in dessertItems" :key="item.name" class="flex items-center mb-8">
+          <img :src="item.image" :alt="item.name" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md mr-6" />
+          <div class="flex-1">
+            <div class="flex items-center">
+              <span class="font-extrabold text-xl md:text-2xl text-gray-900 mr-2">{{ item.name }}</span>
+              <span class="flex-1 border-t border-dashed border-gray-400 mx-2"></span>
+              <span class="text-[#e53935] font-extrabold text-lg md:text-xl mr-2">${{ dessertSize === 'half' ? item.priceHalf.toFixed(2) : item.priceFull.toFixed(2) }}</span>
+              <span class="text-[#e53935] font-extrabold text-lg md:text-xl" v-if="dessertSize === 'full'"> ${{ item.priceFull.toFixed(2) }}</span>
+            </div>
+            <div class="text-gray-500 text-sm italic">{{ item.ingredients }}</div>
+            <div class="text-gray-400 text-xs mt-1">{{ item.note }}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <!-- Right: Big Dessert Image -->
+    <div class="flex-1 flex justify-center">
+      <div class="relative">
+        <img :src="dessertImage" alt="Dessert" class="w-80 h-80 object-cover rounded-full border-8 border-white shadow-lg" />
+        <div class="absolute inset-0 rounded-full border-4 border-[#e53935]"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+             <!-- ============================= PARALLAX ======================================================== -->
+             <section
+                class="flex flex-col w-full pb-20 h-auto md:h-[650px] bg-cover bg-fixed bg-center justify-center items-center overflow-hidden"
+                style="background: linear-gradient(
+                        rgba(0, 0, 0, 0.4),
+                        rgba(0, 0, 0, 0.1)
+                    ),
+                    url('../img/bg6.jpg');
+                background-size: cover;
+                background-position: center;">
+                <h1 class="text-white text-3xl md:text-5xl font-semibold my-10 md:my-20 mb-10">
+                    Today's Special
+                </h1>
+
+                <div
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-8 mx-8 sm:mx-4 lg:mx-20 text-center lg:my-10 font-bold text-white/90">
+                    <div v-for="item in featuredItems.slice(0, 4)" :key="item.id">
+                        <div v-motion-slide-visible-bottom :delay="200" :duration="800"
+                            class="bg-white rounded-md p-4 w-full">
+                            <div class="pb-4">
+                                <p class="text-xs text-left text-green-600">{{ item.category?.name }}</p>
+                                <div class="flex justify-between">
+                                    <p class="text-lg font-extrabold text-slate-800">{{ item.name }}</p>
+                                    <p class="text-lg text-green-600 font-bold">£{{ item.price }}</p>
+                                </div>
+                            </div>
+                            <div class="container flex justify-center">
+                                <img :src="getImageSource(item.image_path)" :alt="item.name || 'Menu item'"
+                                    class="img_card w-full h-48 object-cover rounded-md">
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
-        <!-- ============================= END DESSERT ======================================================== -->
-         
-    </MainLayout>
+            </section>
+            <!-- ============================= END PARALLAX ======================================================== -->
 
-    <!-- Dessert Items Section -->
 
+            <!-- ============================= MARQUEE ======================================================== -->
+            <section class="relative overflow-hidden text-nowrap text-slider text-[30px] md:text-[60px] py-10 md:py-20">
+                    <marquee class="marquee-inner to-left">
+                        <ul class="marqee-list flex">
+                            <li class="flex items-center style1 text-[#bcb8b1]">
+                                <span class="text-slider"></span>
+                                <div class="font-black title hover:text-green-500 hover:border-b-4 hover:leading-tight hover:border-green-500">Curry </div>
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
+                                <span class="font-black title tracking-tighter hover:text-red-500 hover:border-b-4 leading-tight hover:border-red-500">JERK CHICKEN</span>
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
+                                <span class="font-black title text-slider text-style">BURGER</span>
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
+                                <span class="font-black title text-slider text-style">Shrimp Pasta</span>
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
+                                <span class="font-black title text-slider text-style">Tasty Wings</span>
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
+                                <span class="font-black title text-slider text-style">ITALIANO FRENCH FRY</span>
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
+                                <span class="font-black title text-slider text-style">CHICKEN FRY</span>
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
+                                <span class="font-black title text-slider text-style">CHICKEN PATTY</span>
+                                <img src="/img/shape/cutlery.png" alt="cutlery icon" class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
+                                <span class="font-black title text-slider text-style">GRILLED CHICKEN</span>
+                                <span class="text-slider"></span>
+                            </li>
+                        </ul>
+                    </marquee>
+                </section>
+   </MainLayout>
+
+<!-- Dessert Items Section -->
 
 
 </template>

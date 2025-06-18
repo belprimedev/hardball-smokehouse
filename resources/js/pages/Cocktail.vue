@@ -76,7 +76,7 @@ const getImageSource = (imagePath: string | null): string => {
         </div>
 
         <!-- Main Content -->
-        <div class="bg-[#131317] py-20">
+        <div class="bg-[#131317] py-20 gallery-background">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Cocktails Section -->
                 <div class="mb-20">
@@ -149,6 +149,12 @@ const getImageSource = (imagePath: string | null): string => {
 <style scoped>
 .great-vibes {
     font-family: 'Great Vibes', cursive;
+}
+
+.gallery-background {
+    background-color: #01101C;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 0.5px, transparent 0.5px);
+    background-size: 10px 10px;
 }
 
 /* Add smooth scrolling */
