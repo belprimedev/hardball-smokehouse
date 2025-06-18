@@ -661,7 +661,7 @@ watch(selectedMenuCategory, (val) => {
                     </div>
                     <div class="block md:hidden">
                         <img
-                            src="/img/portrait1.jpg"
+                            src="/img/food/portrait5.jpg"
                             alt="Menu Dish"
                             class="rounded-xl shadow-lg w-[350px] max-w-full"
                         />
@@ -796,10 +796,10 @@ watch(selectedMenuCategory, (val) => {
                 <!-- Image Collage -->
                 <div class="absolute right-0 bottom-20 w-80 h-80 transform translate-x-8 translate-y-8 rotate-12">
                     <div class="grid grid-cols-2 gap-1">
-                        <img src="/img/gallery/store4.jpg" alt="Gallery Preview" class="w-full h-52 object-cover rounded-lg shadow-lg" />
-                        <img src="/img/gallery/store8.jpg" alt="Gallery Preview" class="w-full h-52 object-cover rounded-lg shadow-lg" />
-                        <img src="/img/gallery/event1.jpg" alt="Gallery Preview" class="w-full h-52 object-cover rounded-lg shadow-lg" />
-                        <img src="/img/gallery/food1.jpg" alt="Gallery Preview" class="w-full h-52 object-cover rounded-lg shadow-lg" />
+                        <img src="/img/gallery/store4.jpg" alt="store" class="w-full h-52 object-cover rounded-lg shadow-lg" />
+                        <img src="/img/gallery/store8.jpg" alt="Gallery Preview1" class="w-full h-52 object-cover rounded-lg shadow-lg" />
+                        <img src="/img/gallery/event1.jpg" alt="Gallery Preview2" class="w-full h-52 object-cover rounded-lg shadow-lg" />
+                        <img src="/img/gallery/food1.jpg" alt="Gallery Preview3" class="w-full h-52 object-cover rounded-lg shadow-lg" />
                     </div>
                 </div>
                 </Link>
