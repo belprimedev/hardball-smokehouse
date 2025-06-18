@@ -344,196 +344,225 @@ watch(selectedMenuCategory, (val) => {
     line-height: 28px;
     margin-bottom: 45px
 }
-</style>
 
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #23a04f;
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #1d8a42;
+}
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        @keyframes marquee-reverse {
+            0% {
+                transform: translateX(-50%);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .animate-marquee {
+            animation: marquee 40s linear infinite;
+        }
+
+        .animate-marquee-reverse {
+            animation: marquee-reverse 40s linear infinite;
+        }
+
+        .marquee-container {
+            mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+        }
+
+        @keyframes blob {
+            0% {
+                transform: translate(0px, 0px) scale(1);
+            }
+            33% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+            100% {
+                transform: translate(0px, 0px) scale(1);
+            }
+        }
+
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+
+@keyframes slide-right {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+}
+
+@keyframes slide-left {
+    from { transform: translateX(100%); }
+    to { transform: translateX(-100%); }
+}
+
+.animate-slide-right {
+    animation: slide-right 3s linear infinite;
+}
+
+.animate-slide-left {
+    animation: slide-left 3s linear infinite;
+}
+</style>
 <template>
     <MainLayout>
+        <!-- Sticky Book Table Button -->
+        <div class="fixed bottom-8 right-8 z-50">
+            <Link :href="route('make-reservation')" class="group bg-gradient-to-r from-green-600 to-yellow-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Book a Table
+                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">Now Open</span>
+            </Link>
+        </div>
 
         <Head title="Welcome">
             <link rel="preconnect" href="https://rsms.me/" />
             <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
         </Head>
-        <div
-            class="flex min-h-scree flex-col items-center bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] lg:justify-center overflow-x-hidden">
-            
-            <div
-                class="duration-750 starting:opacity-0 flex w-full items-center justify-center opacity-100 transition-opacity lg:grow">
+        <div class="flex min-h-screen flex-col items-center bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] lg:justify-center overflow-x-hidden">
+            <div class="duration-750 starting:opacity-0 flex w-full items-center justify-center opacity-100 transition-opacity lg:grow">
                 <div class="relative w-full max-w-full">
-                    <!-- Background image div -->
+                    <!-- Video Background -->
                     <div class="absolute inset-0 z-0">
-                        <div class="w-full h-screen"
-                            style="background-image: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .1)), url('/img/bg/bg-5.jpg');background-size: cover;background-position: center;background-repeat: no-repeat;">
+                        <div class="relative w-full h-screen overflow-hidden">
+                            <!-- Video Background -->
+                            <video 
+                                class="absolute inset-0 w-full h-full object-cover"
+                                autoplay 
+                                loop 
+                                muted 
+                                playsinline
+                                poster="/img/bg/bg-5.jpg">
+                                <source src="/videos/hero-bg.mp4" type="video/mp4">
+                            </video>
+                            <!-- Overlay -->
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/30"></div>
                         </div>
                     </div>
 
                     <!-- Content that goes over the background -->
-                    <div class="relative z-10 pt-20"> <!-- Add padding-top to push content below navbar -->
+                    <div class="relative z-10 pt-20">
                         <div class="relative min-h-screen flex flex-col selection:bg-[#FF2D20] selection:text-white">
                             <div class="relative w-full">
-                                <!-- ========== HEADER ========== -->
+                                <!-- Hero Content -->
+                                <div class="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
+                                    <!-- Announcement Banner -->
+                                    <div class="flex justify-center">
+                                        <p v-motion-slide-visible-top :delay="600" :duration="800"
+                                            class="inline-flex items-center gap-x-2 bg-white/90 backdrop-blur-sm border border-gray-200 text-2xl text-green-500 rubik p-1 px-6 rounded-full transition hover:border-gray-300 dark:bg-neutral-800 dark:border-neutral-700 dark:hover:border-neutral-600 dark:text-neutral-200">
+                                            <span class="relative flex h-3 w-3">
+                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                                <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                                            </span>
+                                            HARDBALL
+                                        </p>
+                                    </div>
 
+                                    <!-- Title -->
+                                    <div class="max-w-2xl text-center mx-auto">
+                                        <h1 v-motion-slide-visible-top :delay="300" :duration="800"
+                                            class="pr-3 pt-5 font-black great-vibes bg-clip-text bg-gradient-to-tl from-green-600 to-yellow-600 text-transparent text-3xl md:text-5xl lg:text-[70pt] dark:text-neutral-200">
+                                            Caribbean
+                                        </h1>
+                                        <p v-motion-slide-visible-right :delay="200" :duration="600"
+                                            class="text-4xl md:text-6xl text-white knewave-regular">
+                                            Smokehouse
+                                        </p>
+                                    </div>
 
+                                    <div class="mt-5 max-w-3xl text-center mx-auto px-4">
+                                        <p v-motion-slide-visible-bottom :delay="300" :duration="800"
+                                            class="text-2xl md:text-4xl text-yellow-400 great-vibes font-bold dark:text-neutral-400">
+                                            Come for the food, <span class="font-serif text-red-700">Stay</span> for
+                                            the <span class="font-serif text-green-700">vibes</span>!
+                                        </p>
+                                    </div>
 
-
-                                <!-- ========== END HEADER ========== -->
-                                <!-- Hero -->
-                                <div
-                                    class="relative overflow-hidden before:absolute before:top-0 before:start-1/2 before:bg-[url('https://preline.co/assets/svg/examples/polygon-bg-element.svg')] dark:before:bg-[url('https://preline.co/assets/svg/examples-dark/polygon-bg-element.svg')] before:bg-no-repeat before:bg-top before:bg-cover before:size-full before:-z-[1] before:transform before:-translate-x-1/2">
-                                </div>
-
-                                <div class="overflow-hidden">
-                                    <div class="py- mx-auto">
-                                        <div class="relative mx-auto max-w-4xl grid space-y-4 sm:space-y-4">
-                                            <!-- Title -->
-                                            <div class="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
-                                                <!-- Announcement Banner -->
-                                                <div class="flex justify-center">
-                                                    <p v-motion-slide-visible-top :delay="600" :duration="800"
-                                                        class="inline-flex items-center gap-x-2 bg-white border border-gray-200 text-2xl text-green-500 rubik p-1 px-6 rounded-full transition hover:border-gray-300 dark:bg-neutral-800 dark:border-neutral-700 dark:hover:border-neutral-600 dark:text-neutral-200">
-                                                        HARDBALL
-
-                                                    </p>
-                                                </div>
-                                                <!-- End Announcement Banner -->
-
-                                                <!-- Title -->
-                                                <div class="max-w-2xl text-center mx-auto">
-                                                    <h1 v-motion-slide-visible-top :delay="300" :duration="800"
-                                                        class="pr-3 pt-5 font-black great-vibes bg-clip-text bg-gradient-to-tl from-green-600 to-yellow-600 text-transparent text-3xl md:text-5xl lg:text-[70pt] dark:text-neutral-200">
-                                                        Caribbean </h1>
-                                                    <p v-motion-slide-visible-right :delay="200" :duration="600"
-                                                        class="text-4xl md:text-6xl text-white knewave-regular">
-                                                        Smokehouse</p>
-
-                                                </div>
-                                                <!-- End Title -->
-
-                                                <div class="mt-5 max-w-3xl text-center mx-auto px-4">
-                                                    <p v-motion-slide-visible-bottom :delay="300" :duration="800"
-                                                        class="text-2xl md:text-4xl text-yellow-400 great-vibes font-bold dark:text-neutral-400">
-                                                        Come for the food, <span
-                                                            class="font-serif text-red-700">Stay</span> for
-                                                        the <span class="font-serif text-green-700">vibes</span>!</p>
-                                                </div>
-
-                                                <!-- ======================================================== -->
-
-
-
-
-                                                <!-- Buttons -->
-                                                <div v-motion-slide-visible-bottom :delay="600" :duration="800"
-                                                    class="mt-8 gap-3 flex justify-center px-4">
-                                                    <a class="inline-flex justify-center items-center gap-x-3 text-center bg-gradient-to-tl from-green-600 to-yellow-600 hover:from-green-600 hover:to-yellow-600 border border-transparent text-white text-sm font-medium rounded-md focus:outline-none focus:ring-1 focus:ring-gray-600 py-3 px-6 md:px-4 dark:focus:ring-offset-gray-800"
-                                                        href="#carousel">
-                                                        Get started
-                                                        <svg class="flex-shrink-0 size-4"
-                                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                            stroke-width="2" stroke-linecap="round"
-                                                            stroke-linejoin="round">
-                                                            <path d="m9 18 6-6-6-6" />
-                                                        </svg>
-                                                    </a>
-
-                                                </div>
-                                                <!-- End Buttons -->
-
-                                                <!-- <div class="mt-5 flex justify-center items-center gap-x-1 sm:gap-x-3">
-                                                    <span class="text-sm text-gray-600 dark:text-neutral-400">Package Manager:</span>
-                                                    <span class="text-sm font-bold text-gray-900 dark:text-white">npm</span>
-                                                    <svg class="size-5 text-gray-300 dark:text-neutral-600" width="16" height="16"
-                                                        viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                                        <path d="M6 13L10 3" stroke="currentColor" stroke-linecap="round" />
-                                                    </svg>
-                                                    <a class="inline-flex items-center gap-x-1.5 text-sm text-blue-600 decoration-2 hover:underline font-medium"
-                                                        href="#">
-                                                        Installation Guide
-                                                        <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24"
-                                                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                            stroke-linecap="round" stroke-linejoin="round">
-                                                            <path d="m9 18 6-6-6-6" />
-                                                        </svg>
-                                                    </a>
-                                                </div> -->
-                                            </div>
+                                    <!-- Quick Info -->
+                                    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+                                        <div v-motion-slide-visible-bottom :delay="400" :duration="800"
+                                            class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                                            <svg class="w-6 h-6 text-yellow-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <p class="text-white font-semibold">Open Daily</p>
+                                            <p class="text-gray-300 text-sm">12:00 - 22:00</p>
+                                        </div>
+                                        <div v-motion-slide-visible-bottom :delay="500" :duration="800"
+                                            class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                                            <svg class="w-6 h-6 text-yellow-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            <p class="text-white font-semibold">Location</p>
+                                            <p class="text-gray-300 text-sm">Ipswich, UK</p>
+                                        </div>
+                                        <div v-motion-slide-visible-bottom :delay="600" :duration="800"
+                                            class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                                            <svg class="w-6 h-6 text-yellow-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                            </svg>
+                                            <p class="text-white font-semibold">Contact</p>
+                                            <p class="text-gray-300 text-sm">+44 123 456 7890</p>
                                         </div>
                                     </div>
-                                </div>
-                                <!-- <div class="text-gray-700 body-font">
-                                    <div class="max-w-2xl px-4 md:px-10">
 
-                                        <div class="flex flex-wrap -m-4 text-center">
-                                            <div v-motion-slide-visible-right :delay="200" :duration="800"
-                                                class="px-1 w-1/2 md:w-1/4">
-                                                <div
-                                                    class="cs-border-change border border-green-300 px-2 py-2 rounded-lg transform transition duration-500 hover:scale-110">
-                                                    <svg fill="none" stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2"
-                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block"
-                                                        viewBox="0 0 24 24">
-                                                        <path d="M8 17l4 4 4-4m-4-5v9"></path>
-                                                        <path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29">
-                                                        </path>
-                                                    </svg>
-                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">
-                                                        2.7K</h2>
-                                                    <p class="leading-relaxed text-sm md:text-base">Downloads</p>
-                                                </div>
-                                            </div>
-                                            <div v-motion-slide-visible-right :delay="400" :duration="800"
-                                                class="px-1 w-1/2 md:w-1/4">
-                                                <div
-                                                    class="cs-border-change border border-green-400 px-2 py-2 rounded-lg transform transition duration-500 hover:scale-110">
-                                                    <svg fill="none" stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2"
-                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block"
-                                                        viewBox="0 0 24 24">
-                                                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
-                                                        <circle cx="9" cy="7" r="4"></circle>
-                                                        <path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75"></path>
-                                                    </svg>
-                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">
-                                                        1.3K</h2>
-                                                    <p class="leading-relaxed text-sm md:text-base">Users</p>
-                                                </div>
-                                            </div>
-                                            <div v-motion-slide-visible-right :delay="600" :duration="800"
-                                                class="px-1 w-1/2 md:w-1/4">
-                                                <div
-                                                    class="cs-border-change border border-green-300 px-2 py-2 rounded-lg transform transition duration-500 hover:scale-110">
-                                                    <svg fill="none" stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2"
-                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block"
-                                                        viewBox="0 0 24 24">
-                                                        <path d="M3 18v-6a9 9 0 0118 0v6"></path>
-                                                        <path
-                                                            d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z">
-                                                        </path>
-                                                    </svg>
-                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">
-                                                        74</h2>
-                                                    <p class="leading-relaxed text-sm md:text-base">Files</p>
-                                                </div>
-                                            </div>
-                                            <div v-motion-slide-visible-right :delay="800" :duration="800"
-                                                class="px-1 w-1/2 md:w-1/4">
-                                                <div
-                                                    class="cs-border-change border border-green-300 px-2 py-2 rounded-lg transform transition duration-500 hover:scale-110">
-                                                    <svg fill="none" stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2"
-                                                        class="text-green-500 w-8 h-8 md:w-12 md:h-12 mb-3 inline-block"
-                                                        viewBox="0 0 24 24">
-                                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                                                    </svg>
-                                                    <h2 class="title-font font-medium text-2xl md:text-3xl text-white">
-                                                        46</h2>
-                                                    <p class="leading-relaxed text-sm md:text-base">Places</p>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <!-- Buttons -->
+                                    <div v-motion-slide-visible-bottom :delay="600" :duration="800"
+                                        class="mt-8 gap-3 flex justify-center px-4">
+                                        <a class="inline-flex justify-center items-center gap-x-3 text-center bg-gradient-to-tl from-green-600 to-yellow-600 hover:from-green-600 hover:to-yellow-600 border border-transparent text-white text-sm font-medium rounded-md focus:outline-none focus:ring-1 focus:ring-gray-600 py-3 px-6 md:px-4 dark:focus:ring-offset-gray-800"
+                                            href="#carousel">
+                                            Explore Menu
+                                            <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path d="m9 18 6-6-6-6" />
+                                            </svg>
+                                        </a>
+                                        <a class="inline-flex justify-center items-center gap-x-3 text-center bg-white/10 backdrop-blur-sm hover:bg-white/20 border border-white/20 text-white text-sm font-medium rounded-md focus:outline-none focus:ring-1 focus:ring-white/20 py-3 px-6 md:px-4"
+                                            href="#events">
+                                            View Events
+                                            <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path d="M5 12h14M12 5l7 7-7 7" />
+                                            </svg>
+                                        </a>
                                     </div>
-                                </div> -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -543,318 +572,600 @@ watch(selectedMenuCategory, (val) => {
         </div>
 
         <!-- Card Section -->
-        <section id="carousel" class="max-w-full px-4 sm:px-6 lg:px-8 lg:pb-32 lg:pt-10 mx-auto bg-white" v-motion-slide-visible-bottom :delay="200" :duration="400">
-            <!-- Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-                <!-- Card -->
-                <a v-motion-slide-visible-bottom :delay="200" :duration="400"
-                    class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition"
-                    href="#">
-                    <div class="p-4 md:p-5">
-                        <div class="flex items-center">
-                            <svg class="mt-1 flex-shrink-0 size-28 p-4 bg-green-100 text-green-400 rounded-full dark:text-neutral-200 ease-out hover:translate-x-3 transition-all"
-                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="green" stroke-width="1" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                <circle cx="9" cy="7" r="4" />
-                                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                            </svg>
-
-                            <div class="grow ms-5">
-                                <h1 class="group-hover:text-green-600 font-serif font-extrabold text-slate-800">
-                                    Discount Voucher
-                                </h1>
-                                <p class="text-sm text-gray-500 dark:text-neutral-500">
-                                    Get help from 40k+ Preline users
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-                <!-- End Card -->
-
-                <!-- Card -->
-                <a v-motion-slide-visible-bottom :delay="200" :duration="400"
-                    class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition"
-                    href="#">
-                    <div class="p-4 md:p-5">
-                        <div class="flex items-center">
-                            <svg class="mt-1 flex-shrink-0 size-28 rounded-full p-4 bg-green-100 text-green-400 dark:text-neutral-200 ease-out hover:translate-x-3 transition-all"
-                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="green" stroke-width="1" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                                <path d="M12 17h.01" />
-                            </svg>
-
-                            <div class="grow ms-5">
-                                <h1 class="group-hover:text-green-600 font-serif text-lg font-extrabold text-slate-800">
-                                    Fresh Healthy Food
-                                </h1>
-                                <p class="text-sm text-gray-500 dark:text-neutral-500">
-                                    Just head to «Help» in the app
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-                <!-- End Card -->
-
-                <!-- Card -->
-                <a v-motion-slide-visible-bottom :delay="200" :duration="400"
-                    class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition"
-                    href="#">
-                    <div class="p-4 md:p-5">
-                        <div class="flex items-center">
-                            <svg class="mt-1 flex-shrink-0 size-28 rounded-full p-4 bg-green-100 text-green-400 dark:text-neutral-200 ease-out hover:translate-x-3 transition-all"
-                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="green" stroke-width="1" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path
-                                    d="M21.2 8.4c.5.38.8.97.8 1.6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V10a2 2 0 0 1 .8-1.6l8-6a2 2 0 0 1 2.4 0l8 6Z" />
-                                <path d="m22 10-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 10" />
-                            </svg>
-
-                            <div class="grow ms-5">
-                                <h3 class="group-hover:text-green-600 font-serif font-extrabold text-slate-800">
-                                    Email us
-                                </h3>
-                                <p class="text-sm text-gray-500 dark:text-neutral-500">
-                                    Reach us at <span
-                                        class="text-blue-600 decoration-2 group-hover:underline font-medium dark:text-blue-500">info@hardballsmokehouse.co.uk</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-                <!-- End Card -->
+        <section id="carousel" class="relative max-w-full px-4 sm:px-6 lg:px-8 lg:pb-32 lg:pt-10 mx-auto bg-gradient-to-b from-white to-green-50" v-motion-slide-visible-bottom :delay="200" :duration="400">
+            <!-- Decorative elements -->
+            <div class="absolute inset-0 overflow-hidden">
+                <div class="absolute left-0 top-1/2 transform -translate-y-1/2">
+                    <svg class="w-24 h-24 text-green-100 opacity-50" viewBox="0 0 100 100" fill="currentColor">
+                        <path d="M95,50c0,24.9-20.1,45-45,45S5,74.9,5,50S25.1,5,50,5S95,25.1,95,50z"/>
+                    </svg>
+                </div>
+                <div class="absolute right-0 bottom-0">
+                    <svg class="w-32 h-32 text-yellow-100 opacity-50" viewBox="0 0 100 100" fill="currentColor">
+                        <path d="M95,50c0,24.9-20.1,45-45,45S5,74.9,5,50S25.1,5,50,5S95,25.1,95,50z"/>
+                    </svg>
+                </div>
             </div>
-            <!-- End Grid -->
+            
+            <!-- Section Header -->
+            <div class="relative text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Experience Caribbean Excellence</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Discover what makes us Ipswich's premier destination for authentic Caribbean cuisine</p>
+            </div>
+
+            <!-- Grid -->
+            <div class="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <!-- Voucher Card -->
+                <div v-motion-slide-visible-bottom :delay="200" :duration="400"
+                    class="group bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center mb-6">
+                            <div class="flex-shrink-0 bg-gradient-to-br from-green-400 to-green-600 p-4 rounded-xl">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">Special Offers</h3>
+                                <p class="text-gray-600">Exclusive deals for our valued customers</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <a href="#" class="inline-flex items-center text-green-600 font-semibold hover:text-green-700">
+                                View Offers
+                                <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fresh Food Card -->
+                <div v-motion-slide-visible-bottom :delay="300" :duration="400"
+                    class="group bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center mb-6">
+                            <div class="flex-shrink-0 bg-gradient-to-br from-yellow-400 to-yellow-600 p-4 rounded-xl">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-xl font-bold text-gray-900 group-hover:text-yellow-600 transition-colors">Fresh Ingredients</h3>
+                                <p class="text-gray-600">Quality Caribbean ingredients, locally sourced</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <a href="#" class="inline-flex items-center text-yellow-600 font-semibold hover:text-yellow-700">
+                                Learn More
+                                <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Card -->
+                <div v-motion-slide-visible-bottom :delay="400" :duration="400"
+                    class="group bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center mb-6">
+                            <div class="flex-shrink-0 bg-gradient-to-br from-red-400 to-red-600 p-4 rounded-xl">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-xl font-bold text-gray-900 group-hover:text-red-600 transition-colors">Get in Touch</h3>
+                                <p class="text-gray-600">Book your table or event with us</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <a href="mailto:info@hardballsmokehouse.co.uk" class="inline-flex items-center text-red-600 font-semibold hover:text-red-700">
+                                Contact Us
+                                <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
         <!-- End Card Section -->
 
         
         <!-- ============================= MENU & DISHES ======================================================== -->
         <section class="relative w-full min-h-[700px] flex" v-motion-slide-visible-bottom :delay="200" :duration="400">
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 bg-gradient-to-br from-white via-[#e8f5e9] to-[#c8e6c9]">
+                <!-- Overlay Pattern -->
+                <div class="absolute inset-0 opacity-20" 
+                    style="background-image: repeating-linear-gradient(45deg, #23a04f 0, #23a04f 1px, transparent 0, transparent 50%),
+                            repeating-linear-gradient(-45deg, #f9de47 0, #f9de47 1px, transparent 0, transparent 50%);
+                    background-size: 30px 30px;">
+                </div>
+                <!-- Subtle Wave Pattern -->
+                <div class="absolute inset-0 opacity-10" style="background-image: url('/img/shape/wave-pattern.svg'); background-size: 100px;">
+                </div>
+            </div>
            
-                <!-- Left: White 1/3 -->
-            <div class="w-full md:w-1/3 bg-white flex flex-col items-center justify-center p-8 z-10 relative">
+            <!-- Left: White 1/3 -->
+            <div class="w-full md:w-1/3 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center p-8 z-10 relative shadow-2xl">
                 <div class="relative w-full h-full max-w-md flex flex-col items-center md:items-start">
+                    <!-- Animated Counter -->
                     <div class="flex items-center justify-end text-right mb-2">
-                        <svg class="w-16 h-16 text-[#23a04f]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 48 48">
-                            <circle cx="24" cy="24" r="22" stroke="#23a04f" stroke-width="3" fill="none" />
-                            <path d="M16 32h16M24 16v16M32 24H16" stroke="#23a04f" stroke-width="2" stroke-linecap="round" />
-                        </svg>
-                        <span class="text-5xl font-extrabold text-[#23a04f] ml-4">50+</span>
+                        <div class="relative">
+                            <svg class="w-16 h-16 text-[#23a04f]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 48 48">
+                                <circle cx="24" cy="24" r="22" stroke="#23a04f" stroke-width="3" fill="none" class="animate-pulse"/>
+                                <path d="M16 32h16M24 16v16M32 24H16" stroke="#23a04f" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-5xl font-extrabold text-[#23a04f] animate-bounce">50+</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="text-lg font-bold text-black tracking-wide mb-4 flex justify-end justify-items-end text-right">MENU AND DISHES</div>
-                    <div class="hidden md:block">
+                    <div class="text-lg font-bold text-[#0c4149] tracking-wide mb-4 flex justify-end justify-items-end text-right">
+                        MENU AND DISHES
+                    </div>
+                    <!-- Floating Image with Enhanced Effects -->
+                    <div class="hidden md:block relative group">
+                        <div class="absolute -inset-4 bg-gradient-to-r from-[#23a04f] to-[#f9de47] rounded-xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
                         <img
                             src="/img/food/portrait5.JPG"
                             alt="Menu Dish"
-                            class="w-[350px] max-w-full absolute right-[-80px] top-96 -translate-y-1/2 z-20 border-4 border-green-600 rounded-xl"
+                            class="w-[350px] max-w-full relative z-10 rounded-xl transform transition-all duration-500 group-hover:scale-105 group-hover:rotate-2 shadow-xl"
                         />
+                        <!-- Decorative Corner Accents -->
+                        <div class="absolute -top-2 -left-2 w-8 h-8 border-t-4 border-l-4 border-[#23a04f] rounded-tl-xl"></div>
+                        <div class="absolute -bottom-2 -right-2 w-8 h-8 border-b-4 border-r-4 border-[#f9de47] rounded-br-xl"></div>
                     </div>
                     <div class="block md:hidden">
                         <img
                             src="/img/food/portrait5.JPG"
                             alt="Menu Dish"
-                            class="rounded-xl shadow-lg w-[350px] max-w-full"
+                            class="rounded-xl shadow-lg w-[350px] max-w-full transform hover:scale-105 transition-transform duration-500"
                         />
                     </div>
                 </div>
             </div>
-            <!-- Right: 2/3 with BG image -->
-            <div class="w-full md:w-2/3 relative flex items-center justify-center min-h-[600px]" style="background-image: url('/img/bg/bg-6.jpg'); background-size:auto; background-position: right;">
-                <div class="w-full h-full absolute top-0 left-0 bg-whit rounded-xl" ></div>
+
+            <!-- Right: 2/3 with Content -->
+            <div class="w-full md:w-2/3 relative flex items-center justify-center min-h-[600px]">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#23a04f]/90 to-[#23a04f]/80 backdrop-blur-sm"></div>
                 <div class="relative w-full max-w-2xl p-8 z-10">
-                    <div class="mb-2 text-[#23a04f] font-bold uppercase tracking-wider flex items-center gap-2">
+                    <div class="mb-2 text-[#f9de47] font-bold uppercase tracking-wider flex items-center gap-2">
                         FOOD ITEMS
-                        <span class="w-8 h-0.5 bg-[#23a04f] inline-block"></span>
+                        <span class="w-8 h-0.5 bg-[#f9de47] inline-block"></span>
                     </div>
-                    <h2 class="text-3xl md:text-5xl font-extrabold mb-6">Starters & Main Dishes</h2>
-                    <!-- Category Tabs -->
-                    <div class="flex gap-2 mb-6">
-                        <button v-for="cat in menuCategories" :key="cat.key" @click="selectedMenuCategory = cat.key"
-                            :class="selectedMenuCategory === cat.key ? 'bg-[#23a04f] text-white' : 'bg-white text-black border'"
-                            class="px-4 py-2 rounded font-semibold transition border border-[#23a04f] focus:outline-none">
+                    <h2 class="text-3xl md:text-5xl font-extrabold mb-6 text-white">Starters & Main Dishes</h2>
+                    
+                    <!-- Category Tabs with Enhanced Design -->
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <button v-for="cat in menuCategories" :key="cat.key" 
+                            @click="selectedMenuCategory = cat.key"
+                            :class="[
+                                selectedMenuCategory === cat.key 
+                                    ? 'bg-[#f9de47] text-[#0c4149] shadow-lg scale-105' 
+                                    : 'bg-white/20 text-white hover:bg-white/30',
+                                'px-4 py-2 rounded-full font-semibold transition-all duration-300 hover:shadow-md hover:scale-105'
+                            ]">
                             {{ cat.label }}
                         </button>
                     </div>
-                    <!-- Menu List -->
-                    <ul>
-                        <li v-for="item in groupedMenuItems[selectedMenuCategory]" :key="item.id"
-                            class="flex flex-col md:flex-row md:items-center py-4 border-b border-dashed border-gray-300">
-                            <div class="flex-1">
-                                <span class="font-extrabold text-xl md:text-2xl text-black">{{ item.name }}</span>
-                                <div class="text-gray-500 text-sm italic">{{ item.description }}</div>
-                                <div class="text-gray-400 text-xs mt-1" v-if="item.side_note">{{ item.side_note }}</div>
+
+                    <!-- Menu List with Enhanced Styling -->
+                    <div class="space-y-4 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
+                        <div v-for="item in groupedMenuItems[selectedMenuCategory]" :key="item.id"
+                            class="group bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/20 transition-all duration-300 border border-white/20">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-extrabold text-xl md:text-2xl text-white group-hover:text-[#f9de47] transition-colors">
+                                            {{ item.name }}
+                                        </span>
+                                        <span v-if="item.is_chef_special" 
+                                            class="px-2 py-1 bg-[#f9de47] text-[#0c4149] text-xs font-bold rounded-full animate-pulse">
+                                            Chef's Special
+                                        </span>
+                                    </div>
+                                    <div class="text-white/90 text-sm italic mt-1">{{ item.description }}</div>
+                                    <div class="text-white/70 text-xs mt-1" v-if="item.side_note">{{ item.side_note }}</div>
+                                </div>
+                                <div class="flex gap-4 mt-2 md:mt-0 md:ml-8">
+                                    <span class="text-[#f9de47] font-extrabold text-lg md:text-xl">
+                                        ${{ Number(item.price || 0).toFixed(2) }}
+                                    </span>
+                                </div>
                             </div>
-                            <div class="flex gap-4 mt-2 md:mt-0 md:ml-8">
-                                <span class="text-[#23a04f] font-extrabold text-lg md:text-xl">${{ Number(item.price || 0).toFixed(2) }}</span>
-                            </div>
-                        </li>
-                    </ul>
-                    <!-- View Full Menu Link -->
+                        </div>
+                    </div>
+
+                    <!-- View Full Menu Link with Enhanced Design -->
                     <div class="mt-8 text-center">
-                        <Link :href="route('menu')" class="inline-flex items-center gap-2 px-6 py-3 bg-[#23a04f] text-white font-bold rounded-full hover:bg-[#1d8a42] transition-colors">
+                        <Link :href="route('menu')" 
+                            class="inline-flex items-center gap-2 px-6 py-3 bg-[#f9de47] text-[#0c4149] font-bold rounded-full hover:bg-white transition-all duration-300 transform hover:scale-105 hover:shadow-lg group">
                             View Full Menu
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
                         </Link>
                     </div>
                 </div>
             </div>
-            
         </section>
         <!-- ============================= END MENU & DISHES ======================================================== -->
 
-
-        <!-- ============================= MARQUEE ======================================================== -->
-        <section class="relative overflow-hidden text-nowrap text-slider text-[30px] md:text-[60px] py-10 md:py-20" v-motion-slide-visible-bottom :delay="200" :duration="400">
-            <marquee class="marquee-inner to-left">
-                <ul class="marqee-list flex">
-                    <li class="flex items-center style1 text-[#bcb8b1]">
-                        <span class="text-slider"></span>
-                        <div
-                            class="font-black title hover:text-green-500 hover:border-b-4 hover:leading-tight hover:border-green-500">
-                            Curry </div>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span
-                            class="font-black title tracking-tighter hover:text-red-500 hover:border-b-4 leading-tight hover:border-red-500">JERK
-                            CHICKEN</span>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span class="font-black title text-slider text-style">BURGER</span>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span class="font-black title text-slider text-style">Shrimp Pasta</span>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span class="font-black title text-slider text-style">Tasty Wings</span>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span class="font-black title text-slider text-style">ITALIANO FRENCH FRY</span>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span class="font-black title text-slider text-style">CHICKEN FRY</span>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span class="font-black title text-slider text-style">CHICKEN PATTY</span>
-                        <img src="/img/shape/cutlery.png" alt="cutlery icon"
-                            class="w-4 h-4 md:w-8 md:h-8 mx-10 md:mx-20" />
-                        <span class="font-black title text-slider text-style">GRILLED CHICKEN</span>
-                        <span class="text-slider"></span>
-                    </li>
-                </ul>
-            </marquee>
-        </section>
-        <!-- ============================= END MARQUEE ======================================================== -->
-
+        
 
         <!-- ============================= EVENTS ======================================================== -->
-        <div id="carousel" class="max-w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-20 mx-auto bg-[#0c4149]" style="background-image: url('/img/shape/divider1.png'); background-size:auto; background-color: #0c4149;background-position: bottom center;background-repeat: repeat-x;background-size: contain;" v-motion-slide-visible-bottom :delay="200" :duration="400">
-            <div class="container w-full mx-auto py-12 px-4 grid grid-cols-1 md:grid-cols-2 gap-6" >
-            <!-- Left Large Card -->
-            <div class="relative rounded-2xl flex flex-col justify-between ax-h-[600px] md:row-span-2 overflow-hidden p-0">
-                <img src="/img/event/dawn-penn.jpg" alt="event" class="w-full h-full object-center" />
+        <div id="events" class="relative max-w-full overflow-hidden" v-motion-slide-visible-bottom :delay="200" :duration="400">
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 bg-[#0c4149] opacity-95">
+                <!-- Base Pattern -->
+                <div class="absolute inset-0" style="background-image: url('/img/shape/pattern-light.svg'); background-repeat: repeat; opacity: 0.2;"></div>
                 
-            </div>
-            <!-- Top Right Card -->
-            <div class="relative bg-[#c02523] rounded-2xl flex flex-col justify-between p-8 min-h-[160px] overflow-hidden group cursor-pointer">
-                <Link :href="route('cocktail')" class="absolute inset-0 z-10">
-                <div class="relative p-8 z-20">
-                    <h2 class="text-white text-2xl md:text-3xl font-extrabold leading-tight mb-2">SIGNATURE<br/>COCKTAILS</h2>
-                    <button class="mt-2 px-5 py-2 bg-[#e53935] text-white font-bold rounded-full shadow hover:bg-[#c62828] transition">View Cocktail Menu</button>
-                    <svg class="w-5 h-5 inline ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
+                <!-- Diagonal Lines Pattern -->
+                <div class="absolute inset-0 opacity-15" 
+                    style="background-image: repeating-linear-gradient(45deg, #f9de47 0, #f9de47 2px, transparent 0, transparent 50%),
+                            repeating-linear-gradient(-45deg, #23a04f 0, #23a04f 2px, transparent 0, transparent 50%);
+                    background-size: 40px 40px;">
                 </div>
-                <!-- Cocktail Image -->
-                <img src="/img/beverages/cocktail1.png" alt="Signature Cocktails" class="absolute bottom-4 right-4 w-60 h-60 object-contain drop-shadow-xl z-0" />
-                <span class="absolute top-6 right-6 bg-white text-[#23a04f] font-bold px-4 py-2 rounded-full knewave-regular  shadow">Hardball</span>
-                </Link>
+
+                <!-- Dots Pattern -->
+                <div class="absolute inset-0 opacity-15" 
+                    style="background-image: radial-gradient(#f9de47 2px, transparent 2px);
+                    background-size: 30px 30px;">
+                </div>
+
+                <!-- Wave Pattern -->
+                <div class="absolute inset-0 opacity-10"
+                    style="background-image: url('/img/shape/wave-pattern.svg');
+                    background-size: 100px;">
+                </div>
+
+                <!-- Gradient Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-b from-[#13292c]/90 via-[#001b1f]/80 to-[#052c32]/80"></div>
             </div>
-            <!-- Bottom Right Card -->
-            <div class="relative bg-[#ffd600] rounded-2xl flex flex-col justify-between p-8 min-h-[160px] overflow-hidden group cursor-pointer">
-                <Link :href="route('gallery')" class="absolute inset-0 z-10">
-                <div class="relative p-8 z-20">
-                    <h2 class="text-[#0b2341] text-2xl md:text-3xl font-extrabold leading-tight mb-2">OUR<br/>GALLERY</h2>
-                    <div class="flex items-center gap-2 text-[#0b2341] font-semibold group-hover:translate-x-2 transition-transform">
-                        <button class="mt-2 px-5 py-2 bg-[#0c534d] text-white font-bold rounded-full shadow hover:bg-[#23395d] transition">View Gallery</button>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
+
+            <!-- Content Container -->
+            <div class="relative container mx-auto px-4 py-24">
+                <!-- Section Header -->
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Experience the Vibe</h2>
+                    <p class="text-xl text-green-300 max-w-2xl mx-auto">Join us for live music, special events, and the best Caribbean atmosphere in Ipswich</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Left Column: Featured Event -->
+                    <div class="relative group">
+                        <div class="relative overflow-hidden rounded-3xl">
+                            <img src="/img/event/dawn-penn.jpg" alt="Dawn Penn Event" 
+                                 class="w-full h-[600px] object-cove transform group-hover:scale-110 transition-transform duration-700" style="background-position: top;" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-8">
+                                <span class="inline-block px-4 py-2 bg-red-500 text-white rounded-full text-sm font-bold mb-4">FEATURED EVENT</span>
+                                <h3 class="text-3xl font-bold text-white mb-2">Dawn Penn Live</h3>
+                                <p class="text-gray-300 mb-4">Experience the legendary voice behind "No, No, No" live at Hardball</p>
+                                <!-- <button class="bg-white text-[#0c4149] px-6 py-3 rounded-full font-bold hover:bg-green-500 hover:text-white transition-colors">
+                                    Book Now
+                                </button> -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Stacked Cards -->
+                    <div class="space-y-8">
+                        <!-- Cocktail Card -->
+                        <Link :href="route('cocktail')" 
+                              class="block relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#c02523] to-[#e53935] group">
+                            <div class="relative p-8">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 class="text-2xl font-bold text-white mb-2">SIGNATURE<br/>COCKTAILS</h3>
+                                        <p class="text-red-100 mb-4">Discover our unique Caribbean-inspired cocktails</p>
+                                        <button class="inline-flex items-center px-6 py-3 bg-white text-red-600 rounded-full font-bold group-hover:bg-red-100 transition-colors">
+                                            View Menu
+                                            <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <img src="/img/beverages/cocktail1.png" alt="Signature Cocktails" 
+                                         class="absolute bottom-0 right-0 w-48 h-48 object-contain transform group-hover:scale-110 transition-transform duration-500"/>
+                                </div>
+                            </div>
+                        </Link>
+
+                        <!-- Gallery Card -->
+                        <Link :href="route('gallery')" 
+                              class="block relative overflow-hidden rounded-3xl bg-[#ffd600] group">
+                            <div class="relative p-8">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 class="text-2xl font-bold text-[#0b2341] mb-2">EXPLORE OUR<br/>GALLERY</h3>
+                                        <p class="text-[#0b2341]/80 mb-4">Take a visual journey through our Caribbean experience</p>
+                                        <button class="inline-flex items-center px-6 py-3 bg-[#0c534d] text-white rounded-full font-bold group-hover:bg-[#23395d] transition-colors">
+                                            View Gallery
+                                            <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="absolute right-0 bottom-0 grid grid-cols-2 gap-1 transform translate-x-8 translate-y-8 rotate-12 group-hover:rotate-6 transition-transform duration-500">
+                                        <img src="/img/gallery/store4.JPG" alt="Gallery Preview" class="w-24 h-24 object-cover rounded-lg shadow-lg"/>
+                                        <img src="/img/gallery/store8.jpg" alt="Gallery Preview" class="w-24 h-24 object-cover rounded-lg shadow-lg"/>
+                                        <img src="/img/gallery/event1.jpg" alt="Gallery Preview" class="w-24 h-24 object-cover rounded-lg shadow-lg"/>
+                                        <img src="/img/gallery/food1.jpg" alt="Gallery Preview" class="w-24 h-24 object-cover rounded-lg shadow-lg"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </Link>
                     </div>
                 </div>
-                <!-- Image Collage -->
-                <div class="absolute right-0 bottom-20 w-80 h-80 transform translate-x-8 translate-y-8 rotate-12">
-                    <div class="grid grid-cols-2 gap-1">
-                        <img src="/img/gallery/store4.JPG" alt="store" class="w-full h-52 object-cover rounded-lg shadow-lg" />
-                        <img src="/img/gallery/store8.jpg" alt="Gallery Preview1" class="w-full h-52 object-cover rounded-lg shadow-lg" />
-                        <img src="/img/gallery/event1.jpg" alt="Gallery Preview2" class="w-full h-52 object-cover rounded-lg shadow-lg" />
-                        <img src="/img/gallery/food1.jpg" alt="Gallery Preview3" class="w-full h-52 object-cover rounded-lg shadow-lg" />
-                    </div>
-                </div>
-                </Link>
             </div>
-        </div>
         </div>
         <!-- ============================= END EVENTS ======================================================== -->
 
 
         <!-- ============================= Dessert ======================================================== -->
-        <section class="relative bg-white py-28" v-motion-slide-visible-bottom :delay="200" :duration="400">
-            <div class="container mx-auto flex flex-col md:flex-row items-center gap-12">
+        <section class="relative bg-gradient-to-b from-white to-green-50 py-28 overflow-hidden" v-motion-slide-visible-bottom :delay="200" :duration="400">
+            <!-- Decorative Elements -->
+            <div class="absolute inset-0 overflow-hidden">
+                <!-- Floating Elements -->
+                <div class="absolute top-1/4 left-10 w-32 h-32 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+                <div class="absolute top-1/3 right-10 w-32 h-32 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+                <div class="absolute bottom-1/4 left-1/2 w-32 h-32 bg-red-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+                
+                <!-- Caribbean Pattern -->
+                <div class="absolute inset-0 opacity-5" style="background-image: url('/img/shape/caribbean-pattern.svg'); background-repeat: repeat;"></div>
+            </div>
+
+            <div class="container mx-auto flex flex-col md:flex-row items-center gap-12 relative z-10">
                 <!-- Left: Dessert List -->
                 <div class="flex-1 w-full">
                     <div class="flex items-center mb-6">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-[#ffd600] tracking-wide mr-4">DESSERT ITEMS
-                        </h2>
+                        <h2 class="text-3xl md:text-4xl font-extrabold text-[#ffd600] tracking-wide mr-4">DESSERT ITEMS</h2>
                         <span class="flex-1 border-t-2 border-[#ffd600]"></span>
                         <svg class="ml-2" width="40" height="10" viewBox="0 0 40 10" fill="none">
-                            <path d="M0 5h38m0 0l-4-4m4 4l-4 4" stroke="#ffd600" stroke-width="2"
-                                stroke-linecap="round" />
+                            <path d="M0 5h38m0 0l-4-4m4 4l-4 4" stroke="#ffd600" stroke-width="2" stroke-linecap="round" />
                         </svg>
                     </div>
-                    <ul>
-                        <li v-for="item in props.dessertItems" :key="item.id" class="flex items-center mb-8">
-                            <img :src="item.image_path ? '/storage/' + item.image_path : '/img/desserts/default.jpg'" :alt="item.name" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md mr-6" />
-                            <div class="flex-1">
-                                <div class="flex items-center">
-                                    <span class="font-extrabold text-xl md:text-2xl text-gray-900 mr-2">{{ item.name }}</span>
-                                    <span class="flex-1 border-t border-dashed border-gray-400 mx-2"></span>
-                                    <span class="text-[#ffd600] font-extrabold text-lg md:text-xl">${{ Number(item.price || 0).toFixed(2) }}</span>
+
+                    <!-- Dessert Cards -->
+                    <div class="space-y-6">
+                        <div v-for="(item, index) in props.dessertItems" :key="item.id" 
+                            v-motion-slide-visible-bottom 
+                            :delay="200 * index" 
+                            :duration="800"
+                            class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                            <div class="p-6 flex items-center gap-6">
+                                <!-- Dessert Image -->
+                                <div class="relative">
+                                    <div class="absolute -inset-2 bg-gradient-to-r from-yellow-400 to-red-400 rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                                    <img :src="item.image_path ? '/storage/' + item.image_path : '/img/desserts/default.jpg'" 
+                                        :alt="item.name" 
+                                        class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md relative z-10 transform group-hover:scale-110 transition-transform duration-300" />
                                 </div>
-                                <div class="text-gray-500 text-sm italic mt-1">{{ item.description }}</div>
-                                <div class="text-gray-400 text-xs mt-1">{{ item.note }}</div>
+
+                                <!-- Dessert Info -->
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="font-extrabold text-xl md:text-2xl text-gray-900 group-hover:text-[#ffd600] transition-colors">
+                                                {{ item.name }}
+                                            </h3>
+                                            <p class="text-gray-500 text-sm italic mt-1">{{ item.description }}</p>
+                                            <p v-if="item.note" class="text-gray-400 text-xs mt-1">{{ item.note }}</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-[#ffd600] font-extrabold text-lg md:text-xl">
+                                                ${{ Number(item.price || 0).toFixed(2) }}
+                                            </span>
+                                            <!-- Popular Badge -->
+                                            <div v-if="index === 0" class="mt-2">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Most Popular
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </div>
+
                 <!-- Right: Big Dessert Image -->
                 <div class="flex-1 flex justify-center relative">
-                    <!-- Red vertical bar spanning the full section height -->
-                    <div class="absolute left-0 top-0 h-full w-[120px] bg-[#ffd600] z-0"></div>
-                    <div class="relative flex items-center justify-center h-80 w-80 z-10">
-                        <!-- Dessert image -->
-                        <img
-                            src="/img/food/White-Chocolate-Cheesecake.png"
-                            alt="Dessert"
-                            class="w-80 h-80 object-cover rounded-full border-8 border-white shadow-lg z-10"
-                        />
-                        <div class="absolute inset-0 rounded-full border-4 border-[#ffd600] z-20"></div>
+                    <!-- Parallax Container -->
+                    <div class="relative w-96 h-96">
+                        <!-- Decorative Elements -->
+                        <div class="absolute inset-0 bg-gradient-to-r from-yellow-400 to-red-400 rounded-full blur-3xl opacity-20 animate-pulse"></div>
+                        
+                        <!-- Main Image Container -->
+                        <div class="relative w-full h-full">
+                            <!-- Rotating Border -->
+                            <div class="absolute inset-0 rounded-full border-8 border-[#ffd600] animate-spin-slow"></div>
+                            
+                            <!-- Main Image -->
+                            <img
+                                src="/img/food/White-Chocolate-Cheesecake.png"
+                                alt="Dessert"
+                                class="w-full h-full object-cover rounded-full border-8 border-white shadow-lg relative z-10 transform hover:scale-105 transition-transform duration-500"
+                            />
+                            
+                            <!-- Floating Elements -->
+                            <div class="absolute -top-4 -right-4 w-16 h-16 bg-yellow-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+                            <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-red-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
         <!-- ============================= END DESSERT ======================================================== -->
          
+         <!-- Marquee as transition element -->
+        <div class="relative overflow-hidden py-16 bg-[#0c4149]" v-motion-slide-visible-bottom :delay="200" :duration="400">
+            <!-- Background Elements -->
+            <div class="absolute inset-0">
+                <!-- Dark gradient overlay -->
+                <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30"></div>
+                
+                <!-- Geometric Pattern -->
+                <div class="absolute inset-0 opacity-10">
+                    <div class="h-full w-full" 
+                        style="background-image: repeating-linear-gradient(45deg, #f9de47 0, #f9de47 1px, transparent 0, transparent 50%),
+                                repeating-linear-gradient(-45deg, #23a04f 0, #23a04f 1px, transparent 0, transparent 50%);
+                        background-size: 40px 40px;"></div>
+                </div>
+
+                <!-- Animated lines -->
+                <div class="absolute inset-0">
+                    <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#f9de47]/30 to-transparent animate-slide-right"></div>
+                    <div class="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#f9de47]/30 to-transparent animate-slide-left"></div>
+                </div>
+
+                <!-- Radial Gradient Overlay -->
+                <div class="absolute inset-0 bg-[#0c4149] opacity-30"
+                    style="background-image: radial-gradient(circle at center, transparent 0%, #0c4149 70%);"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="relative z-10">
+                <!-- Top Marquee -->
+                <div class="relative marquee-container mb-8">
+                    <div class="flex space-x-4 animate-marquee whitespace-nowrap">
+                        <div v-for="(item, index) in ['Curry', 'Jerk Chicken', 'Burger', 'Shrimp Pasta', 'Tasty Wings', 'French Fry', 'Chicken Fry', 'Chicken Patty', 'Grilled Chicken']" 
+                            :key="index" 
+                            class="group inline-flex items-center">
+                            <span class="text-4xl md:text-6xl font-black text-white/90 hover:text-[#f9de47] transition-colors duration-300 cursor-pointer transform hover:scale-105">
+                                {{ item }}
+                            </span>
+                            <img src="/img/shape/cutlery.png" alt="cutlery icon"
+                                class="w-8 h-8 md:w-12 md:h-12 mx-8 md:mx-12 opacity-40 group-hover:opacity-100 transition-all duration-300 transform rotate-12 group-hover:rotate-45 filter brightness-0 invert" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Marquee (Reverse Direction) -->
+                <div class="relative marquee-container">
+                    <div class="flex space-x-4 animate-marquee-reverse whitespace-nowrap">
+                        <div v-for="(item, index) in ['Caribbean Style', 'Island Flavors', 'Spicy Hot', 'Fresh Ingredients', 'Home Made', 'Traditional', 'Authentic', 'Family Recipe']" 
+                            :key="index" 
+                            class="group inline-flex items-center">
+                            <span class="text-3xl md:text-5xl font-black text-[#f9de47]/80 hover:text-white transition-colors duration-300 cursor-pointer transform hover:scale-105">
+                                {{ item }}
+                            </span>
+                            <img src="/img/shape/palm-tree.png" alt="palm tree icon"
+                                class="w-8 h-8 md:w-12 md:h-12 mx-8 md:mx-12 opacity-40 group-hover:opacity-100 transition-all duration-300 transform -rotate-12 group-hover:-rotate-45 filter brightness-0 invert" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Proof Section -->
+        <section class="relative py-16 bg-white" v-motion-slide-visible-bottom :delay="200" :duration="400">
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 opacity-5">
+                <div class="h-full w-full" style="background-image: url('/img/shape/caribbean-pattern.svg'); background-repeat: repeat;"></div>
+            </div>
+
+            <div class="container mx-auto px-4">
+                <!-- Trust Indicators -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-[#23a04f] mb-2">4.9</div>
+                        <div class="flex justify-center mb-2">
+                            <svg v-for="i in 5" :key="i" class="w-5 h-5 text-[#f9de47]" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                        </div>
+                        <div class="text-gray-800">Google Reviews</div>
+                        <div class="text-gray-500 text-sm">(200+ reviews)</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-[#23a04f] mb-2">12K+</div>
+                        <div class="text-gray-800">Happy Customers</div>
+                        <div class="text-gray-500 text-sm">Monthly</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-[#23a04f] mb-2">96%</div>
+                        <div class="text-gray-800">Return Rate</div>
+                        <div class="text-gray-500 text-sm">Customer Loyalty</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-[#23a04f] mb-2">#1</div>
+                        <div class="text-gray-800">Caribbean Restaurant</div>
+                        <div class="text-gray-500 text-sm">in Ipswich</div>
+                    </div>
+                </div>
+
+                <!-- Testimonials -->
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">What Our Customers Say</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">Real feedback from our valued customers who have experienced the authentic taste of Caribbean cuisine at Hardball.</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div v-for="(testimonial, index) in [
+                        {
+                            name: 'Sarah Thompson',
+                            role: 'Food Blogger',
+                            image: '/img/testimonials/avatar1.jpg',
+                            text: 'The jerk chicken here is absolutely incredible! The flavors are authentic and the atmosphere is perfect. A must-visit spot in Ipswich!',
+                            rating: 5
+                        },
+                        {
+                            name: 'Michael Chen',
+                            role: 'Local Guide',
+                            image: '/img/testimonials/avatar2.jpg',
+                            text: 'Best Caribbean food I\'ve had outside of Jamaica. The staff is friendly and the portions are generous. Their curry goat is outstanding!',
+                            rating: 5
+                        },
+                        {
+                            name: 'Emma Williams',
+                            role: 'Regular Customer',
+                            image: '/img/testimonials/avatar3.jpg',
+                            text: 'Love the vibrant atmosphere and amazing cocktails. The plantain chips are addictive and the service is always top-notch!',
+                            rating: 5
+                        }
+                    ]" :key="index"
+                    class="bg-gray-50 p-6 rounded-xl hover:bg-gray-100 transition-all duration-300 group border border-gray-100 hover:border-[#23a04f]/20 shadow-sm hover:shadow-md">
+                        <div class="flex items-center mb-4">
+                            <img :src="testimonial.image" :alt="testimonial.name" class="w-12 h-12 rounded-full object-cover mr-4 ring-2 ring-[#23a04f]/20" />
+                            <div>
+                                <div class="font-semibold text-gray-900 group-hover:text-[#23a04f] transition-colors">{{ testimonial.name }}</div>
+                                <div class="text-gray-500 text-sm">{{ testimonial.role }}</div>
+                            </div>
+                        </div>
+                        <div class="flex mb-3">
+                            <svg v-for="i in testimonial.rating" :key="i" class="w-5 h-5 text-[#f9de47]" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                        </div>
+                        <p class="text-gray-600 italic">{{ testimonial.text }}</p>
+                    </div>
+                </div>
+
+                <!-- Trust Badges -->
+                <div class="mt-16 flex flex-wrap justify-center items-center gap-8">
+                    <img src="/img/badges/tripadvisor.png" alt="TripAdvisor Choice" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
+                    <img src="/img/badges/google.png" alt="Google Reviews" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
+                    <img src="/img/badges/just-eat.png" alt="Just Eat" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
+                    <img src="/img/badges/deliveroo.png" alt="Deliveroo" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
+                </div>
+            </div>
+        </section>
     </MainLayout>
 
     <!-- Dessert Items Section -->

@@ -702,7 +702,7 @@ button:hover,
 
             <!-- Parallax Background -->
             <section class="flex flex-col w-full p-24 bg-cover bg-fixed bg-center justify-center items-center"
-                style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/img/bg/store2.jpg');">
+                style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/img/bg/store2.JPG');">
                 <div
                     class="sm:pt-10 sm:pb-10 rounded-2xl overflow-hidden relative bg-opacity-0 bg-white/10 backdrop-blur-sm border-2 border-white">
                     <h2 class="ml-4 max-w-xl items-center rounded-full px-4 py-2 mb-4 text-emerald-600 ring-1 ring-inset ring-emerald-600"
