@@ -655,8 +655,7 @@ watch(selectedMenuCategory, (val) => {
                         <img
                             src="/img/food/portrait5.jpg"
                             alt="Menu Dish"
-                            class=" w-[350px] max-w-full absolute right-[-80px] top-96 -translate-y-1/2 z-20 border-4 border-green-600 rounded-xl"
-                            style="box-shadow: 0 8px 32px rgba(0,0,0,0.15);"
+                            class="w-[350px] max-w-full absolute right-[-80px] top-96 -translate-y-1/2 z-20 border-4 border-green-600 rounded-xl"
                         />
                     </div>
                     <div class="block md:hidden">
