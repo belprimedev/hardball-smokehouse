@@ -93,13 +93,6 @@ body {
                                 ]">Cocktail</a>
                         </li>
                         <li>
-                            <a :href="route('events')"
-                                :class="[
-                                    'block py-2 px-3 text-gray-300 text-2xl font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700',
-                                    { 'border-b-2 border-yellow-500': route().current('events') }
-                                ]">Events</a>
-                        </li>
-                        <li>
                             <a :href="route('gallery')"
                                 :class="[
                                     'block py-2 px-3 text-gray-300 text-2xl font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700',
@@ -129,12 +122,6 @@ body {
                         class="block py-2 px-3 text-gray-900 text-xl font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                         :href="route('cocktail')" aria-current="page">
                         Cocktail
-                    </a>
-
-                    <a
-                        class="block py-2 px-3 text-gray-900 text-xl font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                        :href="route('events')" aria-current="page">
-                        Events
                     </a>
 
                     <a
@@ -258,9 +245,6 @@ body {
                             <a :href="route('cocktail')"
                                 class="flex items-center py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Cocktail</a>
-                            <a :href="route('events')"
-                                class="flex items-center py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Events</a>
                             <a :href="route('gallery')"
                                 class="flex items-center py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Gallery</a>

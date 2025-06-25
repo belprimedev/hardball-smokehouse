@@ -1065,7 +1065,7 @@ watch(selectedMenuCategory, (val) => {
                             <span class="text-3xl md:text-5xl font-black text-[#f9de47]/80 hover:text-white transition-colors duration-300 cursor-pointer transform hover:scale-105">
                                 {{ item }}
                             </span>
-                            <img src="/img/shape/palm-tree.png" alt="palm tree icon"
+                            <img src="/img/icon/palm-tree.webp" alt="palm tree icon"
                                 class="w-8 h-8 md:w-12 md:h-12 mx-8 md:mx-12 opacity-40 group-hover:opacity-100 transition-all duration-300 transform -rotate-12 group-hover:-rotate-45 filter brightness-0 invert" />
                         </div>
                     </div>
@@ -1121,28 +1121,28 @@ watch(selectedMenuCategory, (val) => {
                         {
                             name: 'Sarah Thompson',
                             role: 'Food Blogger',
-                            image: '/img/testimonials/avatar1.jpg',
+                            image: '/img/icon/palm-tree.webp',
                             text: 'The jerk chicken here is absolutely incredible! The flavors are authentic and the atmosphere is perfect. A must-visit spot in Ipswich!',
                             rating: 5
                         },
                         {
                             name: 'Michael Chen',
                             role: 'Local Guide',
-                            image: '/img/testimonials/avatar2.jpg',
+                            image: '/img/icon/palm-tree.webp',
                             text: 'Best Caribbean food I\'ve had outside of Jamaica. The staff is friendly and the portions are generous. Their curry goat is outstanding!',
                             rating: 5
                         },
                         {
                             name: 'Emma Williams',
                             role: 'Regular Customer',
-                            image: '/img/testimonials/avatar3.jpg',
+                            image: '/img/icon/palm-tree.webp',
                             text: 'Love the vibrant atmosphere and amazing cocktails. The plantain chips are addictive and the service is always top-notch!',
                             rating: 5
                         }
                     ]" :key="index"
                     class="bg-gray-50 p-6 rounded-xl hover:bg-gray-100 transition-all duration-300 group border border-gray-100 hover:border-[#23a04f]/20 shadow-sm hover:shadow-md">
                         <div class="flex items-center mb-4">
-                            <img :src="testimonial.image" :alt="testimonial.name" class="w-12 h-12 rounded-full object-cover mr-4 ring-2 ring-[#23a04f]/20" />
+                            <img :src="testimonial.image" :alt="testimonial.name" class="w-12 h-12 rounded-full object-cover mr-4 ring-2 ring-green-600" />
                             <div>
                                 <div class="font-semibold text-gray-900 group-hover:text-[#23a04f] transition-colors">{{ testimonial.name }}</div>
                                 <div class="text-gray-500 text-sm">{{ testimonial.role }}</div>
@@ -1159,10 +1159,10 @@ watch(selectedMenuCategory, (val) => {
 
                 <!-- Trust Badges -->
                 <div class="mt-16 flex flex-wrap justify-center items-center gap-8">
-                    <img src="/img/badges/tripadvisor.png" alt="TripAdvisor Choice" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
-                    <img src="/img/badges/google.png" alt="Google Reviews" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
-                    <img src="/img/badges/just-eat.png" alt="Just Eat" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
-                    <img src="/img/badges/deliveroo.png" alt="Deliveroo" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
+                    <img src="/img/icon/TripAdvisor-Logo-SVG_001.svg" alt="TripAdvisor Choice" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
+                    <img src="/img/icon/Google_Review.png" alt="Google Reviews" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
+                    <img src="/img/icon/Just-Eat-Logo.svg" alt="Just Eat" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
+                    <img src="/img/icon/Deliveroo-Logo.svg" alt="Deliveroo" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
                 </div>
             </div>
         </section>
