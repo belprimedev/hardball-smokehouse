@@ -26,7 +26,63 @@ Route::get('/make-reservation', function () {
 })->name('make-reservation');
 
 Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
+    // Get statistics for dashboard
+    $totalMenuItems = \App\Models\MenuItem::count();
+    $totalCategories = \App\Models\MenuCategory::count();
+    $totalUsers = \App\Models\User::count();
+    $totalReservations = \App\Models\Reservation::count();
+    
+    // Get featured and chef special items
+    $featuredItems = \App\Models\MenuItem::where('is_featured', true)
+        ->where('is_visible', true)
+        ->where('is_available', true)
+        ->with('category')
+        ->limit(5)
+        ->get();
+    
+    $chefSpecialItems = \App\Models\MenuItem::where('is_chef_special', true)
+        ->where('is_visible', true)
+        ->where('is_available', true)
+        ->with('category')
+        ->limit(5)
+        ->get();
+    
+    // Get recent reservations
+    $recentReservations = \App\Models\Reservation::latest()
+        ->limit(10)
+        ->get();
+    
+    // Get menu items by category for chart
+    $menuItemsByCategory = \App\Models\MenuCategory::withCount('menuItems')
+        ->get();
+    
+    // Get reservations by date (last 7 days)
+    $reservationsByDate = \App\Models\Reservation::selectRaw('DATE(reservation_date) as date, COUNT(*) as count')
+        ->where('reservation_date', '>=', now()->subDays(7))
+        ->groupBy('date')
+        ->orderBy('date')
+        ->get();
+    
+    // Get top categories by item count
+    $topCategories = \App\Models\MenuCategory::withCount('menuItems')
+        ->orderBy('menu_items_count', 'desc')
+        ->limit(5)
+        ->get();
+    
+    return Inertia::render('Dashboard', [
+        'stats' => [
+            'totalMenuItems' => $totalMenuItems,
+            'totalCategories' => $totalCategories,
+            'totalUsers' => $totalUsers,
+            'totalReservations' => $totalReservations,
+        ],
+        'featuredItems' => $featuredItems,
+        'chefSpecialItems' => $chefSpecialItems,
+        'recentReservations' => $recentReservations,
+        'menuItemsByCategory' => $menuItemsByCategory,
+        'reservationsByDate' => $reservationsByDate,
+        'topCategories' => $topCategories,
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/menu', function () {
