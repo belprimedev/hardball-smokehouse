@@ -2,7 +2,8 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
+import { ChevronUp, ChevronDown } from 'lucide-vue-next';
 
 interface MenuItem {
     id: number;
@@ -14,6 +15,11 @@ interface MenuItem {
         name: string;
     };
     created_at: string;
+}
+
+interface MenuCategory {
+    id: number;
+    name: string;
 }
 
 interface PaginatedData {
@@ -38,11 +44,47 @@ const props = defineProps({
         required: true
     },
     categories: {
-        type: Array,
+        type: Array as () => MenuCategory[],
         required: true
+    },
+    search: {
+        type: String,
+        default: ''
+    },
+    filters: {
+        type: Object,
+        default: () => ({
+            category: '',
+            min_price: '',
+            max_price: '',
+            availability: '',
+            visibility: '',
+            featured: '',
+            chef_special: ''
+        })
+    },
+    sort: {
+        type: Object,
+        default: () => ({
+            by: 'created_at',
+            order: 'desc'
+        })
     }
 });
-console.log(props.menuItems);
+//console.log(props.menuItems);
+// Reactive filter state
+const searchQuery = ref(props.search);
+const showFilters = ref(false);
+const filterState = ref({
+    category: props.filters.category,
+    min_price: props.filters.min_price,
+    max_price: props.filters.max_price,
+    availability: props.filters.availability,
+    visibility: props.filters.visibility,
+    featured: props.filters.featured,
+    chef_special: props.filters.chef_special
+});
+
 // Handle page navigation
 const goToPage = (url: string | null) => {
     if (url) {
@@ -65,32 +107,136 @@ const deleteItem = (id: number) => {
     }
 };
 
-const searchQuery = ref('');
+// Debounced search function
+let searchTimeout: number;
 
-const filteredItems = computed(() => {
-    if (!props.menuItems?.data) return [];
+const performSearch = () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        updateResults();
+    }, 300);
+};
 
-    return props.menuItems.data.filter(item => {
-        const searchLower = searchQuery.value.toLowerCase();
-        return (
-            (item.name?.toLowerCase() || '').includes(searchLower) ||
-            (item.description?.toLowerCase() || '').includes(searchLower) ||
-            (item.category?.name?.toLowerCase() || '').includes(searchLower)
-        );
+// Update results with current filters and search
+const updateResults = () => {
+    const params: Record<string, any> = {
+        search: searchQuery.value,
+        ...filterState.value,
+        sort_by: props.sort.by,
+        sort_order: props.sort.order
+    };
+    
+    // Remove empty values
+    Object.keys(params).forEach(key => {
+        if (params[key] === '' || params[key] === null || params[key] === undefined) {
+            delete params[key];
+        }
     });
+    
+    router.get(route('menu-items.index'), params, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true
+    });
+};
+
+// Handle sorting
+const handleSort = (column: string) => {
+    try {
+        const newOrder = props.sort.by === column && props.sort.order === 'asc' ? 'desc' : 'asc';
+        
+        const params: Record<string, any> = {
+            search: searchQuery.value,
+            ...filterState.value,
+            sort_by: column,
+            sort_order: newOrder
+        };
+        
+        // Remove empty values
+        Object.keys(params).forEach(key => {
+            if (params[key] === '' || params[key] === null || params[key] === undefined) {
+                delete params[key];
+            }
+        });
+        
+        router.get(route('menu-items.index'), params, {
+            preserveScroll: true,
+            replace: true,
+            onError: (errors) => {
+                console.error('Sort error:', errors);
+            },
+            onSuccess: () => {
+                console.log('Sort successful');
+            }
+        });
+    } catch (error) {
+        console.error('Error in handleSort:', error);
+    }
+};
+
+// Clear all filters
+const clearFilters = () => {
+    filterState.value = {
+        category: '',
+        min_price: '',
+        max_price: '',
+        availability: '',
+        visibility: '',
+        featured: '',
+        chef_special: ''
+    };
+    searchQuery.value = '';
+    updateResults();
+};
+
+// Apply filters
+const applyFilters = () => {
+    updateResults();
+};
+
+// Watch for search query changes
+watch(searchQuery, () => {
+    performSearch();
+});
+
+// Watch for filter changes
+watch(filterState, () => {
+    // Don't auto-apply filters, let user click apply button
+}, { deep: true });
+
+// Use the server-side data directly
+const filteredItems = computed(() => {
+    if (!props.menuItems) {
+        return [];
+    }
+    
+    if (!props.menuItems.data) {
+        return [];
+    }
+    
+    return props.menuItems.data;
+});
+
+// Get sort icon for column
+const getSortIcon = (column: string) => {
+    if (props.sort.by !== column) return null;
+    return props.sort.order === 'asc' ? ChevronUp : ChevronDown;
+};
+
+// Check if any filters are active
+const hasActiveFilters = computed(() => {
+    return Object.values(filterState.value).some(value => value !== '') || searchQuery.value !== '';
 });
 </script>
 
 <template>
-
-    <Head title="Reservation" />
+    <Head title="Menu Items" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-col h-full overflow-hidden p-4">
-            <div
-                class="flex justify-between bg-white rounded-xl shadow-sm dark:bg-neutral-900 dark:border-neutral-700 overflow-hidden">
+            <div class="flex justify-between bg-white rounded-xl shadow-sm dark:bg-neutral-900 dark:border-neutral-700 overflow-hidden">
                 <!-- Header - Fixed -->
-                <div class="shrink-0 bg-white border-b border-gray-200 dark:bg-neutral-900 dark:border-neutral-700">
+                <div class="shrink-0 bg-white border-b border-gray-200 dark:bg-neutral-900 dark:border-neutral-700 p-4">
                     <h2 class="text-xl font-semibold text-gray-800 dark:text-neutral-200">
                         Food Listing
                     </h2>
@@ -99,11 +245,11 @@ const filteredItems = computed(() => {
                     </p>
                 </div>
 
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 p-4">
                     <!-- Search Input -->
                     <div class="relative">
                         <input type="text" v-model="searchQuery" placeholder="Search items..."
-                            class="py-2 px-3 ps-9 block w-full border-gray-500 ring-1 ring-emerald-200 rounded-lg text-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:focus:ring-neutral-600" />
+                            class="py-2 px-3 ps-9 pe-9 block w-full border-gray-500 ring-1 ring-emerald-200 rounded-lg text-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:focus:ring-neutral-600" />
                         <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
                             <svg class="size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -112,7 +258,32 @@ const filteredItems = computed(() => {
                                 <path d="m21 21-4.3-4.3" />
                             </svg>
                         </div>
+                        <!-- Clear search button -->
+                        <button v-if="searchQuery" 
+                                @click="searchQuery = ''; performSearch()"
+                                class="absolute inset-y-0 end-0 flex items-center pe-3 text-gray-400 hover:text-gray-600">
+                            <svg class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 6 6 18" />
+                                <path d="m6 6 12 12" />
+                            </svg>
+                        </button>
                     </div>
+
+                    <!-- Filter Toggle Button -->
+                    <button @click="showFilters = !showFilters"
+                            class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
+                        <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46" />
+                        </svg>
+                        Filters
+                        <span v-if="hasActiveFilters" class="inline-flex items-center justify-center w-5 h-5 text-xs font-medium bg-red-500 text-white rounded-full">
+                            {{ Object.values(filterState).filter(v => v !== '').length + (searchQuery ? 1 : 0) }}
+                        </span>
+                    </button>
 
                     <div class="inline-flex gap-x-2">
                         <button @click="createItem"
@@ -129,6 +300,92 @@ const filteredItems = computed(() => {
                 </div>
             </div>
 
+            <!-- Filters Panel -->
+            <div v-if="showFilters" class="bg-white border border-gray-200 rounded-lg p-4 mb-4 dark:bg-neutral-900 dark:border-neutral-700">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Category Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Category</label>
+                        <select v-model="filterState.category" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white">
+                            <option value="">All Categories</option>
+                            <option v-for="category in categories" :key="category.id" :value="category.id">
+                                {{ category.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Min Price</label>
+                        <input type="number" v-model="filterState.min_price" placeholder="0.00" step="0.01"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Max Price</label>
+                        <input type="number" v-model="filterState.max_price" placeholder="100.00" step="0.01"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white" />
+                    </div>
+
+                    <!-- Availability -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Availability</label>
+                        <select v-model="filterState.availability" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white">
+                            <option value="">All</option>
+                            <option value="1">Available</option>
+                            <option value="0">Not Available</option>
+                        </select>
+                    </div>
+
+                    <!-- Visibility -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Visibility</label>
+                        <select v-model="filterState.visibility" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white">
+                            <option value="">All</option>
+                            <option value="1">Visible</option>
+                            <option value="0">Hidden</option>
+                        </select>
+                    </div>
+
+                    <!-- Featured -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Featured</label>
+                        <select v-model="filterState.featured" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white">
+                            <option value="">All</option>
+                            <option value="1">Featured</option>
+                            <option value="0">Not Featured</option>
+                        </select>
+                    </div>
+
+                    <!-- Chef Special -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Chef Special</label>
+                        <select v-model="filterState.chef_special" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white">
+                            <option value="">All</option>
+                            <option value="1">Chef Special</option>
+                            <option value="0">Regular</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Filter Actions -->
+                <div class="flex justify-between items-center mt-4 pt-4 border-t border-gray-200 dark:border-neutral-700">
+                    <button @click="clearFilters" 
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700">
+                        Clear All Filters
+                    </button>
+                    <button @click="applyFilters" 
+                            class="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+
             <!-- Table Container - Scrollable -->
             <div class="flex-1 overflow-auto p-4 border-t border-gray-200 dark:border-neutral-700">
                 <div class="overflow-x-auto">
@@ -137,27 +394,28 @@ const filteredItems = computed(() => {
                             <thead class="bg-gray-50 dark:bg-neutral-900">
                                 <tr>
                                     <th scope="col" class="w-[200px] px-6 py-3 text-start">
-                                        <div class="flex items-center gap-x-2">
-                                            <span
-                                                class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
+                                        <button @click="handleSort('name')" 
+                                                class="flex items-center gap-x-2 hover:text-gray-900 dark:hover:text-white transition-colors">
+                                            <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
                                                 Name
                                             </span>
-                                        </div>
+                                            <component :is="getSortIcon('name')" v-if="getSortIcon('name')" class="w-4 h-4" />
+                                        </button>
                                     </th>
 
                                     <th scope="col" class="w-[100px] px-6 py-3 text-start">
-                                        <div class="flex items-center gap-x-2">
-                                            <span
-                                                class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
+                                        <button @click="handleSort('price')" 
+                                                class="flex items-center gap-x-2 hover:text-gray-900 dark:hover:text-white transition-colors">
+                                            <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
                                                 Price
                                             </span>
-                                        </div>
+                                            <component :is="getSortIcon('price')" v-if="getSortIcon('price')" class="w-4 h-4" />
+                                        </button>
                                     </th>
 
                                     <th scope="col" class="w-[250px] px-6 py-3 text-start">
                                         <div class="flex items-center gap-x-2">
-                                            <span
-                                                class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
+                                            <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
                                                 Details
                                             </span>
                                         </div>
@@ -165,20 +423,20 @@ const filteredItems = computed(() => {
 
                                     <th scope="col" class="w-[150px] px-6 py-3 text-start">
                                         <div class="flex items-center gap-x-2">
-                                            <span
-                                                class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
+                                            <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
                                                 Category
                                             </span>
                                         </div>
                                     </th>
 
                                     <th scope="col" class="w-[150px] px-6 py-3 text-start">
-                                        <div class="flex items-center gap-x-2">
-                                            <span
-                                                class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
+                                        <button @click="handleSort('created_at')" 
+                                                class="flex items-center gap-x-2 hover:text-gray-900 dark:hover:text-white transition-colors">
+                                            <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
                                                 Created
                                             </span>
-                                        </div>
+                                            <component :is="getSortIcon('created_at')" v-if="getSortIcon('created_at')" class="w-4 h-4" />
+                                        </button>
                                     </th>
 
                                     <th scope="col" class="w-[150px] px-6 py-3 text-end"></th>
@@ -191,7 +449,7 @@ const filteredItems = computed(() => {
                                         <div class="px-6 py-3">
                                             <div class="flex items-center gap-x-2">
                                                 <img class="inline-block size-6 rounded-full object-cover"
-                                                    :src="item.image_path ? `/storage/${item.image_path}` : '/favicon.ico'"
+                                                    :src="item.image_path ? `/storage/${item.image_path}` : '/img/food/burger.png'"
                                                     :alt="item.name" />
                                                 <div class="grow">
                                                     <span class="text-sm text-gray-600 dark:text-neutral-400">{{
@@ -241,8 +499,7 @@ const filteredItems = computed(() => {
 
                                     <td class="size-px whitespace-nowrap">
                                         <div class="px-6 py-3">
-                                            <span class="text-sm text-gray-600 dark:text-neutral-400">28 Dec,
-                                                12:12</span>
+                                            <span class="text-sm text-gray-600 dark:text-neutral-400">{{ new Date(item.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) }}</span>
                                         </div>
                                     </td>
 
@@ -270,7 +527,8 @@ const filteredItems = computed(() => {
                 <div>
                     <p class="text-sm text-gray-600 dark:text-neutral-400">
                         <span class="font-semibold text-gray-800 dark:text-neutral-200">{{ menuItems.total }}</span>
-                        results
+                        {{ search ? 'search results' : 'results' }}
+                        <span v-if="search" class="text-gray-500">for "{{ search }}"</span>
                     </p>
                 </div>
 

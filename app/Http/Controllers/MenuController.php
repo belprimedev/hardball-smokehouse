@@ -11,16 +11,98 @@ use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $menuItems = MenuItem::with('category')
-            ->orderBy('created_at', 'desc') // ✅ Sort by latest first
-            ->paginate(10); // Paginate with 10 items per page
-        $categories = MenuCategory::all(); 
+        $query = MenuItem::with('category');
+        
+        // Handle search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('description', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('short_label', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('side_note', 'LIKE', "%{$searchTerm}%")
+                  ->orWhereHas('category', function($categoryQuery) use ($searchTerm) {
+                      $categoryQuery->where('name', 'LIKE', "%{$searchTerm}%");
+                  });
+            });
+        }
+        
+        // Handle category filter
+        if ($request->has('category') && !empty($request->category)) {
+            $query->whereHas('category', function($categoryQuery) use ($request) {
+                $categoryQuery->where('id', $request->category);
+            });
+        }
+        
+        // Handle price range filter
+        if ($request->has('min_price') && !empty($request->min_price)) {
+            $query->where('price', '>=', $request->min_price);
+        }
+        
+        if ($request->has('max_price') && !empty($request->max_price)) {
+            $query->where('price', '<=', $request->max_price);
+        }
+        
+        // Handle availability filter
+        if ($request->has('availability') && $request->availability !== '') {
+            $query->where('is_available', $request->availability);
+        }
+        
+        // Handle visibility filter
+        if ($request->has('visibility') && $request->visibility !== '') {
+            $query->where('is_visible', $request->visibility);
+        }
+        
+        // Handle featured filter
+        if ($request->has('featured') && $request->featured !== '') {
+            $query->where('is_featured', $request->featured);
+        }
+        
+        // Handle chef special filter
+        if ($request->has('chef_special') && $request->chef_special !== '') {
+            $query->where('is_chef_special', $request->chef_special);
+        }
+        
+        // Handle sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        // Validate sort column to prevent SQL injection
+        $allowedSortColumns = ['name', 'price', 'created_at'];
+        if (!in_array($sortBy, $allowedSortColumns)) {
+            $sortBy = 'created_at';
+        }
+        
+        // Validate sort order
+        if (!in_array($sortOrder, ['asc', 'desc'])) {
+            $sortOrder = 'desc';
+        }
+        
+        // Apply sorting
+        $query->orderBy($sortBy, $sortOrder);
+        
+        $menuItems = $query->paginate(10);
+        $categories = MenuCategory::all();
     
         return Inertia::render('Menu/Index', [
             'menuItems' => $menuItems,
             'categories' => $categories,
+            'search' => $request->search ?? '',
+            'filters' => [
+                'category' => $request->category ?? '',
+                'min_price' => $request->min_price ?? '',
+                'max_price' => $request->max_price ?? '',
+                'availability' => $request->availability ?? '',
+                'visibility' => $request->visibility ?? '',
+                'featured' => $request->featured ?? '',
+                'chef_special' => $request->chef_special ?? '',
+            ],
+            'sort' => [
+                'by' => $sortBy,
+                'order' => $sortOrder,
+            ],
         ]);
     }
 

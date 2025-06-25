@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const props = defineProps({
 	reservations: Object,
 })
-console.log(props.reservations);
+//console.log(props.reservations);
 
 // Function to navigate to a page
 const goToPage = (url) => {
