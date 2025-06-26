@@ -158,33 +158,53 @@ class MenuController extends Controller
     public function store(Request $request)
     {
         // Debug request data
-        Log::info('Menu item request:', $request->all());
+        Log::info('Menu item creation request received');
+        Log::info('Request data:', $request->all());
+        Log::info('Files:', $request->allFiles());
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'category_id' => 'required|exists:menu_categories,id',
-            'short_label' => 'nullable|string',
-            'side_note' => 'nullable|string',
-            'is_visible' => 'boolean',
-            'is_available' => 'boolean',
-            'is_featured' => 'boolean',
-            'is_chef_special' => 'boolean',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'price' => 'required|numeric',
+                'category_id' => 'required|exists:menu_categories,id',
+                'short_label' => 'nullable|string',
+                'side_note' => 'nullable|string',
+                'is_visible' => 'boolean',
+                'is_available' => 'boolean',
+                'is_featured' => 'boolean',
+                'is_chef_special' => 'boolean',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+            ]);
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('menu-items', 'public');
-            $validated['image_path'] = $path;
+            Log::info('Validation passed, validated data:', $validated);
+
+            if ($request->hasFile('image')) {
+                Log::info('Image file detected, storing...');
+                $path = $request->file('image')->store('menu-items', 'public');
+                $validated['image_path'] = $path;
+                Log::info('Image stored at:', ['path' => $path]);
+            } else {
+                Log::info('No image file provided');
+            }
+
+            // Debug validated data before insertion
+            Log::info('Creating menu item with data:', $validated);
+
+            $menuItem = MenuItem::create($validated);
+            
+            Log::info('Menu item created successfully:', ['id' => $menuItem->id, 'name' => $menuItem->name]);
+
+            return redirect()->route('menu-items.index')->with('success', 'Menu item created successfully');
+            
+        } catch (\Exception $e) {
+            Log::error('Error creating menu item:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->withErrors(['general' => 'Failed to create menu item: ' . $e->getMessage()]);
         }
-
-        // Debug validated data before insertion
-        Log::info('Validated menu item data:', $validated);
-
-        MenuItem::create($validated);
-
-        return redirect()->route('menu-items.index')->with('success', 'Menu item created successfully');
     }
 
 

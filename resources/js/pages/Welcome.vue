@@ -699,22 +699,10 @@ watch(selectedMenuCategory, (val) => {
             <div class="w-full md:w-1/3 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center p-8 z-10 relative shadow-2xl">
                 <div class="relative w-full h-full max-w-md flex flex-col items-center md:items-start">
                     <!-- Animated Counter -->
-                    <div class="flex items-center justify-end text-right mb-2">
-                        <div class="relative">
-                            <svg class="w-16 h-16 text-[#23a04f]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 48 48">
-                                <circle cx="24" cy="24" r="22" stroke="#23a04f" stroke-width="3" fill="none" class="animate-pulse"/>
-                                <path d="M16 32h16M24 16v16M32 24H16" stroke="#23a04f" stroke-width="2" stroke-linecap="round" />
-                            </svg>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <span class="text-5xl font-extrabold text-[#23a04f] animate-bounce">50+</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="text-lg font-bold text-[#0c4149] tracking-wide mb-4 flex justify-end justify-items-end text-right">
-                        MENU AND DISHES
-                    </div>
+                    
+                   
                     <!-- Floating Image with Enhanced Effects -->
-                    <div class="hidden md:block relative group">
+                    <div class="hidden md:block relative group my-auto items-center">
                         <div class="absolute -inset-4 bg-gradient-to-r from-[#23a04f] to-[#f9de47] rounded-xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
                         <img
                             src="/img/food/portrait5.JPG"

@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import { ref, watchEffect } from 'vue';
+import { Upload, X, ChefHat, Star, Eye, Check, AlertCircle, Loader2 } from 'lucide-vue-next';
 
 interface MenuItem {
     id: number;
@@ -20,81 +21,179 @@ interface MenuItem {
     image?: File;
 }
 
-interface Category {
+interface MenuCategory {
     id: number;
     name: string;
 }
 
+const props = defineProps<{
+    menuItem: MenuItem;
+    categories: MenuCategory[];
+    flash?: {
+        success?: string;
+        error?: string;
+    };
+}>();
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
+        title: 'Menu Items',
+        href: route('menu-items.index'),
+    },
+    {
         title: 'Edit Menu Item',
-        href: '/menu-items',
+        href: `/menu-items/${props.menuItem.id}/edit`,
     },
 ];
 
-const props = defineProps<{
-    menuItem: MenuItem;
-    categories: Category[];
-}>();
+const form = ref({
+    name: props.menuItem.name,
+    description: props.menuItem.description || '',
+    short_label: props.menuItem.short_label || '',
+    side_note: props.menuItem.side_note || '',
+    price: props.menuItem.price.toString(),
+    category_id: props.menuItem.category_id.toString(),
+    is_featured: !!props.menuItem.is_featured,
+    is_chef_special: !!props.menuItem.is_chef_special,
+    is_available: !!props.menuItem.is_available,
+    is_visible: !!props.menuItem.is_visible,
+    image: null as File | null
+});
 
-const editingItem = ref<MenuItem>({ ...props.menuItem });
-const imageInput = ref<HTMLInputElement | null>(null);
-const previewImage = ref<string | null>(null);
+const imagePreview = ref<string | null>(null);
+const isSubmitting = ref(false);
+const errors = ref<Record<string, string>>({});
+const imageInputRef = ref<HTMLInputElement>();
 
-// Ensure boolean fields have default values
+// Initialize image preview with existing image
 watchEffect(() => {
-    if (props.menuItem) {
-        editingItem.value.is_visible = !!props.menuItem.is_visible;
-        editingItem.value.is_available = !!props.menuItem.is_available;
-        editingItem.value.is_featured = !!props.menuItem.is_featured;
-        editingItem.value.is_chef_special = !!props.menuItem.is_chef_special;
+    if (props.menuItem.image_path) {
+        imagePreview.value = `/storage/${props.menuItem.image_path}`;
     }
 });
 
-const handleImageChange = (e: Event) => {
-    const target = e.target as HTMLInputElement;
+// Handle image upload
+const handleImageUpload = (event: Event) => {
+    const target = event.target as HTMLInputElement;
     const file = target.files?.[0];
+    
     if (file) {
-        previewImage.value = URL.createObjectURL(file);
-        editingItem.value.image = file;
+        // Validate file type
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            errors.value.image = 'Please select a valid image file (JPEG, PNG, GIF, WebP)';
+            return;
+        }
+        
+        // Validate file size (2MB max)
+        if (file.size > 2 * 1024 * 1024) {
+            errors.value.image = 'Image size must be less than 2MB';
+            return;
+        }
+        
+        form.value.image = file;
+        errors.value.image = '';
+        
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imagePreview.value = e.target?.result as string;
+        };
+        reader.readAsDataURL(file);
     }
 };
 
-const updateItem = () => {
-    const formData = new FormData();
-    
-    // Add _method field to handle PUT request
-    formData.append('_method', 'PUT');
-    
-    // Append all form fields
-    formData.append('name', editingItem.value.name);
-    formData.append('price', editingItem.value.price.toString());
-    formData.append('category_id', editingItem.value.category_id.toString());
-    formData.append('description', editingItem.value.description || '');
-    formData.append('short_label', editingItem.value.short_label || '');
-    formData.append('side_note', editingItem.value.side_note || '');
-    
-    // Boolean fields
-    formData.append('is_visible', editingItem.value.is_visible ? '1' : '0');
-    formData.append('is_available', editingItem.value.is_available ? '1' : '0');
-    formData.append('is_featured', editingItem.value.is_featured ? '1' : '0');
-    formData.append('is_chef_special', editingItem.value.is_chef_special ? '1' : '0');
+// Remove image
+const removeImage = () => {
+    form.value.image = null;
+    imagePreview.value = props.menuItem.image_path ? `/storage/${props.menuItem.image_path}` : null;
+    errors.value.image = '';
+};
 
-    // Append image if exists
-    if (imageInput.value?.files?.[0]) {
-        formData.append('image', imageInput.value.files[0]);
+// Validate form
+const validateForm = () => {
+    errors.value = {};
+    
+    if (!form.value.name.trim()) {
+        errors.value.name = 'Item name is required';
     }
+    
+    if (!form.value.price || parseFloat(form.value.price) <= 0) {
+        errors.value.price = 'Valid price is required';
+    }
+    
+    if (!form.value.category_id) {
+        errors.value.category_id = 'Please select a category';
+    }
+    
+    return Object.keys(errors.value).length === 0;
+};
 
-    router.post(route('menu-items.update', editingItem.value.id), formData, {
-        onSuccess: () => {
-            router.get(route('menu-items.index'));
-        },
-        onError: (errors) => {
-            console.error('Update failed:', errors);
-        },
-        preserveScroll: true,
-        forceFormData: true,
-    });
+// Submit form
+const submitForm = async () => {
+    if (!validateForm()) return;
+    
+    isSubmitting.value = true;
+    
+    try {
+        const formData = new FormData();
+        
+        // Add _method field to handle PUT request
+        formData.append('_method', 'PUT');
+        
+        // Add all form fields to FormData
+        formData.append('name', form.value.name);
+        formData.append('description', form.value.description || '');
+        formData.append('short_label', form.value.short_label || '');
+        formData.append('side_note', form.value.side_note || '');
+        formData.append('price', form.value.price);
+        formData.append('category_id', form.value.category_id);
+        formData.append('is_featured', form.value.is_featured ? '1' : '0');
+        formData.append('is_chef_special', form.value.is_chef_special ? '1' : '0');
+        formData.append('is_available', form.value.is_available ? '1' : '0');
+        formData.append('is_visible', form.value.is_visible ? '1' : '0');
+        
+        // Add image if selected
+        if (form.value.image) {
+            formData.append('image', form.value.image);
+        }
+        
+        // Debug: Log the form data being sent
+        console.log('Submitting form data:', {
+            name: form.value.name,
+            description: form.value.description,
+            short_label: form.value.short_label,
+            side_note: form.value.side_note,
+            price: form.value.price,
+            category_id: form.value.category_id,
+            is_featured: form.value.is_featured,
+            is_chef_special: form.value.is_chef_special,
+            is_available: form.value.is_available,
+            is_visible: form.value.is_visible,
+            hasImage: !!form.value.image
+        });
+        
+        await router.post(route('menu-items.update', props.menuItem.id), formData, {
+            onSuccess: () => {
+                console.log('Menu item updated successfully');
+                router.visit('/menu-items');
+            },
+            onError: (validationErrors) => {
+                console.error('Validation errors:', validationErrors);
+                errors.value = validationErrors;
+            }
+        });
+    } catch (error) {
+        console.error('Form submission error:', error);
+        errors.value.general = 'An unexpected error occurred. Please try again.';
+    } finally {
+        isSubmitting.value = false;
+    }
+};
+
+// Cancel form
+const cancelForm = () => {
+    router.visit('/menu-items');
 };
 </script>
 
@@ -102,101 +201,338 @@ const updateItem = () => {
     <Head title="Edit Menu Item" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <div class="py-10 px-6 border border-gray-200 rounded-xl shadow-sm gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5 dark:bg-gray-950">
-                <form @submit.prevent="updateItem" enctype="multipart/form-data">
-                    <div class="grid grid-cols-4 gap-x-4">
-                        <div class="grid grid-cols-2 gap-x-2 col-span-3">
-                            <div class="mb-4 sm:mb-8 col-span-3">
-                                <label for="hs-feedback-post-comment-name-1" class="block mb-2 text-sm font-medium dark:text-white">Item Name</label>
-                                <input v-model="editingItem.name" type="text" id="hs-feedback-post-comment-name-1" class="w-full rounded-md border border-green-600/50 bg-white py-3 px-6 text-base font-medium text-green-800 outline-none focus:border-green-600 focus:shadow-md  dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" placeholder="Item Name" required>
-                            </div>
-                                        
-                            <div class="mb-4 sm:mb-8">
-                                <label for="name" class="block mb-2 text-sm font-medium dark:text-white">Item Price</label>
-                                <input v-model="editingItem.price" type="text" id="name" class="w-full rounded-md border border-green-600/50 bg-white py-3 px-6 text-base font-medium text-green-800 outline-none focus:border-green-600 focus:shadow-md  dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" placeholder="Item Price" required>
+        <div class="flex h-full flex-1 flex-col gap-6 rounded-xl p-6">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
+                <h1 class="text-3xl font-bold mb-2">Edit Menu Item</h1>
+                <p class="text-blue-100">Update your delicious Caribbean menu item</p>
+            </div>
+
+            <!-- Form Container -->
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <!-- Success Message Display -->
+                <div v-if="props.flash?.success" class="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-400 p-4 m-6">
+                    <div class="flex">
+                        <Check class="w-5 h-5 text-green-400" />
+                        <div class="ml-3">
+                            <p class="text-sm text-green-700 dark:text-green-300">{{ props.flash.success }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Error Message Display -->
+                <div v-if="props.flash?.error" class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 p-4 m-6">
+                    <div class="flex">
+                        <AlertCircle class="w-5 h-5 text-red-400" />
+                        <div class="ml-3">
+                            <p class="text-sm text-red-700 dark:text-red-300">{{ props.flash.error }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- General Error Display -->
+                <div v-if="errors.general" class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 p-4 m-6">
+                    <div class="flex">
+                        <AlertCircle class="w-5 h-5 text-red-400" />
+                        <div class="ml-3">
+                            <p class="text-sm text-red-700 dark:text-red-300">{{ errors.general }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <form @submit.prevent="submitForm" class="p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Left Column -->
+                        <div class="space-y-6">
+                            <!-- Basic Information -->
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                                    Basic Information
+                                </h3>
+                                
+                                <!-- Item Name -->
+                                <div>
+                                    <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Item Name *
+                                    </label>
+                                    <input
+                                        v-model="form.name"
+                                        type="text"
+                                        id="name"
+                                        :class="[
+                                            'w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors dark:bg-gray-800 dark:text-white dark:placeholder-gray-400',
+                                            errors.name ? 'border-red-300 bg-red-50 dark:bg-red-900/20 dark:border-red-500' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                                        ]"
+                                        placeholder="e.g., Jerk Chicken"
+                                        required
+                                    />
+                                    <p v-if="errors.name" class="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                                        <AlertCircle class="w-4 h-4" />
+                                        {{ errors.name }}
+                                    </p>
+                                </div>
+
+                                <!-- Category -->
+                                <div>
+                                    <label for="category_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Category *
+                                    </label>
+                                    <select
+                                        v-model="form.category_id"
+                                        id="category_id"
+                                        :class="[
+                                            'w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors dark:bg-gray-800 dark:text-white dark:border-gray-600',
+                                            errors.category_id ? 'border-red-300 bg-red-50 dark:bg-red-900/20 dark:border-red-500' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                                        ]"
+                                        required
+                                    >
+                                        <option value="">Select a category</option>
+                                        <option v-for="category in props.categories" :key="category.id" :value="category.id">
+                                            {{ category.name }}
+                                        </option>
+                                    </select>
+                                    <p v-if="errors.category_id" class="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                                        <AlertCircle class="w-4 h-4" />
+                                        {{ errors.category_id }}
+                                    </p>
+                                </div>
+
+                                <!-- Price -->
+                                <div>
+                                    <label for="price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Price (£) *
+                                    </label>
+                                    <div class="relative">
+                                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">£</span>
+                                        <input
+                                            v-model="form.price"
+                                            type="number"
+                                            id="price"
+                                            step="0.01"
+                                            min="0"
+                                            :class="[
+                                                'w-full pl-8 pr-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors dark:bg-gray-800 dark:text-white dark:placeholder-gray-400',
+                                                errors.price ? 'border-red-300 bg-red-50 dark:bg-red-900/20 dark:border-red-500' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                                            ]"
+                                            placeholder="0.00"
+                                            required
+                                        />
+                                    </div>
+                                    <p v-if="errors.price" class="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                                        <AlertCircle class="w-4 h-4" />
+                                        {{ errors.price }}
+                                    </p>
+                                </div>
                             </div>
 
-                            <div class="mb-4 sm:mb-8">
-                                <label for="categories" class="block mb-2 text-sm font-medium dark:text-white">Category</label>
-                                <select v-model="editingItem.category_id" id="categories" class="w-full rounded-md border border-green-600/50 bg-white py-3 px-6 text-base font-medium text-green-800 outline-none focus:border-green-600 focus:shadow-md  dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
-                                    <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
-                                </select>
-                            </div>
+                            <!-- Description -->
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                                    Description
+                                </h3>
+                                
+                                <div>
+                                    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Full Description
+                                    </label>
+                                    <textarea
+                                        v-model="form.description"
+                                        id="description"
+                                        rows="4"
+                                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors hover:border-gray-400 dark:hover:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
+                                        placeholder="Describe the dish, ingredients, cooking method..."
+                                    />
+                                </div>
 
-                            <div class="mb-4 sm:mb-8 col-span-3">
-                                <label for="short_label" class="block mb-2 text-sm font-medium dark:text-white">Short Label</label>
-                                <input type="text" v-model="editingItem.short_label" id="short_label" class="w-full rounded-md border border-green-600/50 bg-white py-3 px-6 text-base font-medium text-green-800 outline-none focus:border-green-600 focus:shadow-md  dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" placeholder="Short Label/ Featured title" >
-                            </div>
+                                <div>
+                                    <label for="short_label" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Short Label
+                                    </label>
+                                    <input
+                                        v-model="form.short_label"
+                                        type="text"
+                                        id="short_label"
+                                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors hover:border-gray-400 dark:hover:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
+                                        placeholder="Quick description for display"
+                                    />
+                                </div>
 
-                            <div class="mb-4 sm:mb-8 col-span-2">
-                                <label for="side_note" class="block mb-2 text-sm font-medium dark:text-white">Side Note</label>
-                                <input type="text" v-model="editingItem.side_note" id="side_note" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" placeholder="Note about this item">
-                            </div>
-
-                            <div class="mb-4 sm:mb-8 col-span-4">
-                                <label for="item_description" class="block mb-2 text-sm font-medium dark:text-white">Item Description</label>
-                                <textarea v-model="editingItem.description" type="text" id="item_description" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" placeholder="Item description"></textarea>
-                            </div>   
-
-                            <div class="py-4">
-                                <button type="button" @click="router.get(route('menu-items.index'))" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Cancel</button>
-                                <button type="submit" class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800">Save</button>
+                                <div>
+                                    <label for="side_note" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Side Note
+                                    </label>
+                                    <input
+                                        v-model="form.side_note"
+                                        type="text"
+                                        id="side_note"
+                                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors hover:border-gray-400 dark:hover:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
+                                        placeholder="Additional information (e.g., 'Serves 2')"
+                                    />
+                                </div>
                             </div>
                         </div>
-                        <div class="col-span-1 px-4">
-                        <label class="relative flex items-center mb-5 cursor-pointer">
-                            <input v-model="editingItem.is_visible" type="checkbox" class="sr-only peer" />
-                            <div class="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-none rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600 hover:peer-checked:bg-green-700"></div>
-                            <span class="ml-3 text-sm font-medium text-gray-600">Show / Visible</span>
-                        </label>
 
-                        <label class="relative flex items-center mb-5 cursor-pointer">
-                            <input v-model="editingItem.is_available" type="checkbox" class="sr-only peer" />
-                            <div class="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-none rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600 hover:peer-checked:bg-green-700"></div>
-                            <span class="ml-3 text-sm font-medium text-gray-600">Available</span>
-                        </label>
+                        <!-- Right Column -->
+                        <div class="space-y-6">
+                            <!-- Image Upload -->
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                                    Item Image
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <!-- Image Preview -->
+                                    <div v-if="imagePreview" class="relative">
+                                        <img
+                                            :src="imagePreview"
+                                            alt="Preview"
+                                            class="w-full h-48 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
+                                        />
+                                        <button
+                                            type="button"
+                                            @click="removeImage"
+                                            class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                                        >
+                                            <X class="w-4 h-4" />
+                                        </button>
+                                    </div>
 
-                        <div class="flex items-center mb-5">
-                            <label class="relative flex items-center cursor-pointer">
-                                <input v-model="editingItem.is_featured" type="checkbox" class="sr-only peer" />
-                                <div class="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-none rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600 hover:peer-checked:bg-green-700"></div>
-                            </label>
-                            <span class="ml-3 text-sm font-medium text-gray-600">Featured</span>
-                        </div>
+                                    <!-- Upload Area -->
+                                    <div
+                                        v-if="!imagePreview"
+                                        class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors cursor-pointer dark:bg-gray-800/50"
+                                        @click="imageInputRef?.click()"
+                                    >
+                                        <Upload class="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                            Click to upload an image or drag and drop
+                                        </p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-500">
+                                            PNG, JPG, GIF, WebP up to 2MB
+                                        </p>
+                                    </div>
 
-                        <div class="flex items-center">
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input v-model="editingItem.is_chef_special" type="checkbox" class="sr-only peer" />
-                                <div class="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-none rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600 hover:peer-checked:bg-green-700"></div>
-                            </label>
-                        <span class="ml-3 text-sm font-medium text-gray-600">Chef's Special</span>
-                        </div>
+                                    <!-- Hidden File Input -->
+                                    <input
+                                        ref="imageInputRef"
+                                        type="file"
+                                        accept="image/*"
+                                        class="hidden"
+                                        @change="handleImageUpload"
+                                    />
 
-                        <div class="my-4 pt-10 sm:mb-8">
-                            <label class="block mb-2 text-sm font-medium dark:text-white">
-                                Item Image
-                            </label>
-                            <div class="mt-2">
-                                <img 
-                                    v-if="previewImage || editingItem.image_path" 
-                                    :src="previewImage || `/storage/${editingItem.image_path}`" 
-                                    class="w-44 h-44 object-cover rounded-lg mb-2"
-                                    alt="Item preview"
-                                />
-                                <input
-                                    ref="imageInput"
-                                    type="file"
-                                    @change="handleImageChange"
-                                    accept="image/*"
-                                    class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                                />
-                                <p class="mt-1 text-sm text-gray-500">
-                                    Recommended size: 800x600px, max file size: 2MB
-                                </p>
+                                    <p v-if="errors.image" class="text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                                        <AlertCircle class="w-4 h-4" />
+                                        {{ errors.image }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Item Settings -->
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                                    Item Settings
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <!-- Featured Toggle -->
+                                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                        <div class="flex items-center gap-3">
+                                            <Star class="w-5 h-5 text-yellow-500" />
+                                            <div>
+                                                <p class="font-medium text-gray-900 dark:text-white">Featured Item</p>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">Highlight this item on the menu</p>
+                                            </div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                v-model="form.is_featured"
+                                                type="checkbox"
+                                                class="sr-only peer"
+                                            />
+                                            <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Chef Special Toggle -->
+                                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                        <div class="flex items-center gap-3">
+                                            <ChefHat class="w-5 h-5 text-red-500" />
+                                            <div>
+                                                <p class="font-medium text-gray-900 dark:text-white">Chef's Special</p>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">Mark as chef's special creation</p>
+                                            </div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                v-model="form.is_chef_special"
+                                                type="checkbox"
+                                                class="sr-only peer"
+                                            />
+                                            <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Available Toggle -->
+                                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                        <div class="flex items-center gap-3">
+                                            <Check class="w-5 h-5 text-green-500" />
+                                            <div>
+                                                <p class="font-medium text-gray-900 dark:text-white">Available</p>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">Item is available for ordering</p>
+                                            </div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                v-model="form.is_available"
+                                                type="checkbox"
+                                                class="sr-only peer"
+                                            />
+                                            <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Visible Toggle -->
+                                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                        <div class="flex items-center gap-3">
+                                            <Eye class="w-5 h-5 text-blue-500" />
+                                            <div>
+                                                <p class="font-medium text-gray-900 dark:text-white">Visible</p>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">Show item on public menu</p>
+                                            </div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                v-model="form.is_visible"
+                                                type="checkbox"
+                                                class="sr-only peer"
+                                            />
+                                            <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <button
+                            type="button"
+                            @click="cancelForm"
+                            class="px-6 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            :disabled="isSubmitting"
+                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                        >
+                            <Loader2 v-if="isSubmitting" class="w-4 h-4 animate-spin" />
+                            <span v-if="isSubmitting">Updating...</span>
+                            <span v-else>Update Menu Item</span>
+                        </button>
                     </div>
                 </form>
             </div>
