@@ -48,6 +48,21 @@ const filteredItems = computed(() => {
     return items;
 });
 
+// Function to generate proper image URL
+const getImageUrl = (imagePath: string | null | undefined): string | null => {
+    if (!imagePath) return null;
+    const url = `/storage/${imagePath}`;
+    console.log('Generated image URL:', url, 'for image_path:', imagePath);
+    return url;
+};
+
+// Function to handle image load errors
+const handleImageError = (event: Event) => {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+    // The fallback SVG will be shown instead
+};
+
 const setupIntersectionObserver = () => {
     observer.value = new IntersectionObserver(
         (entries) => {
@@ -172,7 +187,7 @@ onUnmounted(() => {
                                     <!-- Image placeholder with gradient background -->
                                     <div class="relative h-48 rounded-t-xl overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/20 dark:to-emerald-800/20">
                                         <div v-if="item.image_path" class="absolute inset-0">
-                                            <img :src="item.image_path" :alt="item.name" class="w-full h-full object-cover" />
+                                            <img :src="getImageUrl(item.image_path) || ''" :alt="item.name" class="w-full h-full object-cover" @error="handleImageError" />
                                         </div>
                                         <div v-else class="absolute inset-0 flex items-center justify-center">
                                             <svg class="w-16 h-16 text-emerald-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
