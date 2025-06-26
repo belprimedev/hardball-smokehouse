@@ -233,10 +233,10 @@ const hasActiveFilters = computed(() => {
     <Head title="Menu Items" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-col h-full overflow-hidden p-4">
-            <div class="flex justify-between bg-white rounded-xl shadow-sm dark:bg-neutral-900 dark:border-neutral-700 overflow-hidden">
+        <div class="flex flex-col h-full overflow-hidden p-4 dark:bg-gray-900">
+            <div class="flex justify-between bg-white rounded-xl shadow-sm dark:bg-slate-900 dark:border-neutral-700 overflow-hidden">
                 <!-- Header - Fixed -->
-                <div class="shrink-0 bg-white border-b border-gray-200 dark:bg-neutral-900 dark:border-neutral-700 p-4">
+                <div class="shrink-0 bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-neutral-900 p-4">
                     <h2 class="text-xl font-semibold text-gray-800 dark:text-neutral-200">
                         Food Listing
                     </h2>
@@ -301,7 +301,7 @@ const hasActiveFilters = computed(() => {
             </div>
 
             <!-- Filters Panel -->
-            <div v-if="showFilters" class="bg-white border border-gray-200 rounded-lg p-4 mb-4 dark:bg-neutral-900 dark:border-neutral-700">
+            <div v-if="showFilters" class="bg-white border border-gray-200 rounded-lg p-4 mb-4 dark:bg-slate-900 dark:border-neutral-700">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Category Filter -->
                     <div>
@@ -387,11 +387,11 @@ const hasActiveFilters = computed(() => {
             </div>
 
             <!-- Table Container - Scrollable -->
-            <div class="flex-1 overflow-auto p-4 border-t border-gray-200 dark:border-neutral-700">
+            <div class="flex-1 overflow-auto p-4 border-t border-gray-200 dark:border-gray-800">
                 <div class="overflow-x-auto">
                     <div class="min-w-full inline-block align-middle">
-                        <table class="min-w-[800px] w-full table-auto divide-y divide-gray-200 dark:divide-neutral-700">
-                            <thead class="bg-gray-50 dark:bg-neutral-900">
+                        <table class="min-w-[800px] w-full table-auto divide-y divide-gray-200 dark:divide-neutral-700 dark:border dark:border-gray-800">
+                            <thead class="bg-gray-50 dark:bg-gray-900">
                                 <tr>
                                     <th scope="col" class="w-[200px] px-6 py-3 text-start">
                                         <button @click="handleSort('name')" 
@@ -443,7 +443,7 @@ const hasActiveFilters = computed(() => {
                                 </tr>
                             </thead>
 
-                            <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
+                            <tbody class="divide-y divide-gray-200 dark:divide-neutral-700 dark:bg-gray-800">
                                 <tr v-for="item in filteredItems" :key="item.id">
                                     <td class="size-px whitespace-nowrap">
                                         <div class="px-6 py-3">

@@ -5,10 +5,14 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Moon, Sun, ChevronsUpDown, Calendar } from 'lucide-vue-next';
+import { Folder, LayoutGrid, Moon, Sun, Calendar } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
-import { ref } from 'vue';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { ref, onMounted } from 'vue';
+
+// Extend NavItem to include children
+interface ExtendedNavItem extends NavItem {
+    children?: NavItem[];
+}
 
 // Add dark mode state
 const isDarkMode = ref(false);
@@ -17,9 +21,19 @@ const isDarkMode = ref(false);
 const toggleDarkMode = () => {
     isDarkMode.value = !isDarkMode.value;
     document.documentElement.classList.toggle('dark', isDarkMode.value);
+    localStorage.setItem('darkMode', isDarkMode.value ? 'true' : 'false');
 };
 
-const mainNavItems: NavItem[] = [
+// Initialize dark mode on mount
+onMounted(() => {
+    const savedDarkMode = localStorage.getItem('darkMode');
+    if (savedDarkMode === 'true' || (!savedDarkMode && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        isDarkMode.value = true;
+        document.documentElement.classList.add('dark');
+    }
+});
+
+const mainNavItems: ExtendedNavItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
@@ -32,6 +46,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Menu',
+        href: '#',
         icon: Folder,
         children: [
             {
@@ -61,8 +76,8 @@ const footerNavItems: NavItem[] = [
 </script>
 
 <template>
-    <Sidebar collapsible="icon" variant="inset">
-        <SidebarHeader>
+    <Sidebar collapsible="icon" variant="inset" class="bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700">
+        <SidebarHeader class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
@@ -74,19 +89,18 @@ const footerNavItems: NavItem[] = [
             </SidebarMenu>
         </SidebarHeader>
 
-        <SidebarContent>
+        <SidebarContent class="bg-white dark:bg-gray-900">
             <NavMain :items="mainNavItems" />
-            
         </SidebarContent>
 
-        <SidebarFooter>
+        <SidebarFooter class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
             <NavFooter :items="footerNavItems" />
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton @click="toggleDarkMode">
+                    <SidebarMenuButton @click="toggleDarkMode" class="hover:bg-gray-100 dark:hover:bg-gray-800">
                         <component :is="isDarkMode ? Sun : Moon" 
                                  class="h-4 w-4" />
-                        <span>{{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}</span>
+                        <span class="text-gray-900 dark:text-white">{{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}</span>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>

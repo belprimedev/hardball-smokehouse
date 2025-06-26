@@ -18,19 +18,19 @@ defineProps<Props>();
             <UserInfo :user="user" :show-email="true" />
         </div>
     </DropdownMenuLabel>
-    <DropdownMenuSeparator />
+    <DropdownMenuSeparator class="bg-gray-200 dark:bg-gray-700" />
     <DropdownMenuGroup>
-        <DropdownMenuItem :as-child="true">
-            <Link class="block w-full" :href="route('profile.edit')" as="button">
-                <Settings class="mr-2 h-4 w-4" />
+        <DropdownMenuItem :as-child="true" class="hover:bg-gray-100 dark:hover:bg-gray-700">
+            <Link class="block w-full text-gray-900 dark:text-white" :href="route('profile.edit')" as="button">
+                <Settings class="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" />
                 Settings
             </Link>
         </DropdownMenuItem>
     </DropdownMenuGroup>
-    <DropdownMenuSeparator />
-    <DropdownMenuItem :as-child="true">
-        <Link class="block w-full" method="post" :href="route('logout')" as="button">
-            <LogOut class="mr-2 h-4 w-4" />
+    <DropdownMenuSeparator class="bg-gray-200 dark:bg-gray-700" />
+    <DropdownMenuItem :as-child="true" class="hover:bg-gray-100 dark:hover:bg-gray-700">
+        <Link class="block w-full text-gray-900 dark:text-white" method="post" :href="route('logout')" as="button">
+            <LogOut class="mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" />
             Log out
         </Link>
     </DropdownMenuItem>
