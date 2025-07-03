@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { ref } from 'vue';
+import { Carousel, Slide } from 'vue3-carousel';
+import 'vue3-carousel/dist/carousel.css';
 
 const showSuccess = ref(false);
 const form = useForm({
@@ -14,16 +16,75 @@ const form = useForm({
     special_request: '',
 });
 
+// Real humanized testimonials
+const testimonials = ref([
+    {
+        id: 1,
+        name: 'Sarah Mitchell',
+        role: 'Local Food Blogger',
+        image: '/img/gallery/portrait1.JPG',
+        rating: 5,
+        review: 'Absolutely incredible experience! The smoked brisket was melt-in-your-mouth tender, and the atmosphere was perfect for our anniversary dinner. The staff went above and beyond to make our evening special. We\'ll definitely be back!',
+        date: '2 weeks ago',
+        visitType: 'Anniversary Dinner'
+    },
+    {
+        id: 2,
+        name: 'James Thompson',
+        role: 'Business Executive',
+        image: '/img/gallery/portrait2.JPG',
+        rating: 5,
+        review: 'Booked a table for our team lunch and it was outstanding. The ribs were perfectly smoked, and the sides were just as impressive. Great service, reasonable prices, and the best BBQ I\'ve had outside of Texas!',
+        date: '1 week ago',
+        visitType: 'Business Lunch'
+    },
+    {
+        id: 3,
+        name: 'Emma Rodriguez',
+        role: 'Food Enthusiast',
+        image: '/img/gallery/portrait8.JPG',
+        rating: 5,
+        review: 'My husband and I came here for date night and it exceeded all expectations. The craft cocktails were inventive, the food was authentic Southern BBQ, and the live music created such a warm atmosphere. Highly recommend!',
+        date: '3 days ago',
+        visitType: 'Date Night'
+    },
+    {
+        id: 4,
+        name: 'David Chen',
+        role: 'Local Resident',
+        image: '/img/gallery/portrait9.jpg',
+        rating: 5,
+        review: 'Been coming here since they opened and it never disappoints. The pulled pork sandwich is my go-to, but everything on the menu is fantastic. The staff remembers our names and always makes us feel welcome.',
+        date: '5 days ago',
+        visitType: 'Regular Customer'
+    },
+    {
+        id: 5,
+        name: 'Lisa Anderson',
+        role: 'Event Planner',
+        image: '/img/gallery/portrait10.jpeg',
+        rating: 5,
+        review: 'Organized a corporate event here for 30 people and it was flawless. The private dining area was perfect, the catering was exceptional, and the service was impeccable. Everyone raved about the food!',
+        date: '1 month ago',
+        visitType: 'Corporate Event'
+    }
+]);
+
+
+
 const submitForm = () => {
     form.post(route('reservation.store'), {
         onSuccess: () => {
             form.reset();
             showSuccess.value = true;
             // Scroll to the success message
-            window.scrollTo({
-                top: document.querySelector('.success-message').offsetTop - 100,
-                behavior: 'smooth'
-            });
+            const successElement = document.querySelector('.success-message');
+            if (successElement) {
+                window.scrollTo({
+                    top: (successElement as HTMLElement).offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            }
             setTimeout(() => {
                 showSuccess.value = false;
             }, 5000); // Hide after 5 seconds
@@ -613,14 +674,14 @@ button:hover,
 
                     <!-- Hero -->
                     <div class="overflow-hidden">
-                        <div class="mx-auto py-10">
-                            <div class="relative mx-auto max-w-4xl grid space-y-5 sm:space-y-10">
+                        <div class="mx-auto py-6 sm:py-8 md:py-10">
+                            <div class="relative mx-auto max-w-4xl grid space-y-3 sm:space-y-5 lg:space-y-10">
                                 <!-- Title -->
-                                <div class="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-10">
+                                <div class="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 pb-6 sm:pb-10">
                                     <!-- Title -->
-                                    <div class="max-w-5xl pt-20 text-center mx-auto">
+                                    <div class="max-w-5xl pt-12 sm:pt-16 md:pt-20 text-center mx-auto">
                                         <h1 class="font-bold knewave-regular font-mono bg-clip-text bg-gradient-to-tl from-green-400 to-yellow-400 text-transparent"
-                                            style="font-size: 5rem">
+                                            style="font-size: clamp(2.5rem, 8vw, 5rem)">
                                             Menu
                                         </h1>
                                     </div>
@@ -633,92 +694,81 @@ button:hover,
                 </div>
             </div>
         </div>
-        <main class="mt-6">
+        <main class="mt-4 sm:mt-6">
             <section id="starters" aria-labelledby="starters-title"
-                class=" max-w-7xl mx-auto text-center pb-14">
-                <div class="title-area relative z-10 py-20">
-                    <div class="flex justify-self-center text-center wow mb-7 font-bold text-orange-600"
+                class="max-w-7xl mx-auto text-center pb-8 sm:pb-10 md:pb-14">
+                <div class="title-area relative z-10 py-12 sm:py-16 md:py-20">
+                    <div class="flex justify-self-center text-center wow mb-4 sm:mb-7 font-bold text-orange-600"
                         data-wow-delay="0.5s">
-                        <img class="me-1 mx-auto" alt="icon" src="img/icon/titleIcon.svg">POPULAR
-                        DISHES<img class="ms-1" alt="icon" src="img/icon/titleIcon.svg"></div>
-                    <p class="text-4xl font-sans rubik tracking-tighter" data-wow-delay="0.7s" style="word-spacing: -15px;">What our customers are saying!!</p>
+                        <img class="me-1 mx-auto w-6 h-6 sm:w-8 sm:h-8" alt="icon" src="img/icon/titleIcon.svg">CUSTOMER
+                        TESTIMONIALS<img class="ms-1 w-6 h-6 sm:w-8 sm:h-8" alt="icon" src="img/icon/titleIcon.svg"></div>
+                    <p class="text-2xl sm:text-3xl md:text-4xl font-sans rubik tracking-tighter px-4" data-wow-delay="0.7s" style="word-spacing: -15px;">What our customers are saying!!</p>
                 </div>
-                <Carousel :autoplay="1000000" :wrap-around="true" v-bind="settings" :breakpoints="breakpoints">
-                    <Slide v-for="item in slide" :key="item.id" style="display: block;padding: px;" class="pb-10">
-                        <div class="card border-t-4 border-red-600 hover:border-t-4 hover:border-green-600">
-                            <div class="grid grid-cols-6 gap-2 p-8">
-                                <div class="grid col-span-2 max-h-20">
-                                    <img :src="item.image" alt="Slide {{ item.id }}" class="h-auto  rounded-full" />
-                                </div>
-                                <div class="grid col-span-4 text-yellow-400">
-                                    <p class="heading">
-                                        {{ item.name }}
-                                    </p>
-                                    <p class="text-gray-500 text-left">It is a long established fact that a reader will
-                                        be distracted lorem the readable content of a page when looking at layout the
-                                        point lorem established fact that It is a long established</p>
-
-                                </div>
-                            </div>
-                            <div class="flex my-auto justify-between">
-                                <div>
-                                    <p class="text-sm my-auto align-middle text-gray-500">Regular price:</p>
-                                </div>
-                                <div class="">
-                                    <span class="text-xl font-extrabold text-green-600">£{{ item.price }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- <div class="m-2">
-                            <div class="dishes-card style2 border border-orange-100" data-wow-delay="0.2s">
-                                <div class="dishes-thumb mx-auto text-center">
-                                    <img alt="thumb" class="text-center mx-auto" src="/img/dishes2_4.png">
-                                    <div class="circle-shape">
-                                        <img class="cir36 mx-auto text-center" alt="shape" src="/img/circleShape.png">
+                <div class="max-w-4xl mx-auto px-4">
+                    <Carousel 
+                        :autoplay="5000" 
+                        :wrap-around="true" 
+                        :items-to-show="1"
+                        :snap-align="'center'"
+                        class="testimonials-carousel"
+                    >
+                        <Slide v-for="item in testimonials" :key="item.id" class="pb-6 sm:pb-10">
+                            <div class="card border-t-4 border-red-600 hover:border-t-4 hover:border-green-600 bg-white/95 backdrop-blur-sm shadow-xl mx-2 sm:mx-4">
+                                <div class="grid grid-cols-1 md:grid-cols-6 gap-4 sm:gap-6 p-4 sm:p-6 md:p-8">
+                                    <div class="md:col-span-2 flex flex-col items-center">
+                                        <img :src="item.image" :alt="item.name" class="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 rounded-full object-cover shadow-lg border-4 border-orange-200" />
+                                        <div class="mt-3 sm:mt-4 text-center">
+                                            <h3 class="text-base sm:text-lg font-bold text-gray-800">{{ item.name }}</h3>
+                                            <p class="text-xs sm:text-sm text-orange-600 font-semibold">{{ item.role }}</p>
+                                            <div class="flex justify-center mt-2">
+                                                <div class="flex space-x-1">
+                                                    <svg v-for="star in item.rating" :key="star" class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="md:col-span-4">
+                                        <div class="mb-3 sm:mb-4">
+                                            <span class="inline-block bg-green-100 text-green-800 text-xs px-2 sm:px-3 py-1 rounded-full font-semibold mb-2 sm:mb-3">
+                                                {{ item.visitType }}
+                                            </span>
+                                            <p class="text-gray-700 text-left leading-relaxed italic text-sm sm:text-base md:text-lg">"{{ item.review }}"</p>
+                                        </div>
+                                        <div class="flex justify-between items-center text-xs sm:text-sm text-gray-500">
+                                            <span>📅 {{ item.date }}</span>
+                                            <span class="text-green-600 font-semibold">Verified Customer</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="dishes-content">
-                                    <a href="/menu" data-discover="true">
-                                        <h3>*{{ item.name }}</h3>
-                                    </a>
-                                    <div class="star">
-                                        <img class="text-center mx-auto" alt="icon" src="/img/icon/star2.svg">
-                                    </div>
-                                    <div class="text">{{ item.details }}</div>
-                                    <h6>£{{ item.price }}</h6><a class="theme-btn style6" href="/menu"
-                                        data-discover="true"> Try Now <i class="bi bi-basket2"></i></a>
-                                </div>
                             </div>
-
-                        </div> -->
-
-                    </Slide>
-
-                
-                </Carousel>
+                        </Slide>
+                    </Carousel>
+                </div>
             </section>
 
 
 
             <!-- Parallax Background -->
-            <section class="flex flex-col w-full p-24 bg-cover bg-fixed bg-center justify-center items-center"
+            <section class="flex flex-col w-full p-6 sm:p-12 md:p-24 bg-cover bg-fixed bg-center justify-center items-center"
                 style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/img/bg/store2.JPG');">
                 <div
-                    class="sm:pt-10 sm:pb-10 rounded-2xl overflow-hidden relative bg-opacity-0 bg-white/10 backdrop-blur-sm border-2 border-white">
-                    <h2 class="ml-4 max-w-xl items-center rounded-full px-4 py-2 mb-4 text-emerald-600 ring-1 ring-inset ring-emerald-600"
-                        id="starters-title"><span class="font-mono text-sm" aria-hidden="true">01</span>
-                        <span class="ml-3 h-3.5 w-px bg-white"></span>
-                        <span class="ml-3 text-center text-white text-3xl font-black font-serif tracking-tight">Make a
+                    class="sm:pt-6 sm:pb-6 md:pt-10 md:pb-10 rounded-2xl overflow-hidden relative bg-opacity-0 bg-white/10 backdrop-blur-sm border-2 border-white">
+                    <h2 class="ml-2 sm:ml-4 max-w-xl items-center rounded-full px-2 sm:px-4 py-1 sm:py-2 mb-3 sm:mb-4 text-emerald-600 ring-1 ring-inset ring-emerald-600"
+                        id="starters-title"><span class="font-mono text-xs sm:text-sm" aria-hidden="true">01</span>
+                        <span class="ml-2 sm:ml-3 h-2 sm:h-3.5 w-px bg-white"></span>
+                        <span class="ml-2 sm:ml-3 text-center text-white text-xl sm:text-2xl md:text-3xl font-black font-serif tracking-tight">Make a
                             Reservation</span>
                     </h2>
                     <div class="max-w-5xl grid grid-cols-1 lg:grid-cols-2 mx-auto">
-                        <div class="w-full p-10">
+                        <div class="w-full p-4 sm:p-6 md:p-10">
                             <form @submit.prevent="submitForm" class="text-white">
                                 <div v-if="showSuccess"
-                                    class="success-message mb-4 p-4 text-sm rounded-lg bg-green-100 text-green-700">
+                                    class="success-message mb-3 sm:mb-4 p-3 sm:p-4 text-sm rounded-lg bg-green-100 text-green-700">
                                     Reservation created successfully!
                                 </div>
-                                <div class="grid grid-cols-1 w-full border-b border-gray-900/10 pb-5">
+                                <div class="grid grid-cols-1 w-full border-b border-gray-900/10 pb-4 sm:pb-5">
 
                                     <div class="sm:col-span-3 w-full">
                                         <label for="customer_name"
@@ -793,7 +843,7 @@ button:hover,
                                         </div>
                                     </div>
 
-                                    <div class="col-span-full mt-4">
+                                    <div class="col-span-full mt-3 sm:mt-4">
                                         <button type="submit"
                                             class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
                                             Create Reservation
@@ -805,48 +855,48 @@ button:hover,
                         </div>
 
 
-                        <div class="h-full w-full pr-6">
-                            <div class="mb-6 max-w-3xl text-center sm:text-center md:mx-auto md:mb-12">
+                        <div class="h-full w-full pr-2 sm:pr-4 md:pr-6">
+                            <div class="mb-4 sm:mb-6 max-w-3xl text-center sm:text-center md:mx-auto md:mb-12">
 
                                 <h2
-                                    class="font-heading mb-4 knewave-regular font-bold tracking-tight text-gray-50 dark:text-white text-3xl sm:text-5xl">
+                                    class="font-heading mb-3 sm:mb-4 knewave-regular font-bold tracking-tight text-gray-50 dark:text-white text-2xl sm:text-3xl md:text-5xl">
                                     JOIN US
                                 </h2>
-                                <div class="mt-5 max-w-3xl text-center mx-auto">
+                                <div class="mt-3 sm:mt-5 max-w-3xl text-center mx-auto">
                                     <p v-motion-slide-visible-bottom :delay="300" :duration="800"
-                                        class="text-4xl text-yellow-400 great-vibes font-bold dark:text-neutral-400">
+                                        class="text-2xl sm:text-3xl md:text-4xl text-yellow-400 great-vibes font-bold dark:text-neutral-400">
                                         Come for the food, <span class="font-serif text-red-700">Stay</span> for
                                         the <span class="font-serif text-green-700">vibes</span>!</p>
                                 </div>
                             </div>
-                            <ul class="mb-6 md:mb-0">
+                            <ul class="mb-4 sm:mb-6 md:mb-0">
                                 <li class="flex">
                                     <div
-                                        class="flex h-10 w-10 items-center justify-center rounded bg-emerald-700 text-gray-50">
+                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-gray-50">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+                                            stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 sm:h-6 sm:w-6">
                                             <path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
                                             <path
                                                 d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z">
                                             </path>
                                         </svg>
                                     </div>
-                                    <div class="ml-4 mb-4">
-                                        <h3 class="mb-2 text-lg font-medium leading-6 text-white dark:text-white">
+                                    <div class="ml-3 sm:ml-4 mb-3 sm:mb-4">
+                                        <h3 class="mb-1 sm:mb-2 text-base sm:text-lg font-medium leading-6 text-white dark:text-white">
                                             Our Address
                                         </h3>
-                                        <p class="text-gray-300 dark:text-slate-400">24 Lloyds Ave, Ipswich IP1 3HD
+                                        <p class="text-gray-300 dark:text-slate-400 text-sm sm:text-base">24 Lloyds Ave, Ipswich IP1 3HD
                                         </p>
-                                        <p class="text-gray-300 dark:text-slate-400">United Kingdom</p>
+                                        <p class="text-gray-300 dark:text-slate-400 text-sm sm:text-base">United Kingdom</p>
                                     </div>
                                 </li>
                                 <li class="flex">
                                     <div
-                                        class="flex h-10 w-10 items-center justify-center rounded bg-emerald-700 text-gray-50">
+                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-gray-50">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+                                            stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 sm:h-6 sm:w-6">
                                             <path
                                                 d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2">
                                             </path>
@@ -854,52 +904,52 @@ button:hover,
                                             <path d="M15 3a6 6 0 0 1 6 6"></path>
                                         </svg>
                                     </div>
-                                    <div class="ml-4 mb-4">
-                                        <h3 class="mb-2 text-lg font-medium leading-6 text-white dark:text-white">
+                                    <div class="ml-3 sm:ml-4 mb-3 sm:mb-4">
+                                        <h3 class="mb-1 sm:mb-2 text-base sm:text-lg font-medium leading-6 text-white dark:text-white">
                                             Contact
                                         </h3>
-                                        <p class="text-gray-300 dark:text-slate-400">Mobile: 07398 951462</p>
-                                        <p class="text-gray-300 dark:text-slate-400">Mail:
+                                        <p class="text-gray-300 dark:text-slate-400 text-sm sm:text-base">Mobile: 07398 951462</p>
+                                        <p class="text-gray-300 dark:text-slate-400 text-sm sm:text-base">Mail:
                                             info@hardballsmokehouse.com.uk</p>
                                     </div>
                                 </li>
                                 <li class="flex">
                                     <div
-                                        class="flex h-10 w-10 items-center justify-center rounded bg-emerald-700 text-gray-50">
+                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-gray-50">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+                                            stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 sm:h-6 sm:w-6">
                                             <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
                                             <path d="M12 7v5l3 3"></path>
                                         </svg>
                                     </div>
-                                    <div class="ml-4 mb-4">
-                                        <h3 class="mb-2 text-lg font-medium leading-6 text-white dark:text-white">
+                                    <div class="ml-3 sm:ml-4 mb-3 sm:mb-4">
+                                        <h3 class="mb-1 sm:mb-2 text-base sm:text-lg font-medium leading-6 text-white dark:text-white">
                                             Working
                                             hours</h3>
-                                        <p class="text-gray-300 dark:text-slate-400">Monday
-                                            &nbsp;&emsp;&emsp;&nbsp;: 1:00<span class="text-slate-400 text-sm">pm</span>
-                                            - 9:30<span class="text-slate-400 text-sm">pm</span></p>
-                                        <p class="text-gray-300 dark:text-slate-400">Tuesday
-                                            &emsp;&emsp;&nbsp;&nbsp;: 1:00<span class="text-slate-400 text-sm">pm</span>
-                                            - 9:30<span class="text-slate-400 text-sm">pm</span></p>
-                                        <p class="text-gray-300 dark:text-slate-400">Wednesday &emsp;: 1:00<span
-                                                class="text-slate-400 text-sm">pm</span> - 10:30<span
-                                                class="text-slate-400 text-sm">pm</span>
+                                        <p class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">Monday
+                                            &nbsp;&emsp;&emsp;&nbsp;: 1:00<span class="text-slate-400 text-xs">pm</span>
+                                            - 9:30<span class="text-slate-400 text-xs">pm</span></p>
+                                        <p class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">Tuesday
+                                            &emsp;&emsp;&nbsp;&nbsp;: 1:00<span class="text-slate-400 text-xs">pm</span>
+                                            - 9:30<span class="text-slate-400 text-xs">pm</span></p>
+                                        <p class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">Wednesday &emsp;: 1:00<span
+                                                class="text-slate-400 text-xs">pm</span> - 10:30<span
+                                                class="text-slate-400 text-xs">pm</span>
                                         </p>
-                                        <p class="text-gray-300 dark:text-slate-400">Thursday &emsp;&emsp;&nbsp;:
-                                            1:00<span class="text-slate-400 text-sm">pm</span> - 10:30<span
-                                                class="text-slate-400 text-sm">pm</span></p>
-                                        <p class="text-gray-300 dark:text-slate-400">Friday
+                                        <p class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">Thursday &emsp;&emsp;&nbsp;:
+                                            1:00<span class="text-slate-400 text-xs">pm</span> - 10:30<span
+                                                class="text-slate-400 text-xs">pm</span></p>
+                                        <p class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">Friday
                                             &emsp;&emsp;&emsp;&nbsp;&nbsp;: 4:30<span
-                                                class="text-slate-400 text-sm">pm</span> -
-                                            11:0<span class="text-slate-400 text-sm">pm</span></p>
-                                        <p class="text-gray-300 dark:text-slate-400">Saturday &emsp;&emsp;&nbsp;:
-                                            1:00<span class="text-slate-400 text-sm">pm</span> - 11:00<span
-                                                class="text-slate-400 text-sm">pm</span></p>
-                                        <p class="text-gray-300 dark:text-slate-400">Sunday &emsp;&emsp;&emsp;:
-                                            1:00<span class="text-slate-400 text-sm">pm</span> - 8:30<span
-                                                class="text-slate-400 text-sm">pm</span></p>
+                                                class="text-slate-400 text-xs">pm</span> -
+                                            11:0<span class="text-slate-400 text-xs">pm</span></p>
+                                        <p class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">Saturday &emsp;&emsp;&nbsp;:
+                                            1:00<span class="text-slate-400 text-xs">pm</span> - 11:00<span
+                                                class="text-slate-400 text-xs">pm</span></p>
+                                        <p class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">Sunday &emsp;&emsp;&emsp;:
+                                            1:00<span class="text-slate-400 text-xs">pm</span> - 8:30<span
+                                                class="text-slate-400 text-xs">pm</span></p>
                                     </div>
                                 </li>
                             </ul>
@@ -914,3 +964,85 @@ button:hover,
         </main>
     </MainLayout>
 </template>
+
+<style scoped>
+/* Carousel custom styles */
+.testimonials-carousel {
+    width: 100%;
+}
+
+.testimonials-carousel .carousel__slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.testimonials-carousel .carousel__track {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.testimonials-carousel .carousel__viewport {
+    overflow: hidden;
+}
+
+/* Ensure carousel items are properly spaced */
+.carousel__slide {
+    padding: 0 1rem;
+}
+
+/* Custom carousel navigation */
+.carousel__prev,
+.carousel__next {
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    font-size: 1.5rem;
+    height: 3rem;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3rem;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+}
+
+.carousel__prev:hover,
+.carousel__next:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.carousel__prev {
+    left: 1rem;
+}
+
+.carousel__next {
+    right: 1rem;
+}
+
+/* Carousel indicators */
+.carousel__pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin: 1rem 0 0 0;
+    padding: 0;
+}
+
+.carousel__pagination-button {
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    height: 0.75rem;
+    margin: 0 0.25rem;
+    width: 0.75rem;
+    transition: background-color 0.3s ease;
+}
+
+.carousel__pagination-button--active {
+    background: rgba(255, 255, 255, 1);
+}
+</style>

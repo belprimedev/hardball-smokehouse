@@ -438,13 +438,14 @@ watch(selectedMenuCategory, (val) => {
 <template>
     <MainLayout>
         <!-- Sticky Book Table Button -->
-        <div class="fixed bottom-8 right-8 z-50">
-            <Link :href="route('make-reservation')" class="group bg-gradient-to-r from-green-600 to-yellow-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="fixed bottom-4 sm:bottom-8 right-4 sm:right-8 z-50">
+            <Link :href="route('make-reservation')" class="group bg-gradient-to-r from-green-600 to-yellow-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center gap-2">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                Book a Table
-                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">Now Open</span>
+                <span class="hidden sm:inline">Book a Table</span>
+                <span class="sm:hidden">Book</span>
+                <span class="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 bg-red-500 text-white text-xs px-1 sm:px-2 py-0.5 sm:py-1 rounded-full animate-pulse">Now Open</span>
             </Link>
         </div>
 
@@ -473,19 +474,21 @@ watch(selectedMenuCategory, (val) => {
                         </div>
                     </div>
 
+                   
+
                     <!-- Content that goes over the background -->
                     <div class="relative z-10 pt-20">
                         <div class="relative min-h-screen flex flex-col selection:bg-[#FF2D20] selection:text-white">
                             <div class="relative w-full">
                                 <!-- Hero Content -->
-                                <div class="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
+                                <div class="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 md:pt-32 pb-16 sm:pb-20 md:pb-24">
                                     <!-- Announcement Banner -->
                                     <div class="flex justify-center">
                                         <p v-motion-slide-visible-top :delay="600" :duration="800"
-                                            class="inline-flex items-center gap-x-2 bg-white/90 backdrop-blur-sm border border-gray-200 text-2xl text-green-500 rubik p-1 px-6 rounded-full transition hover:border-gray-300 dark:bg-neutral-800 dark:border-neutral-700 dark:hover:border-neutral-600 dark:text-neutral-200">
-                                            <span class="relative flex h-3 w-3">
+                                            class="inline-flex items-center gap-x-2 bg-white/90 backdrop-blur-sm border border-gray-200 text-lg sm:text-xl md:text-2xl text-green-500 rubik p-1 px-4 sm:px-6 rounded-full transition hover:border-gray-300 dark:bg-neutral-800 dark:border-neutral-700 dark:hover:border-neutral-600 dark:text-neutral-200">
+                                            <span class="relative flex h-2 w-2 sm:h-3 sm:w-3">
                                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                                <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                                                <span class="relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 bg-green-500"></span>
                                             </span>
                                             HARDBALL
                                         </p>
@@ -494,56 +497,56 @@ watch(selectedMenuCategory, (val) => {
                                     <!-- Title -->
                                     <div class="max-w-2xl text-center mx-auto">
                                         <h1 v-motion-slide-visible-top :delay="300" :duration="800"
-                                            class="pr-3 pt-5 font-black great-vibes bg-clip-text bg-gradient-to-tl from-green-600 to-yellow-600 text-transparent text-3xl md:text-5xl lg:text-[70pt] dark:text-neutral-200">
+                                            class="pr-3 pt-3 sm:pt-5 font-black great-vibes bg-clip-text bg-gradient-to-tl from-green-600 to-yellow-600 text-transparent text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-[70pt] dark:text-neutral-200">
                                             Caribbean
                                         </h1>
                                         <p v-motion-slide-visible-right :delay="200" :duration="600"
-                                            class="text-4xl md:text-6xl text-white knewave-regular">
+                                            class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-white knewave-regular">
                                             Smokehouse
                                         </p>
                                     </div>
 
-                                    <div class="mt-5 max-w-3xl text-center mx-auto px-4">
+                                    <div class="mt-3 sm:mt-5 max-w-3xl text-center mx-auto px-4">
                                         <p v-motion-slide-visible-bottom :delay="300" :duration="800"
-                                            class="text-2xl md:text-4xl text-yellow-400 great-vibes font-bold dark:text-neutral-400">
+                                            class="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-yellow-400 great-vibes font-bold dark:text-neutral-400">
                                             Come for the food, <span class="font-serif text-red-700">Stay</span> for
                                             the <span class="font-serif text-green-700">vibes</span>!
                                         </p>
                                     </div>
 
                                     <!-- Quick Info -->
-                                    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+                                    <div class="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto">
                                         <div v-motion-slide-visible-bottom :delay="400" :duration="800"
-                                            class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
-                                            <svg class="w-6 h-6 text-yellow-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            class="bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4 text-center">
+                                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
-                                            <p class="text-white font-semibold">Open Daily</p>
-                                            <p class="text-gray-300 text-sm">12:00 - 22:00</p>
+                                            <p class="text-white font-semibold text-sm sm:text-base">Open Daily</p>
+                                            <p class="text-gray-300 text-xs sm:text-sm">12:00 - 22:00</p>
                                         </div>
                                         <div v-motion-slide-visible-bottom :delay="500" :duration="800"
-                                            class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
-                                            <svg class="w-6 h-6 text-yellow-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            class="bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4 text-center">
+                                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                             </svg>
-                                            <p class="text-white font-semibold">Location</p>
-                                            <p class="text-gray-300 text-sm">Ipswich, UK</p>
+                                            <p class="text-white font-semibold text-sm sm:text-base">Location</p>
+                                            <p class="text-gray-300 text-xs sm:text-sm">Ipswich, UK</p>
                                         </div>
                                         <div v-motion-slide-visible-bottom :delay="600" :duration="800"
-                                            class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
-                                            <svg class="w-6 h-6 text-yellow-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            class="bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4 text-center sm:col-span-2 md:col-span-1">
+                                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                             </svg>
-                                            <p class="text-white font-semibold">Contact</p>
-                                            <p class="text-gray-300 text-sm">+44 123 456 7890</p>
+                                            <p class="text-white font-semibold text-sm sm:text-base">Contact</p>
+                                            <p class="text-gray-300 text-xs sm:text-sm">+44 123 456 7890</p>
                                         </div>
                                     </div>
 
                                     <!-- Buttons -->
                                     <div v-motion-slide-visible-bottom :delay="600" :duration="800"
-                                        class="mt-8 gap-3 flex justify-center px-4">
-                                        <a class="inline-flex justify-center items-center gap-x-3 text-center bg-gradient-to-tl from-green-600 to-yellow-600 hover:from-green-600 hover:to-yellow-600 border border-transparent text-white text-sm font-medium rounded-md focus:outline-none focus:ring-1 focus:ring-gray-600 py-3 px-6 md:px-4 dark:focus:ring-offset-gray-800"
+                                        class="mt-6 sm:mt-8 gap-2 sm:gap-3 flex flex-col sm:flex-row justify-center px-4">
+                                        <a class="inline-flex justify-center items-center gap-x-2 sm:gap-x-3 text-center bg-gradient-to-tl from-green-600 to-yellow-600 hover:from-green-600 hover:to-yellow-600 border border-transparent text-white text-sm font-medium rounded-md focus:outline-none focus:ring-1 focus:ring-gray-600 py-2 sm:py-3 px-4 sm:px-6 dark:focus:ring-offset-gray-800"
                                             href="#carousel">
                                             Explore Menu
                                             <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -552,7 +555,7 @@ watch(selectedMenuCategory, (val) => {
                                                 <path d="m9 18 6-6-6-6" />
                                             </svg>
                                         </a>
-                                        <a class="inline-flex justify-center items-center gap-x-3 text-center bg-white/10 backdrop-blur-sm hover:bg-white/20 border border-white/20 text-white text-sm font-medium rounded-md focus:outline-none focus:ring-1 focus:ring-white/20 py-3 px-6 md:px-4"
+                                        <a class="inline-flex justify-center items-center gap-x-2 sm:gap-x-3 text-center bg-white/10 backdrop-blur-sm hover:bg-white/20 border border-white/20 text-white text-sm font-medium rounded-md focus:outline-none focus:ring-1 focus:ring-white/20 py-2 sm:py-3 px-4 sm:px-6"
                                             href="#events">
                                             View Events
                                             <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -586,7 +589,7 @@ watch(selectedMenuCategory, (val) => {
                     </svg>
                 </div>
             </div>
-            
+           
             <!-- Section Header -->
             <div class="relative text-center mb-12">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Experience Caribbean Excellence</h2>
@@ -681,80 +684,53 @@ watch(selectedMenuCategory, (val) => {
 
         
         <!-- ============================= MENU & DISHES ======================================================== -->
-        <section class="relative w-full min-h-[700px] flex" v-motion-slide-visible-bottom :delay="200" :duration="400">
-            <!-- Background Pattern -->
+        <section class="relative w-full min-h-[700px] flex flex-col md:flex-row bg-gradient-to-r from-[#23a04f]/90 to-[#23a04f]/80" v-motion-slide-visible-bottom :delay="200" :duration="400">
+            <!-- Remove the green background from the card, make it white/transparent for contrast -->
             <div class="absolute inset-0 bg-gradient-to-br from-white via-[#e8f5e9] to-[#c8e6c9]">
-                <!-- Overlay Pattern -->
-                <div class="absolute inset-0 opacity-20" 
-                    style="background-image: repeating-linear-gradient(45deg, #23a04f 0, #23a04f 1px, transparent 0, transparent 50%),
-                            repeating-linear-gradient(-45deg, #f9de47 0, #f9de47 1px, transparent 0, transparent 50%);
-                    background-size: 30px 30px;">
-                </div>
-                <!-- Subtle Wave Pattern -->
-                <div class="absolute inset-0 opacity-10" style="background-image: url('/img/shape/wave-pattern.svg'); background-size: 100px;">
-                </div>
+                <div class="absolute inset-0 opacity-10" style="background-image: url('/img/shape/wave-pattern.svg'); background-size: 100px;"></div>
             </div>
-           
-            <!-- Left: White 1/3 -->
-            <div class="w-full md:w-1/3 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center p-8 z-10 relative shadow-2xl">
+            <!-- Image Section -->
+            <div class="w-full md:w-1/3 flex flex-col items-center justify-center p-4 sm:p-8 z-10 relative shadow-2xl">
                 <div class="relative w-full h-full max-w-md flex flex-col items-center md:items-start">
-                    <!-- Animated Counter -->
-                    
-                   
-                    <!-- Floating Image with Enhanced Effects -->
-                    <div class="hidden md:block relative group my-auto items-center">
-                        <div class="absolute -inset-4 bg-gradient-to-r from-[#23a04f] to-[#f9de47] rounded-xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+                    <div class="relative group my-auto items-center w-full flex justify-center">
+                        <div class="absolute -inset-2 sm:-inset-4 bg-gradient-to-r from-[#23a04f] to-[#f9de47] rounded-xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
                         <img
                             src="/img/food/portrait5.JPG"
                             alt="Menu Dish"
-                            class="w-[350px] max-w-full relative z-10 rounded-xl transform transition-all duration-500 group-hover:scale-105 group-hover:rotate-2 shadow-xl"
-                        />
-                        <!-- Decorative Corner Accents -->
-                        <div class="absolute -top-2 -left-2 w-8 h-8 border-t-4 border-l-4 border-[#23a04f] rounded-tl-xl"></div>
-                        <div class="absolute -bottom-2 -right-2 w-8 h-8 border-b-4 border-r-4 border-[#f9de47] rounded-br-xl"></div>
-                    </div>
-                    <div class="block md:hidden">
-                        <img
-                            src="/img/food/portrait5.JPG"
-                            alt="Menu Dish"
-                            class="rounded-xl shadow-lg w-[350px] max-w-full transform hover:scale-105 transition-transform duration-500"
+                            class="rounded-xl shadow-lg w-full max-w-xs sm:max-w-full transform hover:scale-105 transition-transform duration-500"
                         />
                     </div>
                 </div>
             </div>
-
-            <!-- Right: 2/3 with Content -->
-            <div class="w-full md:w-2/3 relative flex items-center justify-center min-h-[600px]">
-                <div class="absolute inset-0 bg-gradient-to-r from-[#23a04f]/90 to-[#23a04f]/80 backdrop-blur-sm"></div>
-                <div class="relative w-full max-w-2xl p-8 z-10">
-                    <div class="mb-2 text-[#f9de47] font-bold uppercase tracking-wider flex items-center gap-2">
+            <!-- Menu Content Section -->
+            <div class="w-full md:w-2/3 flex items-center justify-center min-h-[400px] md:min-h-[600px]">
+                <div class="relative w-full p-0 sm:p-6 md:p-8 z-10 bg-white/90 shadow-xl mx-0 sm:mx-6 md:mx-0 border border-[#23a04f]/20">
+                    <div class="mb-1 sm:mb-2 text-[#f9de47] font-bold uppercase tracking-wider flex items-center gap-2 text-xs sm:text-sm">
                         FOOD ITEMS
-                        <span class="w-8 h-0.5 bg-[#f9de47] inline-block"></span>
+                        <span class="w-6 sm:w-8 h-0.5 bg-[#f9de47] inline-block"></span>
                     </div>
-                    <h2 class="text-3xl md:text-5xl font-extrabold mb-6 text-white">Starters & Main Dishes</h2>
-                    
-                    <!-- Category Tabs with Enhanced Design -->
-                    <div class="flex flex-wrap gap-2 mb-6">
+                    <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold mb-3 sm:mb-6 text-[#0c4149]">Starters & Main Dishes</h2>
+                    <!-- Category Tabs -->
+                    <div class="flex flex-wrap gap-2 mb-4 sm:mb-6">
                         <button v-for="cat in menuCategories" :key="cat.key" 
                             @click="selectedMenuCategory = cat.key"
                             :class="[
                                 selectedMenuCategory === cat.key 
                                     ? 'bg-[#f9de47] text-[#0c4149] shadow-lg scale-105' 
-                                    : 'bg-white/20 text-white hover:bg-white/30',
-                                'px-4 py-2 rounded-full font-semibold transition-all duration-300 hover:shadow-md hover:scale-105'
+                                    : 'bg-[#23a04f]/10 text-[#0c4149] hover:bg-[#23a04f]/20',
+                                'px-3 py-1 sm:px-4 sm:py-2 rounded-full font-semibold text-xs sm:text-base transition-all duration-300 hover:shadow-md hover:scale-105'
                             ]">
                             {{ cat.label }}
                         </button>
                     </div>
-
-                    <!-- Menu List with Enhanced Styling -->
-                    <div class="space-y-4 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
+                    <!-- Menu List -->
+                    <div class="space-y-3 sm:space-y-4 max-h-[320px] sm:max-h-[400px] overflow-y-auto pr-2 sm:pr-4 custom-scrollbar">
                         <div v-for="item in groupedMenuItems[selectedMenuCategory]" :key="item.id"
-                            class="group bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/20 transition-all duration-300 border border-white/20">
+                            class="group bg-[#23a04f]/5 rounded-xl p-3 sm:p-4 hover:bg-[#23a04f]/10 transition-all duration-300 border border-[#23a04f]/10">
                             <div class="flex flex-col md:flex-row md:items-center justify-between">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2">
-                                        <span class="font-extrabold text-xl md:text-2xl text-white group-hover:text-[#f9de47] transition-colors">
+                                        <span class="font-extrabold text-base sm:text-xl md:text-2xl text-[#0c4149] group-hover:text-[#f9de47] transition-colors">
                                             {{ item.name }}
                                         </span>
                                         <span v-if="item.is_chef_special" 
@@ -762,24 +738,23 @@ watch(selectedMenuCategory, (val) => {
                                             Chef's Special
                                         </span>
                                     </div>
-                                    <div class="text-white/90 text-sm italic mt-1">{{ item.description }}</div>
-                                    <div class="text-white/70 text-xs mt-1" v-if="item.side_note">{{ item.side_note }}</div>
+                                    <div class="text-[#0c4149]/90 text-xs sm:text-sm italic mt-1">{{ item.description }}</div>
+                                    <div class="text-[#0c4149]/70 text-xs mt-1" v-if="item.side_note">{{ item.side_note }}</div>
                                 </div>
-                                <div class="flex gap-4 mt-2 md:mt-0 md:ml-8">
-                                    <span class="text-[#f9de47] font-extrabold text-lg md:text-xl">
+                                <div class="flex gap-2 sm:gap-4 mt-2 md:mt-0 md:ml-8">
+                                    <span class="text-[#f9de47] font-extrabold text-base sm:text-lg md:text-xl">
                                         ${{ Number(item.price || 0).toFixed(2) }}
                                     </span>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- View Full Menu Link with Enhanced Design -->
-                    <div class="mt-8 text-center">
+                    <!-- View Full Menu Link -->
+                    <div class="mt-5 sm:mt-8 text-center">
                         <Link :href="route('menu')" 
-                            class="inline-flex items-center gap-2 px-6 py-3 bg-[#f9de47] text-[#0c4149] font-bold rounded-full hover:bg-white transition-all duration-300 transform hover:scale-105 hover:shadow-lg group">
+                            class="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#f9de47] text-[#0c4149] font-bold rounded-full hover:bg-white transition-all duration-300 transform hover:scale-105 hover:shadow-lg group text-sm sm:text-base">
                             View Full Menu
-                            <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>
                         </Link>

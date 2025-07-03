@@ -117,7 +117,7 @@ onUnmounted(() => {
                         Our Menu
                     </h1>
                     <p class="mt-3 text-lg text-yellow-300">
-                        Discover our delicious selection of dishes and drinks
+                        Discover our delicious selection of dishes.
                     </p>
                 </div>
             </div>
