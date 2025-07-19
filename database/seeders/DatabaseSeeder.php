@@ -28,6 +28,8 @@ class DatabaseSeeder extends Seeder
             MenuCategoriesSeeder::class,
             MenuItemsSeeder::class,
             BeveragesSeeder::class,
+            ReservationSettingsSeeder::class,
+            GeneralSettingsSeeder::class,
         ]);
     }
 }

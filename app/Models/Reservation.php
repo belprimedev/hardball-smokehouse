@@ -13,8 +13,8 @@ class Reservation extends Model
     protected $guarded = [];
     
     protected $casts = [
-        'reservation_date' => 'datetime',
-        'reservation_time' => 'datetime',
+        'reservation_date' => 'date',
+        'reservation_time' => 'string',
     ];
     
     public function formattedDate(): Attribute

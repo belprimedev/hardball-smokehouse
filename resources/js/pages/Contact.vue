@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MainLayout from '@/layouts/MainLayout.vue';
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 
 // Form state
 const formData = reactive({
@@ -13,34 +13,113 @@ const formData = reactive({
 
 const isSubmitting = ref(false);
 const formSubmitted = ref(false);
+const generalSettings = ref<any>(null);
 
-// Contact information
-const contactInfo = [
+// Define types for contact info
+interface ContactInfo {
+    icon: string;
+    title: string;
+    content: string;
+    link: string | null;
+    isHours?: boolean;
+    parsedHours?: Array<{ day: string; time: string }>;
+}
+
+// Contact information - will be populated from general settings
+const contactInfo = ref<ContactInfo[]>([
     {
         icon: '📍',
         title: 'Address',
-        content: '24 Lloyds Ave, Ipswich IP1 3HD',
-        link: 'https://maps.google.com/?q=24+Lloyds+Ave,+Ipswich+IP1+3HD'
+        content: 'Loading...',
+        link: '#'
     },
     {
         icon: '📞',
         title: 'Phone',
-        content: '+44 01473 807117',
-        link: 'tel:+4401473807117'
+        content: 'Loading...',
+        link: '#'
     },
     {
         icon: '✉️',
         title: 'Email',
-        content: 'info@hardballsmokehouse.co.uk',
-        link: 'mailto:info@hardballsmokehouse.co.uk'
+        content: 'Loading...',
+        link: '#'
     },
     {
         icon: '🕒',
         title: 'Opening Hours',
-        content: 'Mon-Sun: 12:00 PM - 10:00 PM',
-        link: null
+        content: 'Loading...',
+        link: null,
+        isHours: true
     }
-];
+]);
+
+// Parse operation hours into structured format
+const parseOperationHours = (hoursText: string): Array<{ day: string; time: string }> => {
+    if (!hoursText) return [];
+    
+    const lines = hoursText.split('\n').filter(line => line.trim());
+    const hours: Array<{ day: string; time: string }> = [];
+    
+    lines.forEach(line => {
+        const match = line.match(/([^:]+):\s*(.+)/);
+        if (match) {
+            const day = match[1].trim();
+            const time = match[2].trim();
+            hours.push({ day, time });
+        }
+    });
+    
+    return hours;
+};
+
+// Fetch general settings
+const fetchGeneralSettings = async () => {
+    try {
+        const response = await fetch('/api/general-settings');
+        const settings = await response.json();
+        generalSettings.value = settings;
+        
+        // Parse operation hours
+        const parsedHours = parseOperationHours(settings.operation_hours || '');
+        
+        // Update contact info with settings data
+        contactInfo.value = [
+            {
+                icon: '📍',
+                title: 'Address',
+                content: settings.address || 'Address not set',
+                link: `https://maps.google.com/?q=${encodeURIComponent(settings.address || '')}`
+            },
+            {
+                icon: '📞',
+                title: 'Phone',
+                content: settings.contact_number || 'Phone not set',
+                link: `tel:${settings.contact_number || ''}`
+            },
+            {
+                icon: '✉️',
+                title: 'Email',
+                content: settings.business_email || 'Email not set',
+                link: `mailto:${settings.business_email || ''}`
+            },
+            {
+                icon: '🕒',
+                title: 'Opening Hours',
+                content: settings.operation_hours || 'Hours not set',
+                link: null,
+                isHours: true,
+                parsedHours: parsedHours
+            }
+        ];
+    } catch (error) {
+        console.error('Error fetching general settings:', error);
+    }
+};
+
+onMounted(() => {
+    fetchGeneralSettings();
+});
 
 // Social media links
 const socialLinks = [
@@ -230,7 +309,7 @@ const handleSubmit = async (e: Event) => {
                                 <button 
                                     type="submit" 
                                     :disabled="isSubmitting"
-                                    class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 sm:py-4 px-4 sm:px-6 rounded-lg font-semibold text-base sm:text-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                    class="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white py-3 sm:py-4 px-4 sm:px-6 rounded-lg font-semibold text-base sm:text-lg hover:from-emerald-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-white transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                                 >
                                     <span v-if="isSubmitting" class="flex items-center justify-center">
                                         <svg class="animate-spin -ml-1 mr-3 h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -261,15 +340,38 @@ const handleSubmit = async (e: Event) => {
                                     </div>
                                     <div class="flex-1">
                                         <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-1">{{ info.title }}</h3>
-                                        <a 
-                                            v-if="info.link" 
-                                            :href="info.link" 
-                                            target="_blank"
-                                            class="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm sm:text-base"
-                                        >
-                                            {{ info.content }}
-                                        </a>
-                                        <p v-else class="text-gray-600 text-sm sm:text-base">{{ info.content }}</p>
+                                        
+                                        <!-- Special display for opening hours -->
+                                        <div v-if="info.isHours && info.parsedHours && info.parsedHours.length > 0" class="space-y-2">
+                                            <div class="grid grid-cols-1 gap-2">
+                                                <div 
+                                                    v-for="(hour, index) in info.parsedHours" 
+                                                    :key="index"
+                                                    class="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                                                >
+                                                    <span class="font-medium text-gray-900 text-sm">{{ hour.day }}</span>
+                                                    <span class="text-emerald-600 dark:text-emerald-400 font-semibold text-sm">{{ hour.time }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Fallback for non-parsed hours or when parsing fails -->
+                                        <div v-else-if="info.isHours" class="bg-gray-50 rounded-lg p-3">
+                                            <p class="text-gray-600 text-sm whitespace-pre-line">{{ info.content }}</p>
+                                        </div>
+                                        
+                                        <!-- Regular content for other items -->
+                                        <div v-else>
+                                            <a 
+                                                v-if="info.link" 
+                                                :href="info.link" 
+                                                target="_blank"
+                                                class="text-gray-600 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-200 text-sm sm:text-base"
+                                            >
+                                                {{ info.content }}
+                                            </a>
+                                            <p v-else class="text-gray-600 text-sm sm:text-base">{{ info.content }}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -299,7 +401,7 @@ const handleSubmit = async (e: Event) => {
                             <div class="space-y-3 sm:space-y-4">
                                 <a 
                                     href="/online-reservation" 
-                                    class="block w-full bg-blue-600 text-white py-2 sm:py-3 px-3 sm:px-4 rounded-lg text-center font-semibold hover:bg-blue-700 transition-colors duration-200 text-sm sm:text-base"
+                                    class="block w-full bg-emerald-600 text-white py-2 sm:py-3 px-3 sm:px-4 rounded-lg text-center font-semibold hover:bg-emerald-700 transition-colors duration-200 text-sm sm:text-base"
                                 >
                                     Make a Reservation
                                 </a>

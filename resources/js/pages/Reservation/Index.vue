@@ -54,27 +54,26 @@ const deleteItem = (id) => {
                             class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden dark:bg-neutral-900 dark:border-neutral-700">
                             <!-- Header -->
                             <div
-                                class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200 dark:border-neutral-700">
+                                class="px-8 py-6 grid gap-4 md:flex md:justify-between md:items-center border-b border-gray-200 dark:border-neutral-700 bg-gradient-to-r from-green-50 to-blue-50 dark:from-neutral-800 dark:to-neutral-700">
                                 <div>
-                                    <h2 class="text-xl font-semibold text-gray-800 dark:text-neutral-200">
-                                        Reservation Listing
+                                    <h2 class="text-2xl font-bold text-gray-800 dark:text-neutral-200 flex items-center">
+                                        <div class="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-3">
+                                            <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                        Reservation Management
                                     </h2>
-                                    <p class="text-sm text-yellow-500 dark:text-neutral-400">
-                                        List of all reservations.
-
+                                    <p class="text-sm text-gray-600 dark:text-neutral-400 mt-2">
+                                        Manage all customer reservations and booking settings
                                     </p>
                                 </div>
 
                                 <div>
-                                    <div class="inline-flex gap-x-2">
-                                        <!-- <a class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
-                                            href="#">
-                                            View all
-                                        </a> -->
-
+                                    <div class="inline-flex gap-x-3">
                                         <button @click="createItem"
-                                            class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:bg-green-700 disabled:opacity-50 disabled:pointer-events-none">
-                                            <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg"
+                                            class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:bg-green-700 disabled:opacity-50 disabled:pointer-events-none shadow-lg hover:shadow-xl transition-all duration-200">
+                                            <svg class="shrink-0 size-5" xmlns="http://www.w3.org/2000/svg"
                                                 width="24" height="24" viewBox="0 0 24 24" fill="none"
                                                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                                 stroke-linejoin="round">
@@ -83,6 +82,19 @@ const deleteItem = (id) => {
                                             </svg>
                                             Create Reservation
                                         </button>
+                                        
+                                        <a href="/reservation-settings"
+                                            class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-gray-200 bg-white text-gray-800 shadow-lg hover:shadow-xl hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 transition-all duration-200">
+                                            <svg class="shrink-0 size-5" xmlns="http://www.w3.org/2000/svg"
+                                                width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                                <line x1="12" y1="9" x2="12" y2="13"/>
+                                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                            </svg>
+                                            Reservation Settings
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -91,7 +103,7 @@ const deleteItem = (id) => {
                             <!-- Table -->
                             <div class="-mx-4 mt-8 sm:-mx-0">
                                 <table class="min-w-full h-80 divide-y divide-gray-200 dark:divide-neutral-700">
-                                    <thead class="bg-gray-50 dark:bg-neutral-900">
+                                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-neutral-900 dark:to-neutral-800">
                                         <tr>
                                             <th scope="col" class="px-6 py-3 text-start">
                                                 <div class="flex items-center gap-x-2">
@@ -129,7 +141,7 @@ const deleteItem = (id) => {
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
-                                        <tr v-for="item in reservations.data" :key="item.id">
+                                        <tr v-for="item in reservations.data" :key="item.id" class="hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-200">
                                             <td class="whitespace-nowrap px-5 text-sm ">
                                                 <div class="flex items-center">
                                                     <div class="w-[32px] h-[32px] p-0 flex-shrink-0">

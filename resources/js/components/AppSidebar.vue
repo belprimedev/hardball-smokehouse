@@ -7,31 +7,24 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { Folder, LayoutGrid, Moon, Sun, Calendar } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
-import { ref, onMounted } from 'vue';
+import { useAppearance } from '@/composables/useAppearance';
 
 // Extend NavItem to include children
 interface ExtendedNavItem extends NavItem {
     children?: NavItem[];
 }
 
-// Add dark mode state
-const isDarkMode = ref(false);
+// Use the same appearance composable
+const { appearance, updateAppearance } = useAppearance();
 
-// Add toggle function
-const toggleDarkMode = () => {
-    isDarkMode.value = !isDarkMode.value;
-    document.documentElement.classList.toggle('dark', isDarkMode.value);
-    localStorage.setItem('darkMode', isDarkMode.value ? 'true' : 'false');
-};
-
-// Initialize dark mode on mount
-onMounted(() => {
-    const savedDarkMode = localStorage.getItem('darkMode');
-    if (savedDarkMode === 'true' || (!savedDarkMode && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        isDarkMode.value = true;
-        document.documentElement.classList.add('dark');
+// Toggle between light and dark themes
+const toggleTheme = () => {
+    if (appearance.value === 'dark') {
+        updateAppearance('light');
+    } else {
+        updateAppearance('dark');
     }
-});
+};
 
 const mainNavItems: ExtendedNavItem[] = [
     {
@@ -97,10 +90,10 @@ const footerNavItems: NavItem[] = [
             <NavFooter :items="footerNavItems" />
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton @click="toggleDarkMode" class="hover:bg-gray-100 dark:hover:bg-gray-800">
-                        <component :is="isDarkMode ? Sun : Moon" 
+                    <SidebarMenuButton @click="toggleTheme" class="hover:bg-gray-100 dark:hover:bg-gray-800">
+                        <component :is="appearance === 'dark' ? Sun : Moon" 
                                  class="h-4 w-4" />
-                        <span class="text-gray-900 dark:text-white">{{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}</span>
+                        <span class="text-gray-900 dark:text-white">{{ appearance === 'dark' ? 'Light Mode' : 'Dark Mode' }}</span>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>

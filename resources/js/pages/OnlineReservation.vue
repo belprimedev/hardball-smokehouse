@@ -6,6 +6,23 @@ import { Carousel, Slide } from 'vue3-carousel';
 import 'vue3-carousel/dist/carousel.css';
 
 const showSuccess = ref(false);
+const isCheckingAvailability = ref(false);
+const availabilityStatus = ref<{ available: boolean; current_count: number; max_capacity: number } | null>(null);
+const reservationSettings = ref<any[]>([]);
+const availableTimeSlots = ref<string[]>([]);
+
+// Restaurant information from general settings
+const restaurantInfo = ref({
+    business_name: 'Hardball Caribbean Smokehouse',
+    address: '24 Lloyds Ave, Ipswich IP1 3HD',
+    email: 'info@hardballsmokehouse.co.uk',
+    phone: '+44 01473 807117',
+    operation_hours: ''
+});
+
+// Parsed opening hours for display
+const openingHours = ref<Array<{day: string, hours: string}>>([]);
+
 const form = useForm({
     customer_name: '',
     customer_email: '',
@@ -73,7 +90,7 @@ const testimonials = ref([
 
 
 const submitForm = () => {
-    form.post(route('reservation.store'), {
+    form.post(route('reservation.store.public'), {
         onSuccess: () => {
             form.reset();
             showSuccess.value = true;
@@ -89,8 +106,154 @@ const submitForm = () => {
                 showSuccess.value = false;
             }, 5000); // Hide after 5 seconds
         },
+        onError: (errors) => {
+            // Handle validation errors
+            console.log('Validation errors:', errors);
+        },
     });
 };
+
+// Function to check availability for a specific date and time
+const checkAvailability = async (date: string, time: string) => {
+    if (!date || !time) {
+        availabilityStatus.value = null;
+        return;
+    }
+    
+    isCheckingAvailability.value = true;
+    
+    try {
+        const response = await fetch(`/api/reservations/check-availability?date=${date}&time=${time}`);
+        const data = await response.json();
+        availabilityStatus.value = data;
+    } catch (error) {
+        console.error('Error checking availability:', error);
+        availabilityStatus.value = { available: true, current_count: 0, max_capacity: 20 };
+    } finally {
+        isCheckingAvailability.value = false;
+    }
+};
+
+// Function to fetch reservation settings
+const fetchReservationSettings = async () => {
+    try {
+        const response = await fetch('/api/reservation-settings');
+        const data = await response.json();
+        reservationSettings.value = data;
+    } catch (error) {
+        console.error('Error fetching reservation settings:', error);
+    }
+};
+
+// Function to fetch general settings
+const fetchGeneralSettings = async () => {
+    try {
+        const response = await fetch('/api/general-settings');
+        const settings = await response.json();
+        
+        // Update restaurant info with settings data
+        restaurantInfo.value = {
+            business_name: settings.business_name || 'Hardball Caribbean Smokehouse',
+            address: settings.address || '24 Lloyds Ave, Ipswich IP1 3HD',
+            email: settings.business_email || 'info@hardballsmokehouse.co.uk',
+            phone: settings.contact_number || '+44 01473 807117',
+            operation_hours: settings.operation_hours || ''
+        };
+        
+        // Parse opening hours for display
+        parseOpeningHours();
+    } catch (error) {
+        console.error('Error fetching general settings:', error);
+    }
+};
+
+// Function to parse opening hours from text
+const parseOpeningHours = () => {
+    if (!restaurantInfo.value.operation_hours) {
+        openingHours.value = [];
+        return;
+    }
+    
+    const lines = restaurantInfo.value.operation_hours.split('\n').filter(line => line.trim());
+    const parsed = lines.map(line => {
+        const parts = line.split(':');
+        if (parts.length >= 2) {
+            return {
+                day: parts[0].trim(),
+                hours: parts.slice(1).join(':').trim()
+            };
+        }
+        return {
+            day: line.trim(),
+            hours: 'Hours not specified'
+        };
+    });
+    
+    openingHours.value = parsed;
+};
+
+// Function to get day of week from date string
+const getDayOfWeek = (dateString: string): string => {
+    const date = new Date(dateString);
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    return days[date.getDay()];
+};
+
+// Function to generate time slots based on selected date
+const generateTimeSlots = (date: string) => {
+    if (!date || !reservationSettings.value.length) {
+        availableTimeSlots.value = [];
+        return;
+    }
+
+    const dayOfWeek = getDayOfWeek(date);
+    const daySettings = reservationSettings.value.find(setting => setting.day_of_week === dayOfWeek);
+
+    if (!daySettings || !daySettings.is_open) {
+        availableTimeSlots.value = [];
+        return;
+    }
+
+    const openingTime = new Date(`2000-01-01T${daySettings.opening_time}`);
+    const closingTime = new Date(`2000-01-01T${daySettings.closing_time}`);
+
+    // Generate 1-hour slots from opening to closing time
+    const timeSlots: string[] = [];
+    for (let hour = openingTime.getHours(); hour < closingTime.getHours(); hour++) {
+        const timeString = `${hour.toString().padStart(2, '0')}:00`;
+        timeSlots.push(timeString);
+    }
+
+    availableTimeSlots.value = timeSlots;
+};
+
+// Function to format time for display (e.g., "13:00" -> "1:00 PM")
+const formatTimeForDisplay = (timeString: string): string => {
+    const [hours, minutes] = timeString.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return `${displayHour}:${minutes} ${ampm}`;
+};
+
+// Watch for changes in date and time to check availability
+import { watch, onMounted } from 'vue';
+
+onMounted(() => {
+    fetchReservationSettings();
+    fetchGeneralSettings();
+});
+
+watch([() => form.reservation_date, () => form.reservation_time], ([date, time]) => {
+    if (date) {
+        generateTimeSlots(date);
+    }
+    if (date && time) {
+        checkAvailability(date, time);
+    } else {
+        availabilityStatus.value = null;
+    }
+});
 </script>
 <style>
 body {
@@ -768,6 +931,15 @@ button:hover,
                                     class="success-message mb-3 sm:mb-4 p-3 sm:p-4 text-sm rounded-lg bg-green-100 text-green-700">
                                     Reservation created successfully!
                                 </div>
+                                <div v-if="Object.keys(form.errors).length > 0"
+                                    class="mb-3 sm:mb-4 p-3 sm:p-4 text-sm rounded-lg bg-red-100 text-red-700 border border-red-300">
+                                    <p class="font-semibold">Please correct the following errors:</p>
+                                    <ul class="mt-1 list-disc list-inside">
+                                        <li v-for="(error, field) in form.errors" :key="field" class="text-sm">
+                                            {{ error }}
+                                        </li>
+                                    </ul>
+                                </div>
                                 <div class="grid grid-cols-1 w-full border-b border-gray-900/10 pb-4 sm:pb-5">
 
                                     <div class="sm:col-span-3 w-full">
@@ -776,7 +948,15 @@ button:hover,
                                             Name</label>
                                         <div class="mt-2">
                                             <input type="text" id="customer_name" v-model="form.customer_name" required
-                                                class="block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                :class="[
+                                                    'block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6',
+                                                    form.errors.customer_name 
+                                                        ? 'ring-red-500 focus:ring-red-500' 
+                                                        : 'ring-gray-300 focus:ring-indigo-600'
+                                                ]">
+                                            <div v-if="form.errors.customer_name" class="mt-1 text-sm text-red-400">
+                                                {{ form.errors.customer_name }}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -786,7 +966,15 @@ button:hover,
                                             Number</label>
                                         <div class="mt-2">
                                             <input type="tel" id="customer_phone" v-model="form.customer_phone" required
-                                                class="block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                :class="[
+                                                    'block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6',
+                                                    form.errors.customer_phone 
+                                                        ? 'ring-red-500 focus:ring-red-500' 
+                                                        : 'ring-gray-300 focus:ring-indigo-600'
+                                                ]">
+                                            <div v-if="form.errors.customer_phone" class="mt-1 text-sm text-red-400">
+                                                {{ form.errors.customer_phone }}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -795,7 +983,15 @@ button:hover,
                                             class="block text-sm font-medium leading-6 text-gray-50">Email</label>
                                         <div class="mt-2">
                                             <input type="email" id="customer_email" v-model="form.customer_email"
-                                                class="block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                :class="[
+                                                    'block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6',
+                                                    form.errors.customer_email 
+                                                        ? 'ring-red-500 focus:ring-red-500' 
+                                                        : 'ring-gray-300 focus:ring-indigo-600'
+                                                ]">
+                                            <div v-if="form.errors.customer_email" class="mt-1 text-sm text-red-400">
+                                                {{ form.errors.customer_email }}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -805,7 +1001,15 @@ button:hover,
                                         <div class="mt-2">
                                             <input type="date" id="reservation_date" v-model="form.reservation_date"
                                                 required
-                                                class="block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                :class="[
+                                                    'block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset sm:text-sm sm:leading-6',
+                                                    form.errors.reservation_date 
+                                                        ? 'ring-red-500 focus:ring-red-500' 
+                                                        : 'ring-gray-300 focus:ring-indigo-600'
+                                                ]">
+                                            <div v-if="form.errors.reservation_date" class="mt-1 text-sm text-red-400">
+                                                {{ form.errors.reservation_date }}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -814,11 +1018,35 @@ button:hover,
                                             class="block text-sm font-medium leading-6 text-gray-50">Time</label>
                                         <div class="mt-2">
                                             <select id="reservation_time" v-model="form.reservation_time" required
-                                                class="block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                                <option value="14:00">2:00 PM</option>
-                                                <option value="17:00">5:00 PM</option>
-                                                <option value="20:00">8:00 PM</option>
+                                                :class="[
+                                                    'block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset sm:text-sm sm:leading-6',
+                                                    form.errors.reservation_time 
+                                                        ? 'ring-red-500 focus:ring-red-500' 
+                                                        : 'ring-gray-300 focus:ring-indigo-600'
+                                                ]">
+                                                <option value="">Select a time</option>
+                                                <option v-if="availableTimeSlots.length === 0" value="" disabled>
+                                                    {{ form.reservation_date ? 'Restaurant is closed on this day' : 'Please select a date first' }}
+                                                </option>
+                                                <option v-for="time in availableTimeSlots" :key="time" :value="time">
+                                                    {{ formatTimeForDisplay(time) }}
+                                                </option>
                                             </select>
+                                            <div v-if="form.errors.reservation_time" class="mt-1 text-sm text-red-400">
+                                                {{ form.errors.reservation_time }}
+                                            </div>
+                                            <!-- Availability Status -->
+                                            <div v-if="availabilityStatus && form.reservation_date && form.reservation_time" class="mt-2">
+                                                <div v-if="isCheckingAvailability" class="text-sm text-blue-400">
+                                                    Checking availability...
+                                                </div>
+                                                <div v-else-if="availabilityStatus.available" class="text-sm text-green-400">
+                                                    ✅ Available ({{ availabilityStatus.current_count }}/{{ availabilityStatus.max_capacity }} spots taken)
+                                                </div>
+                                                <div v-else class="text-sm text-red-400">
+                                                    ❌ Fully booked ({{ availabilityStatus.current_count }}/{{ availabilityStatus.max_capacity }} spots taken)
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -829,7 +1057,15 @@ button:hover,
                                         <div class="mt-2">
                                             <input type="number" id="number_of_guest" v-model="form.number_of_guest"
                                                 required min="1"
-                                                class="block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                :class="[
+                                                    'block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset sm:text-sm sm:leading-6',
+                                                    form.errors.number_of_guest 
+                                                        ? 'ring-red-500 focus:ring-red-500' 
+                                                        : 'ring-gray-300 focus:ring-indigo-600'
+                                                ]">
+                                            <div v-if="form.errors.number_of_guest" class="mt-1 text-sm text-red-400">
+                                                {{ form.errors.number_of_guest }}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -845,8 +1081,14 @@ button:hover,
 
                                     <div class="col-span-full mt-3 sm:mt-4">
                                         <button type="submit"
-                                            class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-                                            Create Reservation
+                                            :disabled="!!(availabilityStatus && !availabilityStatus.available)"
+                                            :class="[
+                                                'px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
+                                                availabilityStatus && !availabilityStatus.available
+                                                    ? 'bg-gray-400 cursor-not-allowed'
+                                                    : 'bg-green-600 hover:bg-green-500 focus-visible:outline-green-600'
+                                            ]">
+                                            {{ availabilityStatus && !availabilityStatus.available ? 'Time Slot Full' : 'Create Reservation' }}
                                         </button>
                                     </div>
 
@@ -886,7 +1128,7 @@ button:hover,
                                         <h3 class="mb-1 sm:mb-2 text-base sm:text-lg font-medium leading-6 text-white dark:text-white">
                                             Our Address
                                         </h3>
-                                        <p class="text-gray-300 dark:text-slate-400 text-sm sm:text-base">24 Lloyds Ave, Ipswich IP1 3HD
+                                        <p class="text-gray-300 dark:text-slate-400 text-sm sm:text-base">{{ restaurantInfo.address }}
                                         </p>
                                         <p class="text-gray-300 dark:text-slate-400 text-sm sm:text-base">United Kingdom</p>
                                     </div>
@@ -908,9 +1150,9 @@ button:hover,
                                         <h3 class="mb-1 sm:mb-2 text-base sm:text-lg font-medium leading-6 text-white dark:text-white">
                                             Contact
                                         </h3>
-                                        <p class="text-gray-300 dark:text-slate-400 text-sm sm:text-base">Mobile: 07398 951462</p>
+                                        <p class="text-gray-300 dark:text-slate-400 text-sm sm:text-base">Phone: {{ restaurantInfo.phone }}</p>
                                         <p class="text-gray-300 dark:text-slate-400 text-sm sm:text-base">Mail:
-                                            info@hardballsmokehouse.com.uk</p>
+                                            {{ restaurantInfo.email }}</p>
                                     </div>
                                 </li>
                                 <li class="flex">
@@ -925,31 +1167,18 @@ button:hover,
                                     </div>
                                     <div class="ml-3 sm:ml-4 mb-3 sm:mb-4">
                                         <h3 class="mb-1 sm:mb-2 text-base sm:text-lg font-medium leading-6 text-white dark:text-white">
-                                            Working
-                                            hours</h3>
-                                        <p class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">Monday
-                                            &nbsp;&emsp;&emsp;&nbsp;: 1:00<span class="text-slate-400 text-xs">pm</span>
-                                            - 9:30<span class="text-slate-400 text-xs">pm</span></p>
-                                        <p class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">Tuesday
-                                            &emsp;&emsp;&nbsp;&nbsp;: 1:00<span class="text-slate-400 text-xs">pm</span>
-                                            - 9:30<span class="text-slate-400 text-xs">pm</span></p>
-                                        <p class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">Wednesday &emsp;: 1:00<span
-                                                class="text-slate-400 text-xs">pm</span> - 10:30<span
-                                                class="text-slate-400 text-xs">pm</span>
-                                        </p>
-                                        <p class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">Thursday &emsp;&emsp;&nbsp;:
-                                            1:00<span class="text-slate-400 text-xs">pm</span> - 10:30<span
-                                                class="text-slate-400 text-xs">pm</span></p>
-                                        <p class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">Friday
-                                            &emsp;&emsp;&emsp;&nbsp;&nbsp;: 4:30<span
-                                                class="text-slate-400 text-xs">pm</span> -
-                                            11:0<span class="text-slate-400 text-xs">pm</span></p>
-                                        <p class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">Saturday &emsp;&emsp;&nbsp;:
-                                            1:00<span class="text-slate-400 text-xs">pm</span> - 11:00<span
-                                                class="text-slate-400 text-xs">pm</span></p>
-                                        <p class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">Sunday &emsp;&emsp;&emsp;:
-                                            1:00<span class="text-slate-400 text-xs">pm</span> - 8:30<span
-                                                class="text-slate-400 text-xs">pm</span></p>
+                                            Working Hours</h3>
+                                        <div v-if="openingHours.length > 0">
+                                            <p v-for="(hour, index) in openingHours" :key="index" 
+                                               class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">
+                                                {{ hour.day }}: <span class="text-emerald-400 font-semibold">{{ hour.hours }}</span>
+                                            </p>
+                                        </div>
+                                        <div v-else class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">
+                                            <p>Monday - Friday: <span class="text-emerald-400 font-semibold">1:00 PM - 9:30 PM</span></p>
+                                            <p>Saturday: <span class="text-emerald-400 font-semibold">1:00 PM - 11:00 PM</span></p>
+                                            <p>Sunday: <span class="text-emerald-400 font-semibold">1:00 PM - 8:30 PM</span></p>
+                                        </div>
                                     </div>
                                 </li>
                             </ul>

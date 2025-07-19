@@ -67,5 +67,13 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('menu-category', MenuCategoryController::class);
         Route::resource('menu-items', MenuController::class);
+        
+        // Reservation Settings Routes
+        Route::get('/reservation-settings', [App\Http\Controllers\ReservationSettingController::class, 'index'])->name('reservation-settings.index');
+        Route::put('/reservation-settings', [App\Http\Controllers\ReservationSettingController::class, 'update'])->name('reservation-settings.update');
+        
+        // General Settings Routes
+        Route::get('/settings/general', [App\Http\Controllers\GeneralSettingController::class, 'index'])->name('settings.general');
+        Route::put('/settings/general', [App\Http\Controllers\GeneralSettingController::class, 'update'])->name('settings.general.update');
      
 });

@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { 
     Users, 
     Utensils, 
@@ -18,6 +18,36 @@ import {
     Plus,
     Eye
 } from 'lucide-vue-next';
+
+// Restaurant information from general settings
+const restaurantInfo = ref({
+    business_name: 'Hardball Caribbean Smokehouse',
+    address: '24 Lloyds Ave, Ipswich IP1 3HD',
+    email: 'info@hardballsmokehouse.co.uk',
+    phone: '+44 01473 807117'
+});
+
+// Fetch general settings
+const fetchGeneralSettings = async () => {
+    try {
+        const response = await fetch('/api/general-settings');
+        const settings = await response.json();
+        
+        // Update restaurant info with settings data
+        restaurantInfo.value = {
+            business_name: settings.business_name || 'Hardball Caribbean Smokehouse',
+            address: settings.address || '24 Lloyds Ave, Ipswich IP1 3HD',
+            email: settings.business_email || 'info@hardballsmokehouse.co.uk',
+            phone: settings.contact_number || '+44 01473 807117'
+        };
+    } catch (error) {
+        console.error('Error fetching general settings:', error);
+    }
+};
+
+onMounted(() => {
+    fetchGeneralSettings();
+});
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -407,15 +437,15 @@ const todaysReservations = computed(() => {
                     <div class="space-y-3">
                         <div class="flex items-center space-x-3">
                             <MapPin class="w-5 h-5 text-green-400" />
-                            <span>24 Lloyds Ave, Ipswich IP1 3HD</span>
+                            <span>{{ restaurantInfo.address }}</span>
                         </div>
                         <div class="flex items-center space-x-3">
                             <Phone class="w-5 h-5 text-green-400" />
-                            <span>+44 01473 807117</span>
+                            <span>{{ restaurantInfo.phone }}</span>
                         </div>
                         <div class="flex items-center space-x-3">
                             <Mail class="w-5 h-5 text-green-400" />
-                            <span>info@hardballsmokehouse.co.uk</span>
+                            <span>{{ restaurantInfo.email }}</span>
                         </div>
                     </div>
                     <div class="space-y-3">
@@ -425,7 +455,7 @@ const todaysReservations = computed(() => {
                         </div>
                         <div class="flex items-center space-x-3">
                             <TrendingUp class="w-5 h-5 text-green-400" />
-                            <span>Caribbean Smokehouse & Restaurant</span>
+                            <span>{{ restaurantInfo.business_name }}</span>
                         </div>
                     </div>
                 </div>

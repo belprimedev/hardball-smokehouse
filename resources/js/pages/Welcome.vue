@@ -522,7 +522,7 @@ watch(selectedMenuCategory, (val) => {
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
                                             <p class="text-white font-semibold text-sm sm:text-base">Open Daily</p>
-                                            <p class="text-gray-300 text-xs sm:text-sm">12:00 - 22:00</p>
+                                            <p class="text-gray-300 text-xs sm:text-sm">12:00pm</p>
                                         </div>
                                         <div v-motion-slide-visible-bottom :delay="500" :duration="800"
                                             class="bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4 text-center">

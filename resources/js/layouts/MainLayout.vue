@@ -1,11 +1,40 @@
 <script setup lang="ts">
 
 //import T1extLink from '@/Components/T1extLink.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Head } from '@inertiajs/vue3';
 
-
 const showingNavigationDropdown = ref(false);
+
+// Restaurant information from general settings
+const restaurantInfo = ref({
+    business_name: 'Hardball Caribbean Smokehouse',
+    address: '24 Lloyds Ave, Ipswich IP1 3HD',
+    email: 'info@hardballsmokehouse.co.uk',
+    phone: '+44 01473 807117'
+});
+
+// Fetch general settings
+const fetchGeneralSettings = async () => {
+    try {
+        const response = await fetch('/api/general-settings');
+        const settings = await response.json();
+        
+        // Update restaurant info with settings data
+        restaurantInfo.value = {
+            business_name: settings.business_name || 'Hardball Caribbean Smokehouse',
+            address: settings.address || '24 Lloyds Ave, Ipswich IP1 3HD',
+            email: settings.business_email || 'info@hardballsmokehouse.co.uk',
+            phone: settings.contact_number || '+44 01473 807117'
+        };
+    } catch (error) {
+        console.error('Error fetching general settings:', error);
+    }
+};
+
+onMounted(() => {
+    fetchGeneralSettings();
+});
 </script>
 <style>
 .rubik {
@@ -164,8 +193,7 @@ body {
                         <div>
                             <div>
                                 <h3 class="block group font-bold text-white dark:text-white">Address</h3>
-                                <p class="text-gray-50 text-xl font-bold dark:text-neutral-400">24 Lloyds Ave, Ipswich
-                                    IP1 3HD</p>
+                                <p class="text-gray-50 text-xl font-bold dark:text-neutral-400">{{ restaurantInfo.address }}</p>
                             </div>
                         </div>
                     </div>
@@ -185,7 +213,7 @@ body {
                             <div>
                                 <h3 class="block group font-bold text-white dark:text-white">EMAIL</h3>
                                 <p class="text-gray-50 text-xl font-bold dark:text-neutral-400">
-                                    info@hardballsmokehouse.co.uk</p>
+                                    {{ restaurantInfo.email }}</p>
                             </div>
                         </div>
                     </a>
@@ -207,8 +235,7 @@ body {
 
                         <div>
                             <h3 class="block group font-bold text-white dark:text-white">CALL</h3>
-                            <a class="text-gray-50 text-xl font-bold dark:text-neutral-400" href="+4401473 807117">+44
-                                01473 807117</a>
+                            <a class="text-gray-50 text-xl font-bold dark:text-neutral-400" :href="`tel:${restaurantInfo.phone}`">{{ restaurantInfo.phone }}</a>
                         </div>
 
 
@@ -240,16 +267,16 @@ body {
 
                         <div class="mt-3 grid space-y-3">
                             <a :href="route('menu')"
-                                class="flex items-center py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                                class="flex items-center py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Menu</a>
                             <a :href="route('cocktail')"
-                                class="flex items-center py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                                class="flex items-center py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Cocktail</a>
                             <a :href="route('gallery')"
-                                class="flex items-center py-2 px-3 text-white text-sm font-black rubik rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                                class="flex items-center py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Gallery</a>
                             <a :href="route('home')"
-                                class="flex items-center py-2 px-3 text-white text-sm font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                                class="flex items-center py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Reservation</a>
 
                         </div>
@@ -263,19 +290,19 @@ body {
 
                         <div class="mt-3 grid space-y-3">
                             <a :href="route('about')"
-                                class="block py-2 px-3 text-white text-sm font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                                class="block py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 About US</a>
                             <a :href="route('faq')"
-                                class="block py-2 px-3 text-white text-sm font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                                class="block py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 FAQ</a>
                             <a :href="route('contact')"
-                                class="block py-2 px-3 text-white text-sm font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                                class="block py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 Contact</a>
                             <a :href="route('vacancies')"
-                                class="block py-2 px-3 text-white text-sm font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                                class="block py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 Vacancies</a>
                             <a :href="route('terms')"
-                                class="block py-2 px-3 text-white text-sm font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                                class="block py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
                                 Terms & Conditions</a>
                         </div>
                     </div>
@@ -290,8 +317,7 @@ body {
             <div class="bg-emerald-900 mt-5 sm:mt-2">
                 <div class="mx-auto max-w-7xl grid lg:gap-y-2 sm:gap-y-0 sm:flex sm:justify-between sm:items-center">
                     <div class="flex justify-between items-center">
-                        <p class="pt-2 pl-4  text-sm text-gray-200 dark:text-neutral-200 lg:p-2">© 2025 Hardball
-                            Caribbean Smokehouse. All
+                        <p class="pt-2 pl-4  text-sm text-gray-200 dark:text-neutral-200 lg:p-2">© 2025 {{ restaurantInfo.business_name }}. All
                             rights reserved.</p>
                     </div>
                     <!-- End Col -->

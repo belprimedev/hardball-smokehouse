@@ -25,6 +25,18 @@ Route::get('/make-reservation', function () {
     return Inertia::render('OnlineReservation');
 })->name('make-reservation');
 
+// Public reservation submission route
+Route::post('/reservation/public', [App\Http\Controllers\ReservationController::class, 'store'])->name('reservation.store.public');
+
+// Public availability check route
+Route::get('/api/reservations/check-availability', [App\Http\Controllers\ReservationController::class, 'checkAvailability']);
+
+// Public reservation settings API route
+Route::get('/api/reservation-settings', [App\Http\Controllers\ReservationSettingController::class, 'apiIndex']);
+
+// Public general settings API route
+Route::get('/api/general-settings', [App\Http\Controllers\GeneralSettingController::class, 'apiIndex']);
+
 Route::get('dashboard', function () {
     // Get statistics for dashboard
     $totalMenuItems = \App\Models\MenuItem::count();
