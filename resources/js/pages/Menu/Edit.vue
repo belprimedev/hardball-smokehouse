@@ -3,7 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import { ref, watchEffect } from 'vue';
-import { Upload, X, ChefHat, Star, Eye, Check, AlertCircle, Loader2 } from 'lucide-vue-next';
+import { X, ChefHat, Star, Eye, Check, AlertCircle, Loader2 } from 'lucide-vue-next';
 
 interface MenuItem {
     id: number;
@@ -57,17 +57,17 @@ const form = ref({
     is_chef_special: !!props.menuItem.is_chef_special,
     is_available: !!props.menuItem.is_available,
     is_visible: !!props.menuItem.is_visible,
-    image: null as File | null
+    image: null as File | null,
+    remove_existing_image: false
 });
 
 const imagePreview = ref<string | null>(null);
 const isSubmitting = ref(false);
 const errors = ref<Record<string, string>>({});
-const imageInputRef = ref<HTMLInputElement>();
 
 // Initialize image preview with existing image
 watchEffect(() => {
-    if (props.menuItem.image_path) {
+    if (props.menuItem.image_path && !form.value.image) {
         imagePreview.value = `/storage/${props.menuItem.image_path}`;
     }
 });
@@ -106,8 +106,14 @@ const handleImageUpload = (event: Event) => {
 // Remove image
 const removeImage = () => {
     form.value.image = null;
-    imagePreview.value = props.menuItem.image_path ? `/storage/${props.menuItem.image_path}` : null;
+    imagePreview.value = null; // Set to null to hide the preview
     errors.value.image = '';
+    
+    // If there was an existing image, we need to signal that we want to remove it
+    // We'll add a special field to the form to indicate image removal
+    if (props.menuItem.image_path) {
+        form.value.remove_existing_image = true;
+    }
 };
 
 // Validate form
@@ -158,28 +164,16 @@ const submitForm = async () => {
             formData.append('image', form.value.image);
         }
         
-        // Debug: Log the form data being sent
-        console.log('Submitting form data:', {
-            name: form.value.name,
-            description: form.value.description,
-            short_label: form.value.short_label,
-            side_note: form.value.side_note,
-            price: form.value.price,
-            category_id: form.value.category_id,
-            is_featured: form.value.is_featured,
-            is_chef_special: form.value.is_chef_special,
-            is_available: form.value.is_available,
-            is_visible: form.value.is_visible,
-            hasImage: !!form.value.image
-        });
+        // Add image removal flag if needed
+        if (form.value.remove_existing_image) {
+            formData.append('remove_existing_image', '1');
+        }
         
         await router.post(route('menu-items.update', props.menuItem.id), formData, {
             onSuccess: () => {
-                console.log('Menu item updated successfully');
                 router.visit('/menu-items');
             },
             onError: (validationErrors) => {
-                console.error('Validation errors:', validationErrors);
                 errors.value = validationErrors;
             }
         });
@@ -203,7 +197,7 @@ const cancelForm = () => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 rounded-xl p-6">
             <!-- Header -->
-            <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
+            <div class="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl p-6 text-white">
                 <h1 class="text-3xl font-bold mb-2">Edit Menu Item</h1>
                 <p class="text-blue-100">Update your delicious Caribbean menu item</p>
             </div>
@@ -380,7 +374,20 @@ const cancelForm = () => {
                                     Item Image
                                 </h3>
                                 
+                                <!-- Simple File Input -->
                                 <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Upload Image
+                                        </label>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            @change="handleImageUpload"
+                                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                        />
+                                    </div>
+
                                     <!-- Image Preview -->
                                     <div v-if="imagePreview" class="relative">
                                         <img
@@ -396,30 +403,6 @@ const cancelForm = () => {
                                             <X class="w-4 h-4" />
                                         </button>
                                     </div>
-
-                                    <!-- Upload Area -->
-                                    <div
-                                        v-if="!imagePreview"
-                                        class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors cursor-pointer dark:bg-gray-800/50"
-                                        @click="imageInputRef?.click()"
-                                    >
-                                        <Upload class="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                            Click to upload an image or drag and drop
-                                        </p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-500">
-                                            PNG, JPG, GIF, WebP up to 2MB
-                                        </p>
-                                    </div>
-
-                                    <!-- Hidden File Input -->
-                                    <input
-                                        ref="imageInputRef"
-                                        type="file"
-                                        accept="image/*"
-                                        class="hidden"
-                                        @change="handleImageUpload"
-                                    />
 
                                     <p v-if="errors.image" class="text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
                                         <AlertCircle class="w-4 h-4" />

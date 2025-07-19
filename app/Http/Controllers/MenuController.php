@@ -114,44 +114,58 @@ class MenuController extends Controller
 
     public function update(Request $request, $id)
     {
-        Log::info('Update request data:', $request->all());
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'price' => 'required|numeric',
+                'category_id' => 'required|exists:menu_categories,id',
+                'short_label' => 'nullable|string',
+                'side_note' => 'nullable|string',
+                'is_visible' => 'nullable|in:0,1',
+                'is_available' => 'nullable|in:0,1',
+                'is_featured' => 'nullable|in:0,1',
+                'is_chef_special' => 'nullable|in:0,1',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'remove_existing_image' => 'nullable|in:0,1'
+            ]);
         
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'category_id' => 'required|exists:menu_categories,id',
-            'short_label' => 'nullable|string',
-            'side_note' => 'nullable|string',
-            'is_visible' => 'boolean',
-            'is_available' => 'boolean',
-            'is_featured' => 'boolean',
-            'is_chef_special' => 'boolean',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
-        ]);
-        
-        Log::info('Validated data:', $validated);
+        // Convert string boolean values to actual booleans
+        $validated['is_visible'] = $request->boolean('is_visible');
+        $validated['is_available'] = $request->boolean('is_available');
+        $validated['is_featured'] = $request->boolean('is_featured');
+        $validated['is_chef_special'] = $request->boolean('is_chef_special');
         
         $menuItem = MenuItem::findOrFail($id);
         
         if ($request->hasFile('image')) {
-            Log::info('Image file detected');
-            
             // Delete old image if exists
             if ($menuItem->image_path) {
-                Log::info('Deleting old image:', ['path' => $menuItem->image_path]);
                 Storage::disk('public')->delete($menuItem->image_path);
             }
             
             $path = $request->file('image')->store('menu-items', 'public');
-            Log::info('New image stored at:', ['path' => $path]);
             $validated['image_path'] = $path;
+        } elseif ($request->boolean('remove_existing_image')) {
+            // Delete existing image if it exists
+            if ($menuItem->image_path) {
+                Storage::disk('public')->delete($menuItem->image_path);
+            }
+            
+            $validated['image_path'] = null;
         }
 
-        Log::info('Updating menu item with data:', $validated);
         $menuItem->update($validated);
         
         return redirect()->route('menu-items.index')->with('success', 'Menu item updated successfully');
+        } catch (\Exception $e) {
+            Log::error('Error updating menu item:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->withErrors(['general' => 'Failed to update menu item: ' . $e->getMessage()]);
+        }
     }
 
 

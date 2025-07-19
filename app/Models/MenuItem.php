@@ -36,6 +36,8 @@ class MenuItem extends Model
     protected $casts = [
         'is_featured' => 'boolean',
         'is_chef_special' => 'boolean',
+        'is_available' => 'boolean',
+        'is_visible' => 'boolean',
         'price' => 'decimal:2',
     ];
 
