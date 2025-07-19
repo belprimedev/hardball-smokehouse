@@ -25,7 +25,7 @@ const props = defineProps<{
 
 const form = useForm({
     settings: props.settings || []
-});
+} as any);
 
 const daysOfWeek = [
     { key: 'monday', label: 'Monday' },
@@ -46,7 +46,36 @@ const submitForm = () => {
 };
 
 const getSettingForDay = (dayKey: string) => {
-    return (form.settings as ReservationSetting[]).find(setting => setting.day_of_week === dayKey);
+    const settings = form.settings as ReservationSetting[];
+    
+    // Ensure settings array exists and is not empty
+    if (!settings || !Array.isArray(settings) || settings.length === 0) {
+        console.warn('Settings array is empty or undefined for day:', dayKey);
+        // Return a default setting if none exists for this day
+        return {
+            id: 0,
+            day_of_week: dayKey,
+            opening_time: '09:00:00',
+            closing_time: '17:00:00',
+            max_capacity_per_hour: 20,
+            is_open: false
+        };
+    }
+    
+    const setting = settings.find(setting => setting.day_of_week === dayKey);
+    if (!setting) {
+        console.warn('No setting found for day:', dayKey);
+        // Return a default setting if none exists for this day
+        return {
+            id: 0,
+            day_of_week: dayKey,
+            opening_time: '09:00:00',
+            closing_time: '17:00:00',
+            max_capacity_per_hour: 20,
+            is_open: false
+        };
+    }
+    return setting;
 };
 </script>
 
