@@ -2,6 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -45,37 +46,51 @@ const submitForm = () => {
     });
 };
 
-const getSettingForDay = (dayKey: string) => {
+// Create a reactive map of settings by day
+const settingsByDay = computed(() => {
     const settings = form.settings as ReservationSetting[];
+    const map = new Map();
     
-    // Ensure settings array exists and is not empty
     if (!settings || !Array.isArray(settings) || settings.length === 0) {
-        console.warn('Settings array is empty or undefined for day:', dayKey);
-        // Return a default setting if none exists for this day
-        return {
-            id: 0,
-            day_of_week: dayKey,
-            opening_time: '09:00:00',
-            closing_time: '17:00:00',
-            max_capacity_per_hour: 20,
-            is_open: false
-        };
+        console.warn('Settings array is empty or undefined');
+        // Create default settings for all days
+        daysOfWeek.forEach(day => {
+            map.set(day.key, {
+                id: 0,
+                day_of_week: day.key,
+                opening_time: '09:00:00',
+                closing_time: '17:00:00',
+                max_capacity_per_hour: 20,
+                is_open: false
+            });
+        });
+        return map;
     }
     
-    const setting = settings.find(setting => setting.day_of_week === dayKey);
-    if (!setting) {
-        console.warn('No setting found for day:', dayKey);
-        // Return a default setting if none exists for this day
-        return {
-            id: 0,
-            day_of_week: dayKey,
-            opening_time: '09:00:00',
-            closing_time: '17:00:00',
-            max_capacity_per_hour: 20,
-            is_open: false
-        };
-    }
-    return setting;
+    settings.forEach(setting => {
+        map.set(setting.day_of_week, setting);
+    });
+    
+    // Ensure all days have a setting
+    daysOfWeek.forEach(day => {
+        if (!map.has(day.key)) {
+            console.warn('No setting found for day:', day.key);
+            map.set(day.key, {
+                id: 0,
+                day_of_week: day.key,
+                opening_time: '09:00:00',
+                closing_time: '17:00:00',
+                max_capacity_per_hour: 20,
+                is_open: false
+            });
+        }
+    });
+    
+    return map;
+});
+
+const getSettingForDay = (dayKey: string) => {
+    return settingsByDay.value.get(dayKey);
 };
 </script>
 
