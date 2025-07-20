@@ -51,8 +51,7 @@ const filteredItems = computed(() => {
 // Function to generate proper image URL
 const getImageUrl = (imagePath: string | null | undefined): string | null => {
     if (!imagePath) return null;
-    const url = `/storage/${imagePath}`;
-    console.log('Generated image URL:', url, 'for image_path:', imagePath);
+    const url = `/img/food/${imagePath}`;
     return url;
 };
 

@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 
 class ReservationController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:manage reservations');
+    }
     
 public function index()
 {

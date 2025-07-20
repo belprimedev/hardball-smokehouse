@@ -108,7 +108,6 @@ const submitForm = () => {
         },
         onError: (errors) => {
             // Handle validation errors
-            console.log('Validation errors:', errors);
         },
     });
 };

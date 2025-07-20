@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class MenuCategoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:manage menu');
+    }
+
     public function index()
     {
         return Inertia::render('MenuCategory/Index', [

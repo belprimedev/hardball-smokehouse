@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
 
         // Run other seeders
         $this->call([
+            RolesAndPermissionsSeeder::class,
             MenuCategoriesSeeder::class,
             MenuItemsSeeder::class,
             BeveragesSeeder::class,

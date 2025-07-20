@@ -57,23 +57,32 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 
-        Route::get('/reservation', [ReservationController::class, 'index'])->name('reservation.index');
-        Route::get('/reservation/create', [ReservationController::class, 'create'])->name('reservation.create');
-        Route::post('/reservation', [ReservationController::class, 'store'])->name('reservation.store');
-        Route::get('/reservation/{reservation}', [ReservationController::class, 'show'])->name('reservation.show');
-        Route::get('/reservation/{reservation}/edit', [ReservationController::class, 'edit'])->name('reservation.edit'); // ✅ Edit Route
-        Route::put('/reservation/{reservation}', [ReservationController::class, 'update'])->name('reservation.update'); // ✅ Fix update name
-        Route::delete('/reservation/{reservation}', [ReservationController::class, 'destroy'])->name('reservation.destroy');
+        // Reservation routes - accessible by staff, manager, and admin
+        Route::middleware('permission:manage reservations')->group(function () {
+            Route::get('/reservation', [ReservationController::class, 'index'])->name('reservation.index');
+            Route::get('/reservation/create', [ReservationController::class, 'create'])->name('reservation.create');
+            Route::post('/reservation', [ReservationController::class, 'store'])->name('reservation.store');
+            Route::get('/reservation/{reservation}', [ReservationController::class, 'show'])->name('reservation.show');
+            Route::get('/reservation/{reservation}/edit', [ReservationController::class, 'edit'])->name('reservation.edit');
+            Route::put('/reservation/{reservation}', [ReservationController::class, 'update'])->name('reservation.update');
+            Route::delete('/reservation/{reservation}', [ReservationController::class, 'destroy'])->name('reservation.destroy');
+        });
 
-        Route::resource('menu-category', MenuCategoryController::class);
-        Route::resource('menu-items', MenuController::class);
+        // Menu management routes - accessible by manager and admin
+        Route::middleware('permission:manage menu')->group(function () {
+            Route::resource('menu-category', MenuCategoryController::class);
+            Route::resource('menu-items', MenuController::class);
+        });
         
-        // Reservation Settings Routes
-        Route::get('/reservation-settings', [App\Http\Controllers\ReservationSettingController::class, 'index'])->name('reservation-settings.index');
-        Route::put('/reservation-settings', [App\Http\Controllers\ReservationSettingController::class, 'update'])->name('reservation-settings.update');
-        
-        // General Settings Routes
-        Route::get('/settings/general', [App\Http\Controllers\GeneralSettingController::class, 'index'])->name('settings.general');
-        Route::put('/settings/general', [App\Http\Controllers\GeneralSettingController::class, 'update'])->name('settings.general.update');
+        // Settings routes - accessible by admin only
+        Route::middleware('permission:manage settings')->group(function () {
+            // Reservation Settings Routes
+            Route::get('/reservation-settings', [App\Http\Controllers\ReservationSettingController::class, 'index'])->name('reservation-settings.index');
+            Route::put('/reservation-settings', [App\Http\Controllers\ReservationSettingController::class, 'update'])->name('reservation-settings.update');
+            
+            // General Settings Routes
+            Route::get('/settings/general', [App\Http\Controllers\GeneralSettingController::class, 'index'])->name('settings.general');
+            Route::put('/settings/general', [App\Http\Controllers\GeneralSettingController::class, 'update'])->name('settings.general.update');
+        });
      
 });

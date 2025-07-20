@@ -71,7 +71,6 @@ const props = defineProps({
         })
     }
 });
-//console.log(props.menuItems);
 // Reactive filter state
 const searchQuery = ref(props.search);
 const showFilters = ref(false);

@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:manage menu');
+    }
+
     public function index(Request $request)
     {
         $query = MenuItem::with('category');

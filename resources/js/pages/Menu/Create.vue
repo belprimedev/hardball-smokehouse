@@ -131,33 +131,15 @@ const submitForm = async () => {
             formData.append('image', form.value.image);
         }
         
-        // Debug: Log the form data being sent
-        console.log('Submitting form data:', {
-            name: form.value.name,
-            description: form.value.description,
-            short_label: form.value.short_label,
-            side_note: form.value.side_note,
-            price: form.value.price,
-            category_id: form.value.category_id,
-            is_featured: form.value.is_featured,
-            is_chef_special: form.value.is_chef_special,
-            is_available: form.value.is_available,
-            is_visible: form.value.is_visible,
-            hasImage: !!form.value.image
-        });
-        
         await router.post('/menu-items', formData, {
             onSuccess: () => {
-                console.log('Menu item created successfully');
                 router.visit('/menu-items');
             },
             onError: (validationErrors) => {
-                console.error('Validation errors:', validationErrors);
                 errors.value = validationErrors;
             }
         });
     } catch (error) {
-        console.error('Form submission error:', error);
         errors.value.general = 'An unexpected error occurred. Please try again.';
     } finally {
         isSubmitting.value = false;

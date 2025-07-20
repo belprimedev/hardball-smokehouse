@@ -63,29 +63,36 @@ const menuCategories = [
 ];
 const selectedMenuCategory = ref('starters');
 
-const groupedMenuItems = computed<Record<string, MenuItem[]>>(() => {
-    console.log('Raw menuItems:', props.menuItems);
-    const groups: Record<string, MenuItem[]> = { starters: [], jerk: [], curry: [], meals: [] };
-    const items = Array.isArray(props.menuItems) ? props.menuItems : [];
-    for (const item of items) {
-        if (!item.category || !item.category.name) {
-            console.log('Item missing category:', item);
-            continue;
+const groupedMenuItems = computed(() => {
+    if (!props.menuItems) return {};
+    
+    const groups: Record<string, any[]> = {};
+    
+    props.menuItems.forEach((item: any) => {
+        if (!item.category) {
+            return;
         }
-        const cat = item.category.name.toLowerCase();
-        console.log('Processing item:', item.name, 'with category:', cat);
-        if (cat.includes('starter')) groups.starters.push(item);
-        else if (cat.includes('jerk')) groups.jerk.push(item);
-        else if (cat.includes('curry')) groups.curry.push(item);
-        else if (cat.includes('meal')) groups.meals.push(item);
-    }
-    console.log('Grouped items:', groups);
+        
+        const cat = item.category.name;
+        if (!groups[cat]) {
+            groups[cat] = [];
+        }
+        groups[cat].push(item);
+    });
+    
     return groups;
 });
 
+const selectedCategory = ref(Object.keys(groupedMenuItems.value)[0] || '');
+
+const filteredItems = computed(() => {
+    if (!selectedCategory.value) return [];
+    return groupedMenuItems.value[selectedCategory.value] || [];
+});
+
 watch(selectedMenuCategory, (val) => {
-    console.log('Selected category:', val);
-    console.log('Items for category:', groupedMenuItems.value[val]);
+    // console.log('Selected category:', val);
+    // console.log('Items for category:', groupedMenuItems.value[val]);
 });
 
 </script>
