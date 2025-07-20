@@ -38,10 +38,8 @@ const submit = () => {
                     <div class="flex justify-center mb-6">
                         <div class="relative">
                             <!-- Logo Background -->
-                            <div class="w-24 h-24 bg-gradient-to-br from-green-500 to-yellow-500 rounded-full flex items-center justify-center shadow-2xl">
-                                <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                                </svg>
+                            <div class="w-32 h-32 bg-gradient-to-br from-green-500 to-yellow-500 rounded-full flex items-center justify-center shadow-2xl p-4">
+                                <img src="/img/logo.svg" alt="Hardball Smokehouse Logo" class="w-20 h-20 text-white" />
                             </div>
                             <!-- Decorative Elements -->
                             <div class="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full opacity-80"></div>
