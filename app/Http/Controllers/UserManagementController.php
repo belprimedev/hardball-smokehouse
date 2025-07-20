@@ -172,4 +172,57 @@ class UserManagementController extends Controller
         return redirect()->back()
             ->with('success', 'Permissions updated successfully.');
     }
+
+    /**
+     * Suspend a user
+     */
+    public function suspend(Request $request, User $user)
+    {
+        $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        // Prevent admin from suspending themselves
+        if ($user->id === Auth::id()) {
+            return redirect()->route('user-management.index')
+                ->with('error', 'You cannot suspend your own account.');
+        }
+
+        $user->suspend($request->reason);
+
+        return redirect()->route('user-management.index')
+            ->with('success', 'User suspended successfully.');
+    }
+
+    /**
+     * Activate a user
+     */
+    public function activate(User $user)
+    {
+        $user->activate();
+
+        return redirect()->route('user-management.index')
+            ->with('success', 'User activated successfully.');
+    }
+
+    /**
+     * Disable a user
+     */
+    public function disable(Request $request, User $user)
+    {
+        $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        // Prevent admin from disabling themselves
+        if ($user->id === Auth::id()) {
+            return redirect()->route('user-management.index')
+                ->with('error', 'You cannot disable your own account.');
+        }
+
+        $user->disable($request->reason);
+
+        return redirect()->route('user-management.index')
+            ->with('success', 'User disabled successfully.');
+    }
 } 

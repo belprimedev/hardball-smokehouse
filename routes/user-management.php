@@ -12,4 +12,12 @@ Route::middleware(['auth', 'verified', 'permission:manage users'])->group(functi
     // Additional route for assigning permissions
     Route::post('user-management/{user}/permissions', [UserManagementController::class, 'assignPermissions'])
         ->name('user-management.permissions');
+    
+    // User Status Management Routes
+    Route::post('user-management/{user}/suspend', [UserManagementController::class, 'suspend'])
+        ->name('user-management.suspend');
+    Route::post('user-management/{user}/activate', [UserManagementController::class, 'activate'])
+        ->name('user-management.activate');
+    Route::post('user-management/{user}/disable', [UserManagementController::class, 'disable'])
+        ->name('user-management.disable');
 }); 

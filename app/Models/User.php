@@ -22,7 +22,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'last_login_at',
+        'status',
+        'status_reason',
+        'suspended_at',
     ];
 
     /**
@@ -46,6 +48,67 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'last_login_at' => 'datetime',
+            'suspended_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Check if user is active
+     */
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+
+    /**
+     * Check if user is suspended
+     */
+    public function isSuspended(): bool
+    {
+        return $this->status === 'suspended';
+    }
+
+    /**
+     * Check if user is disabled
+     */
+    public function isDisabled(): bool
+    {
+        return $this->status === 'disabled';
+    }
+
+    /**
+     * Suspend user
+     */
+    public function suspend(string $reason = null): void
+    {
+        $this->update([
+            'status' => 'suspended',
+            'status_reason' => $reason,
+            'suspended_at' => now(),
+        ]);
+    }
+
+    /**
+     * Activate user
+     */
+    public function activate(): void
+    {
+        $this->update([
+            'status' => 'active',
+            'status_reason' => null,
+            'suspended_at' => null,
+        ]);
+    }
+
+    /**
+     * Disable user
+     */
+    public function disable(string $reason = null): void
+    {
+        $this->update([
+            'status' => 'disabled',
+            'status_reason' => $reason,
+            'suspended_at' => null,
+        ]);
     }
 }
