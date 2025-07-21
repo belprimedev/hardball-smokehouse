@@ -56,12 +56,12 @@ onMounted(async () => {
 const props = defineProps<{ dessertItems: any[]; menuItems: MenuItem[] }>();
 
 const menuCategories = [
-    { key: 'starters', label: 'Starters' },
-    { key: 'jerk', label: 'Jerk Dishes' },
-    { key: 'curry', label: 'Curry Dishes' },
-    { key: 'meals', label: 'Meals' }
+    { key: 'Starters', label: 'Starters' },
+    { key: 'Jerk Dishes', label: 'Jerk Dishes' },
+    { key: 'Curry Dishes', label: 'Curry Dishes' },
+    { key: 'Meals', label: 'Meals' }
 ];
-const selectedMenuCategory = ref('starters');
+const selectedMenuCategory = ref('Starters');
 
 const groupedMenuItems = computed(() => {
     if (!props.menuItems) return {};
@@ -83,16 +83,13 @@ const groupedMenuItems = computed(() => {
     return groups;
 });
 
-const selectedCategory = ref(Object.keys(groupedMenuItems.value)[0] || '');
 
-const filteredItems = computed(() => {
-    if (!selectedCategory.value) return [];
-    return groupedMenuItems.value[selectedCategory.value] || [];
-});
 
 watch(selectedMenuCategory, (val) => {
-    // console.log('Selected category:', val);
-    // console.log('Items for category:', groupedMenuItems.value[val]);
+    console.log('Selected category:', val);
+    console.log('Available categories:', Object.keys(groupedMenuItems.value));
+    console.log('Items for category:', groupedMenuItems.value[val]);
+    console.log('All menu items:', props.menuItems);
 });
 
 </script>
@@ -732,28 +729,34 @@ watch(selectedMenuCategory, (val) => {
                     </div>
                     <!-- Menu List -->
                     <div class="space-y-3 sm:space-y-4 max-h-[320px] sm:max-h-[400px] overflow-y-auto pr-2 sm:pr-4 custom-scrollbar">
-                        <div v-for="item in groupedMenuItems[selectedMenuCategory]" :key="item.id"
-                            class="group bg-[#23a04f]/5 rounded-xl p-3 sm:p-4 hover:bg-[#23a04f]/10 transition-all duration-300 border border-[#23a04f]/10">
-                            <div class="flex flex-col md:flex-row md:items-center justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="font-extrabold text-base sm:text-xl md:text-2xl text-[#0c4149] group-hover:text-[#f9de47] transition-colors">
-                                            {{ item.name }}
-                                        </span>
-                                        <span v-if="item.is_chef_special" 
-                                            class="px-2 py-1 bg-[#f9de47] text-[#0c4149] text-xs font-bold rounded-full animate-pulse">
-                                            Chef's Special
+                        <div v-if="groupedMenuItems[selectedMenuCategory] && groupedMenuItems[selectedMenuCategory].length > 0">
+                            <div v-for="item in groupedMenuItems[selectedMenuCategory]" :key="item.id"
+                                class="group bg-[#23a04f]/5 rounded-xl p-3 sm:p-4 hover:bg-[#23a04f]/10 transition-all duration-300 border border-[#23a04f]/10">
+                                <div class="flex flex-col md:flex-row md:items-center justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-extrabold text-base sm:text-xl md:text-2xl text-[#0c4149] group-hover:text-[#f9de47] transition-colors">
+                                                {{ item.name }}
+                                            </span>
+                                            <span v-if="item.is_chef_special" 
+                                                class="px-2 py-1 bg-[#f9de47] text-[#0c4149] text-xs font-bold rounded-full animate-pulse">
+                                                Chef's Special
+                                            </span>
+                                        </div>
+                                        <div class="text-[#0c4149]/90 text-xs sm:text-sm italic mt-1">{{ item.description }}</div>
+                                        <div class="text-[#0c4149]/70 text-xs mt-1" v-if="item.side_note">{{ item.side_note }}</div>
+                                    </div>
+                                    <div class="flex gap-2 sm:gap-4 mt-2 md:mt-0 md:ml-8">
+                                        <span class="text-[#f9de47] font-extrabold text-base sm:text-lg md:text-xl">
+                                            ${{ Number(item.price || 0).toFixed(2) }}
                                         </span>
                                     </div>
-                                    <div class="text-[#0c4149]/90 text-xs sm:text-sm italic mt-1">{{ item.description }}</div>
-                                    <div class="text-[#0c4149]/70 text-xs mt-1" v-if="item.side_note">{{ item.side_note }}</div>
-                                </div>
-                                <div class="flex gap-2 sm:gap-4 mt-2 md:mt-0 md:ml-8">
-                                    <span class="text-[#f9de47] font-extrabold text-base sm:text-lg md:text-xl">
-                                        ${{ Number(item.price || 0).toFixed(2) }}
-                                    </span>
                                 </div>
                             </div>
+                        </div>
+                        <div v-else class="text-center py-8">
+                            <p class="text-[#0c4149]/70 text-sm">No items found for this category.</p>
+                            <p class="text-[#0c4149]/50 text-xs mt-2">Available categories: {{ Object.keys(groupedMenuItems).join(', ') }}</p>
                         </div>
                     </div>
                     <!-- View Full Menu Link -->
