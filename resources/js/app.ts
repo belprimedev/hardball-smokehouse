@@ -7,6 +7,7 @@ import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 import { MotionPlugin } from '@vueuse/motion';
+import CustomCursor from './components/CustomCursor.vue';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -27,7 +28,12 @@ createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob<DefineComponent>('./pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
-        const vueApp = createApp({ render: () => h(App, props) })
+        const vueApp = createApp({ 
+            render: () => h('div', [
+                h(App, props),
+                h(CustomCursor)
+            ])
+        })
             .use(plugin)
             .use(ZiggyVue)
             .use(MotionPlugin); // Register MotionPlugin globally

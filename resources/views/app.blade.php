@@ -42,6 +42,9 @@
         @routes
         @vite(['resources/js/app.ts'])
         @inertiaHead
+        
+        <!-- Pusher for real-time notifications -->
+        <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     </head>
     <body class="font-sans antialiased">
         @inertia

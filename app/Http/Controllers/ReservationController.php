@@ -5,13 +5,21 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Reservation;
 use App\Models\ReservationSetting;
+use App\Events\NewReservationCreated;
+use App\Models\Notification;
+use App\Notifications\NewReservationCreated as NewReservationCreatedNotification;
+use App\Notifications\ReservationCancelled;
+use App\Notifications\SystemAlert;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class ReservationController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:manage reservations');
+        $this->middleware('permission:manage reservations')->except(['store', 'checkAvailability']);
     }
     
 public function index()
@@ -88,8 +96,90 @@ public function index()
             ])->withInput();
         }
 
-        Reservation::create($validated);
+        $reservation = Reservation::create($validated);
 
+        // Create notification
+        Notification::create([
+            'type' => 'reservation',
+            'title' => 'New Reservation',
+            'message' => "New reservation from {$reservation->customer_name} for {$reservation->number_of_guest} guests",
+            'data' => [
+                'reservation_id' => $reservation->id,
+                'customer_name' => $reservation->customer_name,
+                'customer_email' => $reservation->customer_email,
+                'customer_phone' => $reservation->customer_phone,
+                'reservation_date' => $reservation->reservation_date->format('Y-m-d'),
+                'reservation_time' => $reservation->reservation_time,
+                'number_of_guest' => $reservation->number_of_guest,
+                'special_request' => $reservation->special_request,
+            ],
+        ]);
+
+        // Send email notification to customer if email is provided
+        if ($reservation->customer_email) {
+            try {
+                // Send notification to the reservation model
+                $reservation->notify(new NewReservationCreatedNotification($reservation));
+            } catch (\Exception $e) {
+                // Log the error but don't fail the reservation creation
+                Log::error('Failed to send reservation email: ' . $e->getMessage());
+            }
+        }
+
+        // Send system alert to admin users (or to your email in development)
+        if (app()->environment('local')) {
+            // In development, send to both email addresses
+            $emails = ['shane1obdurate@gmail.com', 'theshanebell@gmail.com'];
+            
+            foreach ($emails as $email) {
+                $testUser = new User();
+                $testUser->email = $email;
+                $testUser->name = 'Test Admin';
+                $testUser->notify(new SystemAlert(
+                    'New Reservation Created',
+                    "New reservation from {$reservation->customer_name} for {$reservation->number_of_guest} guests on {$reservation->reservation_date->format('M d, Y')} at {$reservation->reservation_time}",
+                    'info',
+                    [
+                        'reservation_id' => $reservation->id,
+                        'customer_name' => $reservation->customer_name,
+                        'customer_email' => $reservation->customer_email,
+                        'reservation_date' => $reservation->reservation_date->format('Y-m-d'),
+                        'reservation_time' => $reservation->reservation_time,
+                    ]
+                ));
+            }
+        } else {
+            // In production, send to all admin users
+            $adminUsers = User::whereHas('roles', function ($query) {
+                $query->where('name', 'admin');
+            })->get();
+
+            foreach ($adminUsers as $admin) {
+                $admin->notify(new SystemAlert(
+                    'New Reservation Created',
+                    "New reservation from {$reservation->customer_name} for {$reservation->number_of_guest} guests on {$reservation->reservation_date->format('M d, Y')} at {$reservation->reservation_time}",
+                    'info',
+                    [
+                        'reservation_id' => $reservation->id,
+                        'customer_name' => $reservation->customer_name,
+                        'customer_email' => $reservation->customer_email,
+                        'reservation_date' => $reservation->reservation_date->format('Y-m-d'),
+                        'reservation_time' => $reservation->reservation_time,
+                    ]
+                ));
+            }
+        }
+
+        // Fire event for real-time notifications
+        event(new NewReservationCreated($reservation));
+
+        // Check if this is a public submission (from the public reservation form)
+        if ($request->route()->getName() === 'reservation.store.public') {
+            // Redirect back to the public reservation page with success message
+            return redirect()->route('make-reservation')->with('success', 'Thank you for your reservation! We have received your booking request and will contact you shortly to confirm your table. Please check your email for a confirmation message.');
+        }
+
+        // Admin submission - redirect to admin reservation page
         return redirect()->route('reservation.index')->with('success', 'Reservation created successfully!');
     }
 
@@ -130,6 +220,60 @@ public function index()
     public function destroy($id)
     {
         $reservation = Reservation::findOrFail($id);
+        
+        // Send cancellation notification to customer if email is provided
+        if ($reservation->customer_email) {
+            try {
+                $reservation->notify(new ReservationCancelled($reservation, 'Cancelled by administrator'));
+            } catch (\Exception $e) {
+                Log::error('Failed to send cancellation email: ' . $e->getMessage());
+            }
+        }
+
+        // Send system alert to admin users
+        if (app()->environment('local')) {
+            // In development, send to both email addresses
+            $emails = ['shane1obdurate@gmail.com', 'theshanebell@gmail.com'];
+            
+            foreach ($emails as $email) {
+                $testUser = new User();
+                $testUser->email = $email;
+                $testUser->name = 'Test Admin';
+                $testUser->notify(new SystemAlert(
+                    'Reservation Cancelled',
+                    "Reservation from {$reservation->customer_name} for {$reservation->number_of_guest} guests on {$reservation->reservation_date->format('M d, Y')} at {$reservation->reservation_time} has been cancelled",
+                    'warning',
+                    [
+                        'reservation_id' => $reservation->id,
+                        'customer_name' => $reservation->customer_name,
+                        'customer_email' => $reservation->customer_email,
+                        'reservation_date' => $reservation->reservation_date->format('Y-m-d'),
+                        'reservation_time' => $reservation->reservation_time,
+                    ]
+                ));
+            }
+        } else {
+            // In production, send to all admin users
+            $adminUsers = User::whereHas('roles', function ($query) {
+                $query->where('name', 'admin');
+            })->get();
+
+            foreach ($adminUsers as $admin) {
+                $admin->notify(new SystemAlert(
+                    'Reservation Cancelled',
+                    "Reservation from {$reservation->customer_name} for {$reservation->number_of_guest} guests on {$reservation->reservation_date->format('M d, Y')} at {$reservation->reservation_time} has been cancelled",
+                    'warning',
+                    [
+                        'reservation_id' => $reservation->id,
+                        'customer_name' => $reservation->customer_name,
+                        'customer_email' => $reservation->customer_email,
+                        'reservation_date' => $reservation->reservation_date->format('Y-m-d'),
+                        'reservation_time' => $reservation->reservation_time,
+                    ]
+                ));
+            }
+        }
+
         $reservation->delete();
 
         return redirect()->route('reservation.index')->with('success', 'Reservation deleted successfully');

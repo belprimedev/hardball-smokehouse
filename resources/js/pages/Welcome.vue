@@ -735,7 +735,7 @@ watch(selectedMenuCategory, (val) => {
                                 <div class="flex flex-col md:flex-row md:items-center justify-between">
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2">
-                                            <span class="font-extrabold text-base sm:text-xl md:text-2xl text-[#0c4149] group-hover:text-[#f9de47] transition-colors">
+                                            <span class="font-extrabold text-base sm:text-xl md:text-2xl text-[#0c4149] group-hover:text-emerald-600 transition-colors">
                                                 {{ item.name }}
                                             </span>
                                             <span v-if="item.is_chef_special" 
@@ -747,7 +747,7 @@ watch(selectedMenuCategory, (val) => {
                                         <div class="text-[#0c4149]/70 text-xs mt-1" v-if="item.side_note">{{ item.side_note }}</div>
                                     </div>
                                     <div class="flex gap-2 sm:gap-4 mt-2 md:mt-0 md:ml-8">
-                                        <span class="text-[#f9de47] font-extrabold text-base sm:text-lg md:text-xl">
+                                        <span class="text-emerald-600 font-extrabold text-base sm:text-lg md:text-xl">
                                             ${{ Number(item.price || 0).toFixed(2) }}
                                         </span>
                                     </div>

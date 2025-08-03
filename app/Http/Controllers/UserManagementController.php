@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Notifications\NewUserCreated;
+use App\Notifications\UserStatusChanged;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -70,6 +72,9 @@ class UserManagementController extends Controller
         if ($request->has('roles')) {
             $user->assignRole($request->roles);
         }
+
+        // Send notification to the new user
+        $user->notify(new NewUserCreated($user, Auth::user()));
 
         return redirect()->route('user-management.index')
             ->with('success', 'User created successfully.');
@@ -188,7 +193,11 @@ class UserManagementController extends Controller
                 ->with('error', 'You cannot suspend your own account.');
         }
 
+        $oldStatus = $user->status;
         $user->suspend($request->reason);
+
+        // Send notification to the user about status change
+        $user->notify(new UserStatusChanged($user, $oldStatus, 'suspended', $request->reason, Auth::user()));
 
         return redirect()->route('user-management.index')
             ->with('success', 'User suspended successfully.');
@@ -199,7 +208,11 @@ class UserManagementController extends Controller
      */
     public function activate(User $user)
     {
+        $oldStatus = $user->status;
         $user->activate();
+
+        // Send notification to the user about status change
+        $user->notify(new UserStatusChanged($user, $oldStatus, 'active', null, Auth::user()));
 
         return redirect()->route('user-management.index')
             ->with('success', 'User activated successfully.');
@@ -220,7 +233,11 @@ class UserManagementController extends Controller
                 ->with('error', 'You cannot disable your own account.');
         }
 
+        $oldStatus = $user->status;
         $user->disable($request->reason);
+
+        // Send notification to the user about status change
+        $user->notify(new UserStatusChanged($user, $oldStatus, 'disabled', $request->reason, Auth::user()));
 
         return redirect()->route('user-management.index')
             ->with('success', 'User disabled successfully.');
