@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Folder, LayoutGrid, Moon, Sun, Calendar, Users, Shield, Briefcase } from 'lucide-vue-next';
+import { Folder, LayoutGrid, Moon, Sun, Calendar, Users, Shield, Briefcase, Mail } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { useAppearance } from '@/composables/useAppearance';
 import { computed } from 'vue';
@@ -97,7 +97,7 @@ const footerNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="route('dashboard')">
+                        <Link :href="route('admin.dashboard')">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>
@@ -129,6 +129,14 @@ const footerNavItems: NavItem[] = [
                             <Link :href="route('admin.vacancies.index')" class="text-gray-900 dark:text-white">
                                 <Briefcase class="text-gray-700 dark:text-gray-300" />
                                 <span>Vacancy Management</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <Link :href="route('admin.newsletters.index')" class="text-gray-900 dark:text-white">
+                                <Mail class="text-gray-700 dark:text-gray-300" />
+                                <span>Newsletter Management</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

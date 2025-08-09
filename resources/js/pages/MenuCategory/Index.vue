@@ -10,11 +10,20 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const props = defineProps({
-    categories: Object
-});
+const props = defineProps<{
+    categories: {
+        data: Array<{
+            id: number;
+            name: string;
+            description: string;
+            display_image?: string;
+        }>;
+        prev_page_url?: string;
+        next_page_url?: string;
+    };
+}>();
 
-const deleteCategory = (id) => {
+const deleteCategory = (id: number) => {
     if (confirm("Are you sure you want to delete this category?")) {
         router.delete(route("menu-category.destroy", id));
     }
@@ -22,7 +31,7 @@ const deleteCategory = (id) => {
 </script>
 
 <template>
-    <Head title="Reservation" />
+    <Head title="Menu Categories" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
 
@@ -38,18 +47,12 @@ const deleteCategory = (id) => {
                                     Category Listing
                                 </h2>
                                 <p class="text-sm text-yellow-500 dark:text-neutral-400">
-                                    List of all food & beverage items.
-                                    
+                                    List of all menu categories.
                                 </p>
                             </div>
 
                             <div>
                                 <div class="inline-flex gap-x-2">
-                                    <!-- <a class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
-                                        href="#">
-                                        View all
-                                    </a> -->
-
                                     <a :href="route('menu-category.create')" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:bg-green-700 disabled:opacity-50 disabled:pointer-events-none">
                                         <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg"
                                             width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -72,6 +75,14 @@ const deleteCategory = (id) => {
                                         <div class="flex items-center gap-x-2">
                                             <span
                                                 class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
+                                                Image
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-start">
+                                        <div class="flex items-center gap-x-2">
+                                            <span
+                                                class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
                                                 Name
                                             </span>
                                         </div>
@@ -91,6 +102,22 @@ const deleteCategory = (id) => {
                                     <tr v-for="category in props.categories.data" :key="category.id">
                                         <td class="size-px whitespace-nowrap">
                                             <div class="px-6 py-3">
+                                                <div v-if="category.display_image" class="w-16 h-16 rounded-lg overflow-hidden">
+                                                    <img 
+                                                        :src="`/storage/${category.display_image}`" 
+                                                        :alt="category.name"
+                                                        class="w-full h-full object-cover"
+                                                    />
+                                                </div>
+                                                <div v-else class="w-16 h-16 rounded-lg bg-gray-200 flex items-center justify-center">
+                                                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="size-px whitespace-nowrap">
+                                            <div class="px-6 py-3">
                                                 <span class="text-sm text-gray-600 dark:text-neutral-400">{{
                                                     category.name }}</span>
                                             </div>
@@ -107,7 +134,7 @@ const deleteCategory = (id) => {
                                                 Edit
                                             </a>
                                             <a @click="deleteCategory(category.id)"
-                                                class="bg-red-600 rounded-r-md p-2 text-white hover:shadow-lg text-xs font-thin">
+                                                class="bg-red-600 rounded-r-md p-2 text-white hover:shadow-lg text-xs font-thin cursor-pointer">
                                                 Remove
                                             </a>
                                         </td>

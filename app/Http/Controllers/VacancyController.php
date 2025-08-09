@@ -13,10 +13,12 @@ class VacancyController extends Controller
      */
     public function index()
     {
+        $perPage = request()->get('per_page', 10);
+        
         $vacancies = Vacancy::active()
             ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($vacancy) {
+            ->paginate($perPage)
+            ->through(function ($vacancy) {
                 return [
                     'id' => $vacancy->id,
                     'title' => $vacancy->title,
@@ -39,6 +41,10 @@ class VacancyController extends Controller
         if (request()->route()->getName() === 'admin.vacancies.index') {
             return Inertia::render('Admin/Vacancies/Index', [
                 'vacancies' => $vacancies,
+                'flash' => [
+                    'success' => session('success'),
+                    'error' => session('error'),
+                ],
             ]);
         }
 

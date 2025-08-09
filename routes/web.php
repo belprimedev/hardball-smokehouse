@@ -5,6 +5,13 @@ use Inertia\Inertia;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\MenuController;
 use App\Models\MenuItem;
+use App\Models\MenuCategory;
+use App\Http\Controllers\GeneralSettingController;
+use App\Http\Controllers\ReservationSettingController;
+use App\Http\Controllers\VacancyController;
+use App\Http\Controllers\NotificationController;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Admin\NewsletterController;
 
 Route::get('/', function () {
     $dessertItems = MenuItem::whereHas('category', function ($q) {
@@ -232,6 +239,9 @@ Route::get('/menu', function () {
 Route::get('/api/featured-menu-items', [MenuController::class, 'getFeaturedItems']);
 Route::get('/api/chef-special-items', [MenuController::class, 'getChefSpecialItems']);
 Route::get('/api/menu-items', [MenuController::class, 'getAllMenuItems']);
+Route::get('/api/menu-categories', function () {
+    return MenuCategory::withCount('menuItems')->get();
+});
 
 Route::get('/cocktail', function () {
     return Inertia::render('Cocktail');
@@ -261,6 +271,10 @@ Route::get('/terms', function () {
     return Inertia::render('Terms');
 })->name('terms');
 
+Route::get('/privacy', function () {
+    return Inertia::render('Privacy');
+})->name('privacy');
+
 Route::get('/cursor-test', function () {
     return Inertia::render('CursorTest');
 })->name('cursor-test');
@@ -279,6 +293,10 @@ Route::get('/vacancy/{vacancy}', [App\Http\Controllers\VacancyController::class,
 Route::get('/vacancy/{vacancy}/edit', [App\Http\Controllers\VacancyController::class, 'edit'])->name('vacancy.edit');
 Route::put('/vacancy/{vacancy}', [App\Http\Controllers\VacancyController::class, 'update'])->name('vacancy.update');
 Route::delete('/vacancy/{vacancy}', [App\Http\Controllers\VacancyController::class, 'destroy'])->name('vacancy.destroy');
+
+// Newsletter API routes for frontend
+Route::post('/api/newsletters/subscribe', [NewsletterController::class, 'subscribe']);
+Route::post('/api/newsletters/unsubscribe', [NewsletterController::class, 'unsubscribe']);
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

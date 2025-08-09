@@ -3,8 +3,14 @@
 //import T1extLink from '@/Components/T1extLink.vue';
 import { ref, onMounted } from 'vue';
 import { Head } from '@inertiajs/vue3';
+import axios from 'axios';
 
 const showingNavigationDropdown = ref(false);
+
+// Newsletter subscription
+const footerEmail = ref('');
+const footerNewsletterSubmitted = ref(false);
+const footerNewsletterError = ref('');
 
 // Restaurant information from general settings
 const restaurantInfo = ref({
@@ -32,9 +38,47 @@ const fetchGeneralSettings = async () => {
     }
 };
 
+// Footer newsletter subscription
+const submitFooterNewsletter = async () => {
+    if (!footerEmail.value || !footerEmail.value.includes('@')) {
+        footerNewsletterError.value = 'Please enter a valid email address.';
+        return;
+    }
+
+    try {
+        footerNewsletterError.value = '';
+        const response = await axios.post('/api/newsletters/subscribe', {
+            email: footerEmail.value,
+            source: 'footer'
+        });
+
+        if (response.data.success) {
+            footerNewsletterSubmitted.value = true;
+            footerEmail.value = '';
+            setTimeout(() => {
+                footerNewsletterSubmitted.value = false;
+            }, 5000);
+        }
+    } catch (error: any) {
+        console.error('Footer newsletter subscription error:', error);
+        if (error.response?.data?.message) {
+            footerNewsletterError.value = error.response.data.message;
+        } else {
+            footerNewsletterError.value = 'Failed to subscribe. Please try again.';
+        }
+    }
+};
+
 onMounted(() => {
     fetchGeneralSettings();
 });
+
+// Scroll to top function
+const scrollToTop = () => {
+    if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+};
 </script>
 <style>
 .rubik {
@@ -65,7 +109,7 @@ body {
         <!-- Favicon Meta Tags -->
         <Head>
             <link rel="preconnect" href="https://fonts.googleapis.com">
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
             <link href="https://fonts.googleapis.com/css2?family=Knewave&display=swap" rel="stylesheet">
             <link rel="icon" type="image/x-icon" href="/favicon.ico">
             <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
@@ -82,9 +126,20 @@ body {
                     <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"></span>
                 </a>
                 <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-                    <a :href="route('make-reservation')" type="button"
-                        class="bg-yellow-500 text-green-50 knewave-regular hover:bg-yellow-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold rounded-lg text-sm px-4 py-2 text-center dark:bg-yellow-400 dark:hover:bg-yellow-500 dark:focus:ring-yellow-600">
-                        Reservation</a>
+                    <div class="fixed bottom-4 sm:bottom-8 right-4 sm:right-8 z-50">
+            <a :href="route('make-reservation')"
+                class="group bg-gradient-to-r from-green-600 to-yellow-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center gap-2 animate-pulse-slow">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="hidden sm:inline">Book a Table</span>
+            <span class="sm:hidden">Book</span>
+            <span
+                class="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 bg-red-500 text-white text-xs px-1 sm:px-2 py-0.5 sm:py-1 rounded-full animate-pulse">Now
+                Open</span>
+            </a>
+        </div>
                     <div class="-me-2 flex items-center sm:hidden">
                         <button @click="showingNavigationDropdown = !showingNavigationDropdown"
                             class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-700 dark:focus:text-gray-400 transition duration-150 ease-in-out">
@@ -175,205 +230,213 @@ body {
         </div>
 
         <!-- Footer -->
-        <footer class="relative mt-auto px-4 bg-[#010f1c] w-full dark:bg-neutral-950">
-            <!-- Icon Blocks -->
-            <div class="max-w-[85rem] bg-[#f7cd28] m-20 rounded-3xl px-4 py-10 sm:px-6 lg:px-8 lg:py-4 mx-auto">
-                <div class="grid sm:grid-cols-2 lg:grid-cols-3 items-center gap-6">
-                    <!-- Card -->
-                    <div class="group flex gap-3 size-full hover:text-slate-900 focus:outline-none focus:bg-gray-100 rounded-lg p-5 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-                        href="#">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="h-6 w-6">
-                            <path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
-                            <path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z">
-                            </path>
-                        </svg>
+        <footer class="relative w-full mt-auto bg-gray-900">
+            <!-- Subtle Background Design -->
+            <div class="absolute inset-0 opacity-3 z-0">
+                <!-- Subtle geometric shapes -->
+                <div class="absolute top-4 left-4 w-24 h-24 border border-gray-600 rounded-full opacity-20"></div>
+                <div class="absolute top-40 right-20 w-12 h-12 bg-gray-600 rounded-full opacity-15"></div>
+                <div class="absolute bottom-20 left-1/4 w-8 h-8 border border-gray-600 transform rotate-45 opacity-20"></div>
+                <div class="absolute bottom-40 right-1/3 w-10 h-10 bg-gray-600 rounded-full opacity-15"></div>
+                
+                <!-- Very subtle diagonal lines -->
+                <div class="absolute top-0 left-0 w-full h-full">
+                    <div class="absolute top-10 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent transform rotate-5 opacity-10"></div>
+                    <div class="absolute top-40 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent transform -rotate-3 opacity-10"></div>
+                    <div class="absolute bottom-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent transform rotate-2 opacity-10"></div>
+                </div>
+                
+                <!-- Minimal dots -->
+                <div class="absolute top-1/3 left-1/4 w-1 h-1 bg-gray-600 rounded-full opacity-20"></div>
+                <div class="absolute top-1/2 right-1/4 w-1 h-1 bg-gray-600 rounded-full opacity-20"></div>
+                <div class="absolute bottom-1/3 left-1/3 w-1 h-1 bg-gray-600 rounded-full opacity-20"></div>
+                
+                <!-- Subtle curved elements -->
+                <div class="absolute top-1/2 left-5 w-12 h-12 border border-gray-600 rounded-full border-t-transparent border-r-transparent transform -rotate-45 opacity-15"></div>
+                <div class="absolute top-1/4 right-5 w-8 h-8 border border-gray-600 rounded-full border-b-transparent border-l-transparent transform rotate-45 opacity-15"></div>
+            </div>
 
-                        <div>
-                            <div>
-                                <h3 class="block group font-bold text-white dark:text-white">Address</h3>
-                                <p class="text-gray-50 text-xl font-bold dark:text-neutral-400">{{ restaurantInfo.address }}</p>
+            <!-- Main Footer Content -->
+            <div class="relative z-20 container mx-auto px-4 py-16">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    
+                    <!-- Company Information Column -->
+                    <div class="lg:col-span-1">
+                        <!-- Logo and Company Info -->
+                        <div class="mb-6">
+                            <div class="flex items-center space-x-3 mb-4">
+                                <div class="w-24 h-24 rounded-full flex items-center justify-center shadow-lg">
+                                    <img src="/img/smokehouse-logo.png" alt="Hardball Smokehouse Logo" class="w-16 h-16 object-contain">
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-bold text-gray-100">
+                                        Hardball
+                                        <span class="text-yellow-400">Smokehouse</span>
+                                    </h3>
+                                    <p class="text-yellow-400 text-sm font-semibold">Caribbean Cuisine</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-50 leading-relaxed">
+                                Great platform for authentic Caribbean cuisine passionate about food. Find your delicious Caribbean dishes easier, passionate about food for you!
+                            </p>
+                        </div>
+
+                        <!-- Social Media Links -->
+                        <div class="flex space-x-4">
+                            <a href="#" class="w-10 h-10 bg-white border border-gray-300 rounded-full flex items-center justify-center hover:bg-accent-yellow hover:text-dark-900 transition-all duration-300">
+                                <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="w-10 h-10 bg-white border border-gray-300 rounded-full flex items-center justify-center hover:bg-accent-yellow hover:text-dark-900 transition-all duration-300">
+                                <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="w-10 h-10 bg-white border border-gray-300 rounded-full flex items-center justify-center hover:bg-accent-yellow hover:text-dark-900 transition-all duration-300">
+                                <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="w-10 h-10 bg-white border border-gray-300 rounded-full flex items-center justify-center hover:bg-accent-yellow hover:text-dark-900 transition-all duration-300">
+                                <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Popular Links Column -->
+                    <div class="lg:col-span-1">
+                        <div class="space-y-3">
+                            <a href="/menu" class="flex items-center text-gray-50 hover:text-accent-yellow transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                Menu
+                            </a>
+                            <a href="/cocktail" class="flex items-center text-gray-50 hover:text-accent-yellow transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                Cocktail
+                            </a>
+                            <a href="/gallery" class="flex items-center text-gray-50 hover:text-accent-yellow transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                Gallery
+                            </a>
+                            <a href="/About" class="flex items-center text-gray-50 hover:text-accent-yellow transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                About Us
+                            </a>
+                            <a href="#" class="flex items-center text-gray-50 hover:text-accent-yellow transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                Vacancy
+                            </a>
+                            <a href="/contact" class="flex items-center text-gray-50 hover:text-accent-yellow transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                Contact Us
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Photo Gallery Column -->
+                    <div class="lg:col-span-1">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+                                <img src="/img/food/burger.png" alt="Burger" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"/>
+                            </div>
+                            <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+                                <img src="/img/food/fritters.jpg" alt="Fritters" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"/>
+                            </div>
+                            <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+                                <img src="/img/food/portrait5.JPG" alt="Caribbean Dish" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"/>
+                            </div>
+                            <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+                                <img src="/img/gallery/store4.JPG" alt="Restaurant Interior" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"/>
+                            </div>
+                            <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+                                <img src="/img/gallery/event1.jpg" alt="Event" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"/>
+                            </div>
+                            <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+                                <img src="/img/gallery/food1.jpg" alt="Food" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"/>
                             </div>
                         </div>
                     </div>
-                    <!-- End Card -->
 
-                    <!-- Card -->
-                    <a class="group flex gap-3 size-full focus:outline-none focus:bg-gray-100 rounded-lg p-5 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-                        href="#">
-                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="2"
-                            fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
-                            </path>
-                            <polyline points="22,6 12,13 2,6"></polyline>
-                        </svg>
-
-                        <div>
-                            <div>
-                                <h3 class="block group font-bold text-white dark:text-white">EMAIL</h3>
-                                <p class="text-gray-50 text-xl font-bold dark:text-neutral-400">
-                                    {{ restaurantInfo.email }}</p>
+                    <!-- Newsletter and Payment Methods Column -->
+                    <div class="lg:col-span-1">
+                        <!-- Newsletter Section -->
+                        <div class="mb-8">
+                            <p class="text-gray-50 mb-4">Subscribe newsletter to get updates</p>
+                            <div class="flex flex-col space-y-3">
+                                <input 
+                                    v-model="footerEmail"
+                                    type="email" 
+                                    placeholder="Email Address" 
+                                    class="px-4 py-3 bg-gray-200 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-yellow focus:border-transparent"
+                                />
+                                <button @click="submitFooterNewsletter"
+                                    class="bg-yellow-400 text-dark-900 px-6 py-3 rounded-lg font-bold hover:bg-yellow-500 transition-colors">
+                                    Subscribe
+                                </button>
+                            </div>
+                            
+                            <!-- Success Message -->
+                            <div v-if="footerNewsletterSubmitted" class="mt-3 text-green-400 text-sm">
+                                Thank you for subscribing! Check your email for updates.
+                            </div>
+                            
+                            <!-- Error Message -->
+                            <div v-if="footerNewsletterError" class="mt-3 text-red-400 text-sm">
+                                {{ footerNewsletterError }}
                             </div>
                         </div>
-                    </a>
-                    <!-- End Card -->
 
-                    <!-- Card -->
-                    <div class="group flex gap-3 size-full focus:outline-none focus:bg-gray-100 rounded-lg p-5 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-                        href="#">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="h-6 w-6">
-                            <path
-                                d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2">
-                            </path>
-                            <path d="M15 7a2 2 0 0 1 2 2"></path>
-                            <path d="M15 3a6 6 0 0 1 6 6"></path>
-                        </svg>
-
-
-                        <div>
-                            <h3 class="block group font-bold text-white dark:text-white">CALL</h3>
-                            <a class="text-gray-50 text-xl font-bold dark:text-neutral-400" :href="`tel:${restaurantInfo.phone}`">{{ restaurantInfo.phone }}</a>
-                        </div>
-
-
+                        <!-- Payment Methods Section -->
+                        
                     </div>
-                    <!-- End Card -->
                 </div>
             </div>
-            <!-- End Icon Blocks -->
-            <div class="mt-auto w-full max-w-[85rem] py-10 px-4 sm:px-6 lg:px-8 lg:pt-2 mx-auto">
-                <!-- Grid -->
-                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
 
-                    <!-- End Col -->
+            <!-- Bottom Bar -->
+            <div class="border-t border-gray-300 relative z-20">
+                <div class="container mx-auto px-4 py-6">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <!-- Copyright -->
+                        <div class="text-gray-50 text-sm mb-4 md:mb-0">
+                            © 2025 {{ restaurantInfo.business_name }}. All Rights Reserved.
+                        </div>
 
-
-                    <!-- End Col -->
-
-                    <div class="col-span-full lg:col-span-2 flex justify-center">
-                        <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
-                            <img src="img/smokehouse-logo.png" class="w-60" alt=" Logo">
-                            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"></span>
-                        </a>
-                    </div>
-
-                    <div class="col-span-1">
-                        <h4 class="font-bold text-xl bg-gray-300 w-40 rounded-r-lg">
-                            <hr class="border-2 w-[75%] rounded-r-lg border-emerald-600">
-                        </h4>
-
-                        <div class="mt-3 grid space-y-3">
-                            <a :href="route('menu')"
-                                class="flex items-center py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Menu</a>
-                            <a :href="route('cocktail')"
-                                class="flex items-center py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Cocktail</a>
-                            <a :href="route('gallery')"
-                                class="flex items-center py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Gallery</a>
-                            <a :href="route('home')"
-                                class="flex items-center py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> Reservation</a>
-
+                        <!-- Legal Links -->
+                        <div class="flex items-center space-x-4 text-sm">
+                            <a :href="route('privacy')" class="text-gray-50 hover:text-accent-yellow transition-colors">Privacy Policy</a>
+                            <div class="w-px h-4 bg-gray-400"></div>
+                            <a :href="route('terms')" class="text-gray-50 hover:text-accent-yellow transition-colors">Terms & Conditions</a>
                         </div>
                     </div>
-                    <!-- End Col -->
-
-                    <div class="col-span-1">
-                        <h4 class="font-bold text-xl bg-gray-300 w-40 rounded-r-lg">
-                            <hr class="border-2 w-[75%] rounded-r-lg border-emerald-600">
-                        </h4>
-
-                        <div class="mt-3 grid space-y-3">
-                            <a :href="route('about')"
-                                class="block py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                About US</a>
-                            <a :href="route('faq')"
-                                class="block py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                FAQ</a>
-                            <a :href="route('contact')"
-                                class="block py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                Contact</a>
-                            <a :href="route('vacancy.index')"
-                                class="block py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                Vacancy</a>
-                            <a :href="route('terms')"
-                                class="block py-2 px-3 text-white text-md font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                Terms & Conditions</a>
-                        </div>
-                    </div>
-                    <!-- End Col -->
-
-
-                </div>
-                <!-- End Grid -->
-
-
-            </div>
-            <div class="bg-emerald-900 mt-5 sm:mt-2">
-                <div class="mx-auto max-w-7xl grid lg:gap-y-2 sm:gap-y-0 sm:flex sm:justify-between sm:items-center">
-                    <div class="flex justify-between items-center">
-                        <p class="pt-2 pl-4  text-sm text-gray-200 dark:text-neutral-200 lg:p-2">© 2025 {{ restaurantInfo.business_name }}. All
-                            rights reserved.</p>
-                    </div>
-                    <!-- End Col -->
-
-                    <!-- Social Brands -->
-                    <div class="pl-2 lg:p-2">
-                        <a class="size-10 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-white hover:bg-white/10 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:ring-1 focus:ring-gray-600"
-                            href="#">
-                            <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                fill="currentColor" viewBox="0 0 16 16">
-                                <path
-                                    d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" />
-                            </svg>
-                        </a>
-                        <a class="size-10 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-white hover:bg-white/10 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:ring-1 focus:ring-gray-600"
-                            href="#">
-                            <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                fill="currentColor" viewBox="0 0 16 16">
-                                <path
-                                    d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z" />
-                            </svg>
-                        </a>
-                        <a class="size-10 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-white hover:bg-white/10 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:ring-1 focus:ring-gray-600"
-                            href="#">
-                            <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                fill="currentColor" viewBox="0 0 16 16">
-                                <path
-                                    d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z" />
-                            </svg>
-                        </a>
-                        <a class="size-10 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-white hover:bg-white/10 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:ring-1 focus:ring-gray-600"
-                            href="#">
-                            <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                fill="currentColor" viewBox="0 0 16 16">
-                                <path
-                                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
-                            </svg>
-                        </a>
-                        <a class="size-10 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-white hover:bg-white/10 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:ring-1 focus:ring-gray-600"
-                            href="#">
-                            <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                fill="currentColor" viewBox="0 0 16 16">
-                                <path
-                                    d="M3.362 10.11c0 .926-.756 1.681-1.681 1.681S0 11.036 0 10.111C0 9.186.756 8.43 1.68 8.43h1.682v1.68zm.846 0c0-.924.756-1.68 1.681-1.68s1.681.756 1.681 1.68v4.21c0 .924-.756 1.68-1.68 1.68a1.685 1.685 0 0 1-1.682-1.68v-4.21zM5.89 3.362c-.926 0-1.682-.756-1.682-1.681S4.964 0 5.89 0s1.68.756 1.68 1.68v1.682H5.89zm0 .846c.924 0 1.68.756 1.68 1.681S6.814 7.57 5.89 7.57H1.68C.757 7.57 0 6.814 0 5.89c0-.926.756-1.682 1.68-1.682h4.21zm6.749 1.682c0-.926.755-1.682 1.68-1.682.925 0 1.681.756 1.681 1.681s-.756 1.681-1.68 1.681h-1.681V5.89zm-.848 0c0 .924-.755 1.68-1.68 1.68A1.685 1.685 0 0 1 8.43 5.89V1.68C8.43.757 9.186 0 10.11 0c.926 0 1.681.756 1.681 1.68v4.21zm-1.681 6.748c.926 0 1.682.756 1.681 1.681S11.036 16 10.11 16s-1.681-.756-1.681-1.68v-1.682h1.68zm0-.847c-.924 0-1.68-.755-1.68-1.68 0-.925.756-1.681 1.68-1.681h4.21c.924 0 1.68.756 1.68 1.68 0 .926-.756 1.681-1.68 1.681h-4.21z" />
-                            </svg>
-                        </a>
-                    </div>
-                    <!-- End Social Brands -->
                 </div>
             </div>
-            <div class="absolute bottom-20 left-0 float-bob-y d-none d-xxl-block -z-10">
-                <img alt="shape" class="h-52 opacity-50" src="/img/shape/lettuce.png">
-            </div>
-            <div class="absolute bottom-0 left-0 d-none d-xxl-block">
-                <img alt="shape" src="/img/shape/shadow.png">
-            </div>
+
+            <!-- Scroll to Top Button -->
+            <button 
+                @click="scrollToTop"
+                class="fixed bottom-8 right-8 w-12 h-12 bg-yellow-400 text-dark-900 rounded-full flex items-center justify-center hover:bg-yellow-400 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110 z-50"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                </svg>
+            </button>
+
+            
         </footer>
     </div>
 </template>

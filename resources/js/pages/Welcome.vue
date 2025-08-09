@@ -2,7 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import MainLayout from '@/layouts/MainLayout.vue';
 import 'vue3-carousel/dist/carousel.css';
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
 import axios from 'axios';
 
 interface MenuItem {
@@ -24,25 +24,22 @@ interface MenuItem {
     side_note?: string;
 }
 
-//import { Carousel, Slide, Navigation } from '...'; // Need to check the actual import paths, but in the original code, they are components, so assuming they are imported.
-
-//import { useMotion } from '@vueuse/motion'; // Assuming useMotion is from VueUse Motion.
-
-// Handling the name
+interface MenuCategory {
+    key: string;
+    label: string;
+    count: number;
+    display_image: string | null;
+}
 
 defineOptions({
-
     name: 'App'
-
 });
 
-// motionConfig
-
-
-
-// data properties
-
+// Data properties
 const featuredItems = ref<MenuItem[]>([]);
+const email = ref('');
+const newsletterSubmitted = ref(false);
+const selectedFAQ = ref<number | null>(null);
 
 onMounted(async () => {
     try {
@@ -55,35 +52,335 @@ onMounted(async () => {
 
 const props = defineProps<{ dessertItems: any[]; menuItems: MenuItem[] }>();
 
-const menuCategories = [
-    { key: 'Starters', label: 'Starters' },
-    { key: 'Jerk Dishes', label: 'Jerk Dishes' },
-    { key: 'Curry Dishes', label: 'Curry Dishes' },
-    { key: 'Meals', label: 'Meals' }
-];
+const menuCategories = ref<MenuCategory[]>([]);
 const selectedMenuCategory = ref('Starters');
+
+// Fetch menu categories from backend
+onMounted(async () => {
+    try {
+        console.log('Fetching menu categories...');
+        const response = await axios.get('/api/menu-categories');
+        console.log('API response:', response.data);
+
+        // Filter to only show the 4 specific categories we want
+        const desiredCategories = ['Starters', 'Jerk Dishes', 'Curry Dishes', 'Meals'];
+
+        menuCategories.value = response.data
+            .filter((category: any) => desiredCategories.includes(category.name))
+            .map((category: any) => ({
+                key: category.name,
+                label: category.name,
+                count: category.menu_items_count || 0,
+                display_image: category.display_image
+            }));
+
+        console.log('Processed menu categories:', menuCategories.value);
+
+        // Set first category as selected if available
+        if (menuCategories.value.length > 0) {
+            selectedMenuCategory.value = menuCategories.value[0].key;
+        }
+    } catch (error) {
+        console.error('Error fetching menu categories:', error);
+        // Fallback to hardcoded data if API fails
+        menuCategories.value = [
+            { key: 'Starters', label: 'Starters', count: 8, display_image: null },
+            { key: 'Jerk Dishes', label: 'Jerk Dishes', count: 12, display_image: null },
+            { key: 'Curry Dishes', label: 'Curry Dishes', count: 10, display_image: null },
+            { key: 'Meals', label: 'Meals', count: 15, display_image: null }
+        ];
+    }
+});
 
 const groupedMenuItems = computed(() => {
     if (!props.menuItems) return {};
-    
+
     const groups: Record<string, any[]> = {};
-    
+
     props.menuItems.forEach((item: any) => {
         if (!item.category) {
             return;
         }
-        
+
         const cat = item.category.name;
         if (!groups[cat]) {
             groups[cat] = [];
         }
         groups[cat].push(item);
     });
-    
+
     return groups;
 });
 
+// Newsletter submission
+const submitNewsletter = async () => {
+    if (!email.value || !email.value.includes('@')) {
+        return;
+    }
 
+    try {
+        const response = await axios.post('/api/newsletters/subscribe', {
+            email: email.value,
+            source: 'website'
+        });
+
+        if (response.data.success) {
+            newsletterSubmitted.value = true;
+            email.value = '';
+            setTimeout(() => {
+                newsletterSubmitted.value = false;
+            }, 5000);
+        }
+    } catch (error: any) {
+        console.error('Newsletter subscription error:', error);
+        // Handle error response
+        if (error.response?.data?.message) {
+            alert(error.response.data.message);
+        } else {
+            alert('Failed to subscribe. Please try again.');
+        }
+    }
+};
+
+// FAQ toggle
+const toggleFAQ = (index: number) => {
+    selectedFAQ.value = selectedFAQ.value === index ? null : index;
+};
+
+// Carousel functionality
+const currentSlide = ref(0);
+const isDragging = ref(false);
+const startX = ref(0);
+const currentX = ref(0);
+const isAutoPlaying = ref(true);
+const dragOffset = ref(0);
+
+// Create infinite loop by duplicating testimonials
+const infiniteTestimonials = computed(() => {
+    return [...testimonials, ...testimonials, ...testimonials];
+});
+
+const nextSlide = () => {
+    currentSlide.value++;
+    // Reset to middle set when reaching the end
+    if (currentSlide.value >= testimonials.length) {
+        currentSlide.value = 0;
+    }
+};
+
+const prevSlide = () => {
+    currentSlide.value--;
+    // Reset to middle set when reaching the beginning
+    if (currentSlide.value < 0) {
+        currentSlide.value = testimonials.length - 1;
+    }
+};
+
+const goToSlide = (index: number) => {
+    currentSlide.value = index;
+};
+
+const toggleAutoPlay = () => {
+    isAutoPlaying.value = !isAutoPlaying.value;
+    if (isAutoPlaying.value) {
+        startAutoPlay();
+    } else {
+        stopAutoPlay();
+    }
+};
+
+const startAutoPlay = () => {
+    autoPlayInterval = setInterval(() => {
+        nextSlide();
+    }, 2000); // Original timing
+};
+
+const stopAutoPlay = () => {
+    if (autoPlayInterval) {
+        clearInterval(autoPlayInterval);
+    }
+};
+
+const startDrag = (event: MouseEvent | TouchEvent) => {
+    isDragging.value = true;
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    startX.value = clientX;
+    currentX.value = clientX;
+    dragOffset.value = 0;
+    
+    // Pause auto-play during drag
+    stopAutoPlay();
+};
+
+const onDrag = (event: MouseEvent | TouchEvent) => {
+    if (!isDragging.value) return;
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    currentX.value = clientX;
+    dragOffset.value = startX.value - clientX;
+};
+
+const endDrag = () => {
+    if (!isDragging.value) return;
+    isDragging.value = false;
+    
+    const diff = startX.value - currentX.value;
+    const threshold = 50;
+    
+    if (Math.abs(diff) > threshold) {
+        if (diff > 0) {
+            nextSlide();
+        } else {
+            prevSlide();
+        }
+    }
+    
+    // Resume auto-play if it was enabled
+    if (isAutoPlaying.value) {
+        startAutoPlay();
+    }
+};
+
+// Auto-play carousel
+let autoPlayInterval: number;
+
+// Newsletter image carousel
+const currentImageIndex = ref(0);
+let imageCarouselInterval: number;
+
+const nextImage = () => {
+    currentImageIndex.value = (currentImageIndex.value + 1) % 3;
+};
+
+const startImageCarousel = () => {
+    imageCarouselInterval = setInterval(() => {
+        nextImage();
+    }, 3000); // Change image every 3 seconds
+};
+
+const stopImageCarousel = () => {
+    if (imageCarouselInterval) {
+        clearInterval(imageCarouselInterval);
+    }
+};
+
+onMounted(() => {
+    // Start auto-play
+    startAutoPlay();
+    // Start image carousel
+    startImageCarousel();
+});
+
+onUnmounted(() => {
+    // Clean up auto-play
+    stopAutoPlay();
+    // Clean up image carousel
+    stopImageCarousel();
+});
+
+// Featured menu items (top 6)
+const featuredMenuItems = computed(() => {
+    return props.menuItems?.slice(0, 6) || [];
+});
+
+// Testimonials
+const testimonials = [
+    {
+        name: 'Sarah Thompson',
+        role: 'Food Blogger',
+        image: '/img/icon/palm-tree.webp',
+        text: 'The jerk chicken here is absolutely incredible! The flavors are authentic and the atmosphere is perfect. A must-visit spot in Ipswich!',
+        rating: 5
+    },
+    {
+        name: 'Michael Chen',
+        role: 'Local Guide',
+        image: '/img/icon/palm-tree.webp',
+        text: 'Best Caribbean food I\'ve had outside of Jamaica. The staff is friendly and the portions are generous. Their curry goat is outstanding!',
+        rating: 5
+    },
+    {
+        name: 'Emma Williams',
+        role: 'Regular Customer',
+        image: '/img/icon/palm-tree.webp',
+        text: 'Love the vibrant atmosphere and amazing cocktails. The plantain chips are addictive and the service is always top-notch!',
+        rating: 5
+    },
+    {
+        name: 'David Rodriguez',
+        role: 'Business Owner',
+        image: '/img/icon/palm-tree.webp',
+        text: 'Perfect for corporate events! The catering service is professional and the food quality is consistently excellent. Highly recommend!',
+        rating: 5
+    },
+    {
+        name: 'Lisa Johnson',
+        role: 'Event Planner',
+        image: '/img/icon/palm-tree.webp',
+        text: 'I\'ve booked Hardball for multiple events and they never disappoint. The jerk pork is a crowd favorite and the presentation is always beautiful.',
+        rating: 5
+    },
+    {
+        name: 'James Wilson',
+        role: 'Local Resident',
+        image: '/img/icon/palm-tree.webp',
+        text: 'Been coming here for years! The oxtail stew is my favorite - tender, flavorful, and reminds me of my grandmother\'s cooking.',
+        rating: 5
+    },
+    {
+        name: 'Maria Garcia',
+        role: 'Food Enthusiast',
+        image: '/img/icon/palm-tree.webp',
+        text: 'The curry chicken is absolutely divine! Perfect blend of spices and the rice and peas are cooked to perfection. A true taste of the Caribbean!',
+        rating: 5
+    },
+    {
+        name: 'Robert Taylor',
+        role: 'Traveler',
+        image: '/img/icon/palm-tree.webp',
+        text: 'Found this gem while visiting Ipswich. The atmosphere is so welcoming and the food is authentic Caribbean. The rum punch is a must-try!',
+        rating: 5
+    }
+];
+
+// FAQ items
+const faqItems = [
+    {
+        question: 'Do you offer vegetarian options?',
+        answer: 'Yes! We have a variety of vegetarian dishes including our popular curry vegetables, plantain chips, and fresh salads.'
+    },
+    {
+        question: 'Can I make a reservation for a large group?',
+        answer: 'Absolutely! We welcome large groups and can accommodate up to 20 people. Please call us in advance to make arrangements.'
+    },
+    {
+        question: 'Do you offer delivery services?',
+        answer: 'Yes, we partner with Just Eat and Deliveroo for delivery services. You can also call us directly for takeaway orders.'
+    },
+    {
+        question: 'What are your opening hours?',
+        answer: 'We are open daily from 12:00 PM to 11:00 PM. On weekends, we stay open until midnight.'
+    }
+];
+
+// Promotions
+const promotions = [
+    {
+        title: 'Buy 1 Get 1 Free',
+        subtitle: 'On Selected Starters',
+        description: 'Every Tuesday & Wednesday',
+        image: '/img/food/burger.png',
+        cta: 'Order Now',
+        color: 'from-gray-800 to-green-700'
+    },
+    {
+        title: '20% Off First Order',
+        subtitle: 'New Customers Only',
+        description: 'Use code: WELCOME20',
+        image: '/img/food/fritters.jpg',
+        cta: 'Get Discount',
+        color: 'from-yellow-500 to-gray-800'
+    }
+];
 
 watch(selectedMenuCategory, (val) => {
     console.log('Selected category:', val);
@@ -92,935 +389,494 @@ watch(selectedMenuCategory, (val) => {
     console.log('All menu items:', props.menuItems);
 });
 
+onMounted(() => {
+    // Scroll animation for cards
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                const target = entry.target as HTMLElement;
+                target.style.transform = 'translateX(0)';
+                target.style.opacity = '1';
+            }
+        });
+    }, observerOptions);
+
+    // Observe all cards
+    const cards = document.querySelectorAll('[data-aos="fade-right"]');
+    cards.forEach((card, index) => {
+        const cardElement = card as HTMLElement;
+        // Set initial state - slide in from right
+        cardElement.style.transition = 'transform 0.8s ease-out, opacity 0.8s ease-out';
+        cardElement.style.transform = 'translateX(100%)';
+        cardElement.style.opacity = '0';
+        
+        // Add delay based on index
+        setTimeout(() => {
+            observer.observe(card);
+        }, index * 200);
+    });
+});
 </script>
 
-<style>
-.cta-section.style-white:before {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    content: "";
-    background-color: var(--white);
-    top: 50%
-}
-
-.popular-dishes-wrapper.style1 {
-    position: relative
-}
-
-.popular-dishes-wrapper.style1 .btn-wrapper {
-    display: block;
-    margin: 60px auto 0
-}
-
-.popular-dishes-wrapper.style1 .shape1 {
-    position: absolute;
-    bottom: -120px;
-    left: 0;
-    z-index: 1
-}
-
-.popular-dishes-wrapper.style1 .shape2 {
-    position: absolute;
-    top: -50px;
-    right: 0;
-    z-index: 1
-}
-
-.popular-dishes-wrapper.style2 {
-    position: relative
-}
-
-.popular-dishes-wrapper.style2 .shape1 {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    z-index: 1
-}
-
-.popular-dishes-wrapper.style2 .shape2 {
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 1
-}
-
-.popular-dishes-wrapper.style2 .btn-wrapper {
-    max-width: 195px;
-    margin: 0 auto
-}
-
-.popular-dishes-wrapper.style3 {
-    position: relative
-}
-
-.popular-dishes-wrapper.style3 .swiper {
-    overflow: visible
-}
-
-.popular-dishes-wrapper.style3 .shape1 {
-    position: absolute;
-    top: -60px;
-    left: 0
-}
-
-.popular-dishes-wrapper.style3 .shape2 {
-    position: absolute;
-    top: -30px;
-    right: 0
-}
-
-.popular-dishes-wrapper.style4 {
-    position: relative
-}
-
-.popular-dishes-wrapper.style4 .shape1 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1
-}
-
-.dishes-card-wrap.style1 {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 5px
-}
-
-.dishes-card.style2 {
-    padding: 26px 25px;
-    margin-top: 140px;
-    background: linear-gradient(180deg, #ffffff4d, #fff 63.33%);
-    text-align: center;
-    border-radius: 16px;
-    background: var(--white);
-    box-shadow: 0 4px 54px #00000014;
-}
-
-.dishes-card.style2 .dishes-thumb {
-    position: relative;
-    margin-top: -120px;
-    border-radius: 50%;
-    -webkit-border-radius: 50%;
-    -moz-border-radius: 50%;
-    -ms-border-radius: 50%;
-    -o-border-radius: 50%;
-}
-
-.dishes-thumb {
-    position: relative;
-    text-align: center;
-}
-
-.dishes-card.style2 .dishes-thumb .circle-shape {
-    position: absolute;
-    top: -7px;
-    left: 50%;
-    width: 100%;
-    transform: translate(-50%);
-    z-index: 1;
-    -webkit-transform: translateX(-50%);
-    -moz-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    -o-transform: translateX(-50%)
-}
-
-@keyframes cir36 {
+<style scoped>
+@keyframes scroll {
     0% {
-        transform: rotate(0deg);
+        transform: translateX(0);
     }
-
     100% {
-        transform: rotate(360deg);
+        transform: translateX(-33.333%);
     }
 }
 
-.cir36 {
-    animation: cir36 20s linear infinite;
-    -webkit-animation: cir36 20s linear infinite;
+.animate-scroll {
+    animation: scroll 1.5s linear infinite;
 }
 
-.dishes-card.style2 .dishes-thumb .circle-shape {
-    position: absolute;
-    top: -7px;
-    left: 50%;
-    width: 100%;
-    transform: translate(-50%);
-    z-index: 1;
-    -webkit-transform: translateX(-50%);
-    -moz-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    -o-transform: translateX(-50%)
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
-.dishes-card.style2 .dishes-content {
-    margin-top: 24px
+@keyframes marquee-reverse {
+    0% {
+        transform: translateX(-50%);
+    }
+    100% {
+        transform: translateX(0);
+    }
 }
 
-.dishes-card.style2 .dishes-content h3 {
-    color: var(--title);
-    font-family: var(--title);
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 1;
-    text-transform: capitalize;
-    margin-bottom: 1px;
-    transition: all .4s;
-    -webkit-transition: all .4s;
-    -moz-transition: all .4s;
-    -ms-transition: all .4s;
-    -o-transition: all .4s
+.animate-marquee {
+    animation: marquee 40s linear infinite;
 }
 
-.dishes-card.style2 .dishes-content h3:hover {
-    color: var(--theme)
+.animate-marquee-reverse {
+    animation: marquee-reverse 50s linear infinite;
 }
 
-.dishes-card.style2 .dishes-content .text {
-    color: var(--text);
-    font-family: var(--body-font);
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1;
-    text-transform: capitalize;
-    margin-bottom: 16px;
-    margin-top: 3px
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.dishes-card.style2 .dishes-content h6 {
-    color: var(--theme);
-    font-family: var(--title-font);
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 1;
-    text-transform: capitalize;
-    margin-bottom: 24px
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-.dishes-card.style3 {
-    margin-top: 40px
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-.dishes-card.style3 .dishes-thumb {
-    position: relative;
-    transition: all .4s;
-    -webkit-transition: all .4s;
-    -moz-transition: all .4s;
-    -ms-transition: all .4s;
-    -o-transition: all .4s
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
 }
 
-.dishes-card.style3 .dishes-thumb img {
-    position: relative;
-    width: 100%;
-    transition: all .4s;
-    -webkit-transition: all .4s;
-    -moz-transition: all .4s;
-    -ms-transition: all .4s;
-    -o-transition: all .4s
+.slide-in-left {
+    animation: slideInLeft 0.8s ease-out;
 }
 
-.title-area .title {
-    color: var(--title);
-    text-align: center;
-    font-family: var(--title-font);
-    font-size: 40px;
-    font-style: normal;
-    font-weight: 900;
-    line-height: 50px;
-    text-transform: capitalize;
-    margin-bottom: 10px
+.slide-in-right {
+    animation: slideInRight 0.8s ease-out;
 }
 
-.title-area .text {
-    color: var(--text);
-    text-align: center;
-    font-family: var(--body-font);
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 28px;
-    margin-bottom: 45px
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
+/* Custom colors */
+.bg-dark-900 {
+    background-color: #0A1B2A;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #23a04f;
-    border-radius: 3px;
+.bg-light-cream {
+    background-color: #FAF5D0;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #1d8a42;
+.text-dark-900 {
+    color: #0A1B2A;
 }
 
-        @keyframes marquee {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-
-        @keyframes marquee-reverse {
-            0% {
-                transform: translateX(-50%);
-            }
-            100% {
-                transform: translateX(0);
-            }
-        }
-
-        .animate-marquee {
-            animation: marquee 40s linear infinite;
-        }
-
-        .animate-marquee-reverse {
-            animation: marquee-reverse 40s linear infinite;
-        }
-
-        .marquee-container {
-            mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
-            -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
-        }
-
-        @keyframes blob {
-            0% {
-                transform: translate(0px, 0px) scale(1);
-            }
-            33% {
-                transform: translate(30px, -50px) scale(1.1);
-            }
-            66% {
-                transform: translate(-20px, 20px) scale(0.9);
-            }
-            100% {
-                transform: translate(0px, 0px) scale(1);
-            }
-        }
-
-        .animate-blob {
-            animation: blob 7s infinite;
-        }
-
-        .animation-delay-2000 {
-            animation-delay: 2s;
-        }
-
-@keyframes slide-right {
-    from { transform: translateX(-100%); }
-    to { transform: translateX(100%); }
+/* Custom fonts */
+.knewave-regular {
+    font-family: 'Knewave', cursive;
 }
 
-@keyframes slide-left {
-    from { transform: translateX(100%); }
-    to { transform: translateX(-100%); }
-}
-
-.animate-slide-right {
-    animation: slide-right 3s linear infinite;
-}
-
-.animate-slide-left {
-    animation: slide-left 3s linear infinite;
+/* Responsive text sizes */
+@media (max-width: 640px) {
+    .text-4xl {
+        font-size: 1.875rem;
+    }
+    .text-5xl {
+        font-size: 2.25rem;
+    }
 }
 </style>
+
 <template>
     <MainLayout>
-        <!-- Sticky Book Table Button -->
-        <div class="fixed bottom-4 sm:bottom-8 right-4 sm:right-8 z-50">
-            <Link :href="route('make-reservation')" class="group bg-gradient-to-r from-green-600 to-yellow-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center gap-2">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span class="hidden sm:inline">Book a Table</span>
-                <span class="sm:hidden">Book</span>
-                <span class="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 bg-red-500 text-white text-xs px-1 sm:px-2 py-0.5 sm:py-1 rounded-full animate-pulse">Now Open</span>
-            </Link>
-        </div>
 
         <Head title="Welcome">
             <link rel="preconnect" href="https://rsms.me/" />
             <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
         </Head>
-        <div class="flex min-h-screen flex-col items-center bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] lg:justify-center overflow-x-hidden">
-            <div class="duration-750 starting:opacity-0 flex w-full items-center justify-center opacity-100 transition-opacity lg:grow">
-                <div class="relative w-full max-w-full">
-                    <!-- Video Background -->
-                    <div class="absolute inset-0 z-0">
-                        <div class="relative w-full h-screen overflow-hidden">
-                            <!-- Video Background -->
-                            <video 
-                                class="absolute inset-0 w-full h-full object-cover"
-                                autoplay 
-                                loop 
-                                muted 
-                                playsinline
-                                poster="/img/bg/bg-5.jpg">
-                                <source src="/videos/hero-bg.mp4" type="video/mp4">
-                            </video>
-                            <!-- Overlay -->
-                            <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/30"></div>
-                        </div>
-                    </div>
 
-                   
-
-                    <!-- Content that goes over the background -->
-                    <div class="relative z-10 pt-20">
-                        <div class="relative min-h-screen flex flex-col selection:bg-[#FF2D20] selection:text-white">
-                            <div class="relative w-full">
-                                <!-- Hero Content -->
-                                <div class="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 md:pt-32 pb-16 sm:pb-20 md:pb-24">
-                                    <!-- Announcement Banner -->
-                                    <div class="flex justify-center">
-                                        <p v-motion-slide-visible-top :delay="600" :duration="800"
-                                            class="inline-flex items-center gap-x-2 bg-white/90 backdrop-blur-sm border border-gray-200 text-lg sm:text-xl md:text-2xl text-green-500 rubik p-1 px-4 sm:px-6 rounded-full transition hover:border-gray-300 dark:bg-neutral-800 dark:border-neutral-700 dark:hover:border-neutral-600 dark:text-neutral-200">
-                                            <span class="relative flex h-2 w-2 sm:h-3 sm:w-3">
-                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                                <span class="relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 bg-green-500"></span>
-                                            </span>
-                                            HARDBALL
-                                        </p>
-                                    </div>
-
-                                    <!-- Title -->
-                                    <div class="max-w-2xl text-center mx-auto">
-                                        <h1 v-motion-slide-visible-top :delay="300" :duration="800"
-                                            class="pr-3 pt-3 sm:pt-5 font-black great-vibes bg-clip-text bg-gradient-to-tl from-green-600 to-yellow-600 text-transparent text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-[70pt] dark:text-neutral-200">
-                                            Caribbean
-                                        </h1>
-                                        <p v-motion-slide-visible-right :delay="200" :duration="600"
-                                            class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-white knewave-regular">
-                                            Smokehouse
-                                        </p>
-                                    </div>
-
-                                    <div class="mt-3 sm:mt-5 max-w-3xl text-center mx-auto px-4">
-                                        <p v-motion-slide-visible-bottom :delay="300" :duration="800"
-                                            class="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-yellow-400 great-vibes font-bold dark:text-neutral-400">
-                                            Come for the food, <span class="font-serif text-red-700">Stay</span> for
-                                            the <span class="font-serif text-green-700">vibes</span>!
-                                        </p>
-                                    </div>
-
-                                    <!-- Quick Info -->
-                                    <div class="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto">
-                                        <div v-motion-slide-visible-bottom :delay="400" :duration="800"
-                                            class="bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4 text-center">
-                                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            <p class="text-white font-semibold text-sm sm:text-base">Open Daily</p>
-                                            <p class="text-gray-300 text-xs sm:text-sm">12:00pm</p>
-                                        </div>
-                                        <div v-motion-slide-visible-bottom :delay="500" :duration="800"
-                                            class="bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4 text-center">
-                                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            </svg>
-                                            <p class="text-white font-semibold text-sm sm:text-base">Location</p>
-                                            <p class="text-gray-300 text-xs sm:text-sm">Ipswich, UK</p>
-                                        </div>
-                                        <div v-motion-slide-visible-bottom :delay="600" :duration="800"
-                                            class="bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4 text-center sm:col-span-2 md:col-span-1">
-                                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                            </svg>
-                                            <p class="text-white font-semibold text-sm sm:text-base">Contact</p>
-                                            <p class="text-gray-300 text-xs sm:text-sm">+44 123 456 7890</p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Buttons -->
-                                    <div v-motion-slide-visible-bottom :delay="600" :duration="800"
-                                        class="mt-6 sm:mt-8 gap-2 sm:gap-3 flex flex-col sm:flex-row justify-center px-4">
-                                        <a class="inline-flex justify-center items-center gap-x-2 sm:gap-x-3 text-center bg-gradient-to-tl from-green-600 to-yellow-600 hover:from-green-600 hover:to-yellow-600 border border-transparent text-white text-sm font-medium rounded-md focus:outline-none focus:ring-1 focus:ring-gray-600 py-2 sm:py-3 px-4 sm:px-6 dark:focus:ring-offset-gray-800"
-                                            href="#carousel">
-                                            Explore Menu
-                                            <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round">
-                                                <path d="m9 18 6-6-6-6" />
-                                            </svg>
-                                        </a>
-                                        <a class="inline-flex justify-center items-center gap-x-2 sm:gap-x-3 text-center bg-white/10 backdrop-blur-sm hover:bg-white/20 border border-white/20 text-white text-sm font-medium rounded-md focus:outline-none focus:ring-1 focus:ring-white/20 py-2 sm:py-3 px-4 sm:px-6"
-                                            href="#events">
-                                            View Events
-                                            <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round">
-                                                <path d="M5 12h14M12 5l7 7-7 7" />
-                                            </svg>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="h-14.5x hidden lg:block"></div>
-        </div>
-
-        <!-- Card Section -->
-        <section id="carousel" class="relative max-w-full px-4 sm:px-6 lg:px-8 lg:pb-32 lg:pt-10 mx-auto bg-gradient-to-b from-white to-green-50" v-motion-slide-visible-bottom :delay="200" :duration="400">
-            <!-- Decorative elements -->
-            <div class="absolute inset-0 overflow-hidden">
-                <div class="absolute left-0 top-1/2 transform -translate-y-1/2">
-                    <svg class="w-24 h-24 text-green-100 opacity-50" viewBox="0 0 100 100" fill="currentColor">
-                        <path d="M95,50c0,24.9-20.1,45-45,45S5,74.9,5,50S25.1,5,50,5S95,25.1,95,50z"/>
-                    </svg>
-                </div>
-                <div class="absolute right-0 bottom-0">
-                    <svg class="w-32 h-32 text-yellow-100 opacity-50" viewBox="0 0 100 100" fill="currentColor">
-                        <path d="M95,50c0,24.9-20.1,45-45,45S5,74.9,5,50S25.1,5,50,5S95,25.1,95,50z"/>
-                    </svg>
-                </div>
-            </div>
-           
-            <!-- Section Header -->
-            <div class="relative text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Experience Caribbean Excellence</h2>
-                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Discover what makes us Ipswich's premier destination for authentic Caribbean cuisine</p>
-            </div>
-
-            <!-- Grid -->
-            <div class="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                <!-- Voucher Card -->
-                <div v-motion-slide-visible-bottom :delay="200" :duration="400"
-                    class="group bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
-                    <div class="p-6">
-                        <div class="flex items-center mb-6">
-                            <div class="flex-shrink-0 bg-gradient-to-br from-green-400 to-green-600 p-4 rounded-xl">
-                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                    <circle cx="9" cy="7" r="4" />
-                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">Special Offers</h3>
-                                <p class="text-gray-600">Exclusive deals for our valued customers</p>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <a href="#" class="inline-flex items-center text-green-600 font-semibold hover:text-green-700">
-                                View Offers
-                                <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Fresh Food Card -->
-                <div v-motion-slide-visible-bottom :delay="300" :duration="400"
-                    class="group bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
-                    <div class="p-6">
-                        <div class="flex items-center mb-6">
-                            <div class="flex-shrink-0 bg-gradient-to-br from-yellow-400 to-yellow-600 p-4 rounded-xl">
-                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="text-xl font-bold text-gray-900 group-hover:text-yellow-600 transition-colors">Fresh Ingredients</h3>
-                                <p class="text-gray-600">Quality Caribbean ingredients, locally sourced</p>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <a href="#" class="inline-flex items-center text-yellow-600 font-semibold hover:text-yellow-700">
-                                Learn More
-                                <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Contact Card -->
-                <div v-motion-slide-visible-bottom :delay="400" :duration="400"
-                    class="group bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
-                    <div class="p-6">
-                        <div class="flex items-center mb-6">
-                            <div class="flex-shrink-0 bg-gradient-to-br from-red-400 to-red-600 p-4 rounded-xl">
-                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="text-xl font-bold text-gray-900 group-hover:text-red-600 transition-colors">Get in Touch</h3>
-                                <p class="text-gray-600">Book your table or event with us</p>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <a href="mailto:info@hardballsmokehouse.co.uk" class="inline-flex items-center text-red-600 font-semibold hover:text-red-700">
-                                Contact Us
-                                <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- End Card Section -->
-
-        
-        <!-- ============================= MENU & DISHES ======================================================== -->
-        <section class="relative w-full min-h-[700px] flex flex-col md:flex-row bg-gradient-to-r from-[#23a04f]/90 to-[#23a04f]/80" v-motion-slide-visible-bottom :delay="200" :duration="400">
-            <!-- Remove the green background from the card, make it white/transparent for contrast -->
-            <div class="absolute inset-0 bg-gradient-to-br from-white via-[#e8f5e9] to-[#c8e6c9]">
-                <div class="absolute inset-0 opacity-10" style="background-image: url('/img/shape/wave-pattern.svg'); background-size: 100px;"></div>
-            </div>
-            <!-- Image Section -->
-            <div class="w-full md:w-1/3 flex flex-col items-center justify-center p-4 sm:p-8 z-10 relative shadow-2xl">
-                <div class="relative w-full h-full max-w-md flex flex-col items-center md:items-start">
-                    <div class="relative group my-auto items-center w-full flex justify-center">
-                        <div class="absolute -inset-2 sm:-inset-4 bg-gradient-to-r from-[#23a04f] to-[#f9de47] rounded-xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
-                        <img
-                            src="/img/food/portrait5.JPG"
-                            alt="Menu Dish"
-                            class="rounded-xl shadow-lg w-full max-w-xs sm:max-w-full transform hover:scale-105 transition-transform duration-500"
-                        />
-                    </div>
-                </div>
-            </div>
-            <!-- Menu Content Section -->
-            <div class="w-full md:w-2/3 flex items-center justify-center min-h-[400px] md:min-h-[600px]">
-                <div class="relative w-full p-0 sm:p-6 md:p-8 z-10 bg-white/90 shadow-xl mx-0 sm:mx-6 md:mx-0 border border-[#23a04f]/20">
-                    <div class="mb-1 sm:mb-2 text-[#f9de47] font-bold uppercase tracking-wider flex items-center gap-2 text-xs sm:text-sm">
-                        FOOD ITEMS
-                        <span class="w-6 sm:w-8 h-0.5 bg-[#f9de47] inline-block"></span>
-                    </div>
-                    <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold mb-3 sm:mb-6 text-[#0c4149]">Starters & Main Dishes</h2>
-                    <!-- Category Tabs -->
-                    <div class="flex flex-wrap gap-2 mb-4 sm:mb-6">
-                        <button v-for="cat in menuCategories" :key="cat.key" 
-                            @click="selectedMenuCategory = cat.key"
-                            :class="[
-                                selectedMenuCategory === cat.key 
-                                    ? 'bg-[#f9de47] text-[#0c4149] shadow-lg scale-105' 
-                                    : 'bg-[#23a04f]/10 text-[#0c4149] hover:bg-[#23a04f]/20',
-                                'px-3 py-1 sm:px-4 sm:py-2 rounded-full font-semibold text-xs sm:text-base transition-all duration-300 hover:shadow-md hover:scale-105'
-                            ]">
-                            {{ cat.label }}
-                        </button>
-                    </div>
-                    <!-- Menu List -->
-                    <div class="space-y-3 sm:space-y-4 max-h-[320px] sm:max-h-[400px] overflow-y-auto pr-2 sm:pr-4 custom-scrollbar">
-                        <div v-if="groupedMenuItems[selectedMenuCategory] && groupedMenuItems[selectedMenuCategory].length > 0">
-                            <div v-for="item in groupedMenuItems[selectedMenuCategory]" :key="item.id"
-                                class="group bg-[#23a04f]/5 rounded-xl p-3 sm:p-4 hover:bg-[#23a04f]/10 transition-all duration-300 border border-[#23a04f]/10">
-                                <div class="flex flex-col md:flex-row md:items-center justify-between">
-                                    <div class="flex-1">
-                                        <div class="flex items-center gap-2">
-                                            <span class="font-extrabold text-base sm:text-xl md:text-2xl text-[#0c4149] group-hover:text-emerald-600 transition-colors">
-                                                {{ item.name }}
-                                            </span>
-                                            <span v-if="item.is_chef_special" 
-                                                class="px-2 py-1 bg-[#f9de47] text-[#0c4149] text-xs font-bold rounded-full animate-pulse">
-                                                Chef's Special
-                                            </span>
-                                        </div>
-                                        <div class="text-[#0c4149]/90 text-xs sm:text-sm italic mt-1">{{ item.description }}</div>
-                                        <div class="text-[#0c4149]/70 text-xs mt-1" v-if="item.side_note">{{ item.side_note }}</div>
-                                    </div>
-                                    <div class="flex gap-2 sm:gap-4 mt-2 md:mt-0 md:ml-8">
-                                        <span class="text-emerald-600 font-extrabold text-base sm:text-lg md:text-xl">
-                                            ${{ Number(item.price || 0).toFixed(2) }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div v-else class="text-center py-8">
-                            <p class="text-[#0c4149]/70 text-sm">No items found for this category.</p>
-                            <p class="text-[#0c4149]/50 text-xs mt-2">Available categories: {{ Object.keys(groupedMenuItems).join(', ') }}</p>
-                        </div>
-                    </div>
-                    <!-- View Full Menu Link -->
-                    <div class="mt-5 sm:mt-8 text-center">
-                        <Link :href="route('menu')" 
-                            class="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#f9de47] text-[#0c4149] font-bold rounded-full hover:bg-white transition-all duration-300 transform hover:scale-105 hover:shadow-lg group text-sm sm:text-base">
-                            View Full Menu
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                            </svg>
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- ============================= END MENU & DISHES ======================================================== -->
-
-        
-
-        <!-- ============================= EVENTS ======================================================== -->
-        <div id="events" class="relative max-w-full overflow-hidden" v-motion-slide-visible-bottom :delay="200" :duration="400">
-            <!-- Background Pattern -->
-            <div class="absolute inset-0 bg-[#0c4149] opacity-95">
-                <!-- Base Pattern -->
-                <div class="absolute inset-0" style="background-image: url('/img/shape/pattern-light.svg'); background-repeat: repeat; opacity: 0.2;"></div>
+        <!-- Hero Section -->
+        <section class="relative min-h-screen bg-gradient-to-br from-dark-900 via-green-900 to-dark-900 text-white overflow-hidden">
+            <!-- Animated Background Pattern -->
+            <div class="absolute inset-0 z-0">
+                <div class="absolute inset-0 bg-[url('/img/bg/bg-5.jpg')] bg-cove bg-center bg-no-repeat op"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-dark-900 via-green-900 to-gray-900"></div>
+                
+                <!-- Floating Caribbean Elements -->
+                <div class="absolute top-20 left-10 w-24 h-24 bg-yellow-400/20 rounded-full animate-pulse animation-delay-3000"></div>
+                <div class="absolute top-40 right-20 w-16 h-16 bg-accent-red/20 rounded-full animate-pulse"></div>
+                <div class="absolute bottom-40 left-1/4 w-20 h-20 bg-green-400/20 rounded-full animate-bounce animation-delay-2000"></div>
+                <div class="absolute bottom-20 right-1/3 w-12 h-12 bg-yellow-400/20 rounded-full animate-pulse"></div>
                 
                 <!-- Diagonal Lines Pattern -->
-                <div class="absolute inset-0 opacity-15" 
-                    style="background-image: repeating-linear-gradient(45deg, #f9de47 0, #f9de47 2px, transparent 0, transparent 50%),
-                            repeating-linear-gradient(-45deg, #23a04f 0, #23a04f 2px, transparent 0, transparent 50%);
-                    background-size: 40px 40px;">
+                <div class="absolute inset-0 opacity-10">
+                    <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-yellow-400 to-transparent transform rotate-12"></div>
+                    <div class="absolute top-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-accent-red to-transparent transform -rotate-6"></div>
+                    <div class="absolute bottom-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-400 to-transparent transform rotate-3"></div>
                 </div>
-
-                <!-- Dots Pattern -->
-                <div class="absolute inset-0 opacity-15" 
-                    style="background-image: radial-gradient(#f9de47 2px, transparent 2px);
-                    background-size: 30px 30px;">
-                </div>
-
-                <!-- Wave Pattern -->
-                <div class="absolute inset-0 opacity-10"
-                    style="background-image: url('/img/shape/wave-pattern.svg');
-                    background-size: 100px;">
-                </div>
-
-                <!-- Gradient Overlay -->
-                <div class="absolute inset-0 bg-gradient-to-b from-[#13292c]/90 via-[#001b1f]/80 to-[#052c32]/80"></div>
             </div>
 
             <!-- Content Container -->
-            <div class="relative container mx-auto px-4 py-24">
-                <!-- Section Header -->
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Experience the Vibe</h2>
-                    <p class="text-xl text-green-300 max-w-2xl mx-auto">Join us for live music, special events, and the best Caribbean atmosphere in Ipswich</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Left Column: Featured Event -->
-                    <div class="relative group">
-                        <div class="relative overflow-hidden rounded-3xl">
-                            <img src="/img/event/dawn-penn.jpg" alt="Dawn Penn Event" 
-                                 class="w-full h-[600px] object-cove transform group-hover:scale-110 transition-transform duration-700" style="background-position: top;" />
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                            <div class="absolute bottom-0 left-0 right-0 p-8">
-                                <span class="inline-block px-4 py-2 bg-red-500 text-white rounded-full text-sm font-bold mb-4">FEATURED EVENT</span>
-                                <h3 class="text-3xl font-bold text-white mb-2">Dawn Penn Live</h3>
-                                <p class="text-gray-300 mb-4">Experience the legendary voice behind "No, No, No" live at Hardball</p>
-                                <!-- <button class="bg-white text-[#0c4149] px-6 py-3 rounded-full font-bold hover:bg-green-500 hover:text-white transition-colors">
-                                    Book Now
-                                </button> -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column: Stacked Cards -->
-                    <div class="space-y-8">
-                        <!-- Cocktail Card -->
-                        <Link :href="route('cocktail')" 
-                              class="block relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#c02523] to-[#e53935] group">
-                            <div class="relative p-8">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <h3 class="text-2xl font-bold text-white mb-2">SIGNATURE<br/>COCKTAILS</h3>
-                                        <p class="text-red-100 mb-4">Discover our unique Caribbean-inspired cocktails</p>
-                                        <button class="inline-flex items-center px-6 py-3 bg-white text-red-600 rounded-full font-bold group-hover:bg-red-100 transition-colors">
-                                            View Menu
-                                            <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <img src="/img/beverages/cocktail1.png" alt="Signature Cocktails" 
-                                         class="absolute bottom-0 right-0 w-48 h-48 object-contain transform group-hover:scale-110 transition-transform duration-500"/>
-                                </div>
-                            </div>
-                        </Link>
-
-                        <!-- Gallery Card -->
-                        <Link :href="route('gallery')" 
-                              class="block relative overflow-hidden rounded-3xl bg-[#ffd600] group">
-                            <div class="relative p-8">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <h3 class="text-2xl font-bold text-[#0b2341] mb-2">EXPLORE OUR<br/>GALLERY</h3>
-                                        <p class="text-[#0b2341]/80 mb-4">Take a visual journey through our Caribbean experience</p>
-                                        <button class="inline-flex items-center px-6 py-3 bg-[#0c534d] text-white rounded-full font-bold group-hover:bg-[#23395d] transition-colors">
-                                            View Gallery
-                                            <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <div class="absolute right-0 bottom-0 grid grid-cols-2 gap-1 transform translate-x-8 translate-y-8 rotate-12 group-hover:rotate-6 transition-transform duration-500">
-                                        <img src="/img/gallery/store4.JPG" alt="Gallery Preview" class="w-24 h-24 object-cover rounded-lg shadow-lg"/>
-                                        <img src="/img/gallery/store8.jpg" alt="Gallery Preview" class="w-24 h-24 object-cover rounded-lg shadow-lg"/>
-                                        <img src="/img/gallery/event1.jpg" alt="Gallery Preview" class="w-24 h-24 object-cover rounded-lg shadow-lg"/>
-                                        <img src="/img/gallery/food1.jpg" alt="Gallery Preview" class="w-24 h-24 object-cover rounded-lg shadow-lg"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- ============================= END EVENTS ======================================================== -->
-
-
-        <!-- ============================= Dessert ======================================================== -->
-        <section class="relative bg-gradient-to-b from-white to-green-50 py-28 overflow-hidden" v-motion-slide-visible-bottom :delay="200" :duration="400">
-            <!-- Decorative Elements -->
-            <div class="absolute inset-0 overflow-hidden">
-                <!-- Floating Elements -->
-                <div class="absolute top-1/4 left-10 w-32 h-32 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-                <div class="absolute top-1/3 right-10 w-32 h-32 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-                <div class="absolute bottom-1/4 left-1/2 w-32 h-32 bg-red-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
-                
-                <!-- Caribbean Pattern -->
-                <div class="absolute inset-0 opacity-5" style="background-image: url('/img/shape/caribbean-pattern.svg'); background-repeat: repeat;"></div>
-            </div>
-
-            <div class="container mx-auto flex flex-col md:flex-row items-center gap-12 relative z-10">
-                <!-- Left: Dessert List -->
-                <div class="flex-1 w-full">
-                    <div class="flex items-center mb-6">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-[#ffd600] tracking-wide mr-4">DESSERT ITEMS</h2>
-                        <span class="flex-1 border-t-2 border-[#ffd600]"></span>
-                        <svg class="ml-2" width="40" height="10" viewBox="0 0 40 10" fill="none">
-                            <path d="M0 5h38m0 0l-4-4m4 4l-4 4" stroke="#ffd600" stroke-width="2" stroke-linecap="round" />
-                        </svg>
-                    </div>
-
-                    <!-- Dessert Cards -->
-                    <div class="space-y-6">
-                        <div v-for="(item, index) in props.dessertItems" :key="item.id" 
-                            v-motion-slide-visible-bottom 
-                            :delay="200 * index" 
-                            :duration="800"
-                            class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                            <div class="p-6 flex items-center gap-6">
-                                <!-- Dessert Image -->
-                                <div class="relative">
-                                    <div class="absolute -inset-2 bg-gradient-to-r from-yellow-400 to-red-400 rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                                    <img :src="item.image_path ? '/storage/' + item.image_path : '/img/desserts/default.jpg'" 
-                                        :alt="item.name" 
-                                        class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md relative z-10 transform group-hover:scale-110 transition-transform duration-300" />
-                                </div>
-
-                                <!-- Dessert Info -->
-                                <div class="flex-1">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <h3 class="font-extrabold text-xl md:text-2xl text-gray-900 group-hover:text-[#ffd600] transition-colors">
-                                                {{ item.name }}
-                                            </h3>
-                                            <p class="text-gray-500 text-sm italic mt-1">{{ item.description }}</p>
-                                            <p v-if="item.note" class="text-gray-400 text-xs mt-1">{{ item.note }}</p>
-                                        </div>
-                                        <div class="text-right">
-                                            <span class="text-[#ffd600] font-extrabold text-lg md:text-xl">
-                                                ${{ Number(item.price || 0).toFixed(2) }}
-                                            </span>
-                                            <!-- Popular Badge -->
-                                            <div v-if="index === 0" class="mt-2">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd" />
-                                                    </svg>
-                                                    Most Popular
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right: Big Dessert Image -->
-                <div class="flex-1 flex justify-center relative">
-                    <!-- Parallax Container -->
-                    <div class="relative w-96 h-96">
-                        <!-- Decorative Elements -->
-                        <div class="absolute inset-0 bg-gradient-to-r from-yellow-400 to-red-400 rounded-full blur-3xl opacity-20 animate-pulse"></div>
+            <div class="relative z-10 container mx-auto px-4 py-20">
+                <div class="grid grid-cols-1 lg:grid-cols-2 items-center min-h-screen gap-12">
+                    
+                    <!-- Left Side - Text Content -->
+                    <div class="text-center lg:text-left space-y-8 animate-slide-in-left">
                         
-                        <!-- Main Image Container -->
-                        <div class="relative w-full h-full">
-                            <!-- Rotating Border -->
-                            <div class="absolute inset-0 rounded-full border-8 border-[#ffd600] animate-spin-slow"></div>
+                       
+
+                        <!-- Main Headlines -->
+                        <div class="space-y-4">
+                            <h1 class="text-6xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-white to-accent-red animate-pulse-slow">
+                                HARDBALL
+                            </h1>
+                            <h2 class="text-4xl lg:text-6xl knewave-regular font-bold text-white mb-4">
+                                Caribbean Smokehouse
+                            </h2>
+                        </div>
+
+                        <!-- Subtitle with Enhanced Typography -->
+                        <div class="space-y-4">
+                            <p class="text-xl lg:text-2xl text-gray-200 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                                Come for the <span class="text-yellow-400 font-bold">food</span>, 
+                                <span class="text-white font-bold">Stay</span> for the 
+                                <span class="text-accent-red font-bold">vibes</span>!
+                            </p>
+                            <p class="text-lg text-gray-300 max-w-xl mx-auto lg:mx-0">
+                                Experience authentic Caribbean flavors with a modern twist. From jerk chicken to rum cocktails, every bite tells a story.
+                            </p>
+                        </div>
+
+                        <!-- Enhanced Stats Grid -->
+                        <div class="grid grid-cols-3 gap-6 max-w-md mx-auto lg:mx-0">
+                            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                                <div class="text-3xl font-bold text-yellow-400">4.9</div>
+                                <div class="text-sm text-gray-300">Rating</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                                <div class="text-3xl font-bold text-yellow-400">5000+</div>
+                                <div class="text-sm text-gray-300">Customers</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                                <div class="text-3xl font-bold text-yellow-400">50+</div>
+                                <div class="text-sm text-gray-300">Menu Items</div>
+                            </div>
+                        </div>
+
+                        <!-- Enhanced CTA Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                            <Link :href="route('make-reservation')"
+                                class="group inline-flex items-center gap-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-dark-900 px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:from-yellow-300 hover:to-yellow-400 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                                <span>Book a Table</span>
+                                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                            </Link>
+                            <Link :href="route('menu')"
+                                class="group inline-flex items-center gap-3 border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg backdrop-blur-sm hover:bg-white hover:text-gray-900 transition-all duration-300 transform hover:scale-105">
+                                <span>Explore Menu</span>
+                                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </Link>
+                        </div>
+                    </div>
+
+                    <!-- Right Side - Enhanced Hero Visual -->
+                    <div class="relative flex justify-center lg:justify-end animate-slide-in-right">
+                        <div class="relative">
+                            <!-- Decorative Background Elements -->
+                            <div class="absolute -top-8 -right-8 w-40 h-40 bg-gradient-to-br from-yellow-400/30 to-accent-red/30 rounded-full blur-3xl animate-pulse"></div>
+                            <div class="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br from-green-400/30 to-yellow-400/30 rounded-full blur-2xl animate-pulse animation-delay-2000"></div>
                             
-                            <!-- Main Image -->
-                            <img
-                                src="/img/food/White-Chocolate-Cheesecake.png"
-                                alt="Dessert"
-                                class="w-full h-full object-cover rounded-full border-8 border-white shadow-lg relative z-10 transform hover:scale-105 transition-transform duration-500"
-                            />
+                            <!-- Main Image Container -->
+                            <div class="relative">
+                                <!-- Glowing Border Effect -->
+                                <div class="absolute -inset-6 bg-gradient-to-r from-yellow-400 via-accent-red to-green-400 rounded-full blur-xl opacity-30 animate-pulse-slow"></div>
+                                
+                                <!-- Main Image with Enhanced Styling -->
+                                <div class="relative z-10">
+                                    <img src="/img/portrait1.JPG" alt="Caribbean Smokehouse Signature Dish"
+                                        class="w-96 h-96 lg:w-[28rem] lg:h-[28rem] object-cover rounded-full border-4 border-white shadow-2xl transform hover:scale-105 transition-all duration-500" style="background-position: center;" />
+                                    
+                                    <!-- Floating Food Elements -->
+                                    <div class="absolute -top-4 -right-4 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                                        <img src="/img/food/burger.png" alt="Burger" class="w-10 h-10 object-cover rounded-full" />
+                                    </div>
+                                    <div class="absolute -bottom-4 -left-4 w-14 h-14 bg-accent-red rounded-full flex items-center justify-center shadow-lg animate-pulse animation-delay-1000">
+                                        <img src="/img/food/fritters.jpg" alt="Fritters" class="w-8 h-8 object-cover rounded-full" />
+                                    </div>
+                                </div>
+                            </div>
                             
-                            <!-- Floating Elements -->
-                            <div class="absolute -top-4 -right-4 w-16 h-16 bg-yellow-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-                            <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-red-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+                            <!-- Floating Rating Badge -->
+                            <div class="absolute z-50 top-8 right-8 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex">
+                                        <svg v-for="i in 5" :key="i" class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                    </div>
+                                    <span class="text-dark-900 font-bold">4.9</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-        <!-- ============================= END DESSERT ======================================================== -->
-         
-         <!-- Marquee as transition element -->
-        <div class="relative overflow-hidden py-16 bg-[#0c4149]" v-motion-slide-visible-bottom :delay="200" :duration="400">
-            <!-- Background Elements -->
-            <div class="absolute inset-0">
-                <!-- Dark gradient overlay -->
-                <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30"></div>
+
+        <!-- Food Categories Section -->
+        <section class="py-20 bg-green-100">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-green-600 mb-4 knewave-regular">Explore Our Menu</h2>
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">Discover authentic Caribbean flavors across our
+                        carefully curated menu categories</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div v-for="category in menuCategories" :key="category.key"
+                        class="group relative overflow-hidden ">
+                        <div class="aspect-square relative rounded-3xl overflow-hidden">
+                            <!-- Display Image or Fallback -->
+                            <div v-if="category.display_image" class="w-full h-full">
+                                <img :src="`/storage/${category.display_image}`" :alt="category.label"
+                                    class="w-full h-full object-cover rounded-3xl group-hover:scale-110 transition-transform duration-300" />
+                                <div
+                                    class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300">
+                                </div>
+                            </div>
+                            <div v-else class="w-full h-full bg-gradient-to-br from-yellow-400 to-accent-red">
+                                <div
+                                    class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300">
+                                </div>
+                            </div>
+
+                            <!-- Hover Overlay with View Items Button -->
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <button @click="selectedMenuCategory = category.key"
+                                    class="bg-white text-dark-900 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors transform scale-90 group-hover:scale-100 duration-300 shadow-lg">
+                                    View Items →
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-6 text-center">
+                            <h3 class="text-2xl text-green-600 knewave-regular font-extrabold ">{{ category.label }}</h3>
+                            <p class="text-gray-600 mb-4">{{ category.count }} Items</p>
+                        </div>
+                    </div>
+                </div>
                 
-                <!-- Geometric Pattern -->
+                <!-- Browse Full Menu Button -->
+                <div class="text-center mt-6">
+                    <Link :href="route('menu')"
+                        class="inline-flex items-center gap-3 ring-1 ring-gray-900  text-gray-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-500 transition-all duration-300 transform hover:scale-105 shadow-">
+                        Browse Full Menu
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                    </Link>
+                </div>
+            </div>
+        </section>
+
+        <div class="flex items-center space-x-4 text-lg">sss
+                            <a :href="route('privacy')" class="text-gray-50 hover:text-accent-yellow transition-colors">Privacy Policy</a>
+                            <div class="w-px h-4 bg-gray-400"></div>
+                            <a :href="route('terms')" class="text-gray-50 hover:text-accent-yellow transition-colors">Terms & Conditions</a>
+                        </div>
+        <!-- Promotions Section -->
+        <section class="py-32 bg-white relative" style="background: url('/img/bg/food_pattern.jpg') no-repeat center center fixed; background-size: cover;">
+            <!-- White overlay to make background lighter -->
+            <div class="absolute inset-0 bg-white/95"></div>
+            
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div v-for="(promo, index) in promotions" :key="index"
+                        class="group relative overflow-hidden rounded-2xl bg-gradient-to-r" :class="promo.color">
+                        <div class="p-12 text-white">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <h3 class="text-3xl font-bold mb-2">{{ promo.title }}</h3>
+                                    <p class="text-xl mb-2">{{ promo.subtitle }}</p>
+                                    <p class="text-gray-200 mb-6">{{ promo.description }}</p>
+                                    <button
+                                        class="bg-white text-dark-900 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors">
+                                        {{ promo.cta }}
+                                    </button>
+                                </div>
+                                <div class="hidden lg:block">
+                                    <img :src="promo.image" :alt="promo.title"
+                                        class="w-32 h-32 object-cover rounded-full transform group-hover:scale-110 transition-transform duration-300" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Menu Items -->
+        <section class="py-20 mx-auto" style="background-color: rgb(9 20 32);">
+            <div class="container max-w-7xl mx-auto px-4">
+                <div class="flex flex-col lg:flex-row items-center justify-between mb-16">
+                    <div class="text-left mb-8 lg:mb-0">
+                        <h2 class="text-4xl lg:text-5xl font-bold text-white mb-4 knewave-regular">Find Your Best
+                            Delicious Flavor</h2>
+                        <p class="text-xl text-gray-300 max-w-2xl">
+                            Scroll, select, and savor — our diverse menu brings together the best of local favorites and
+                            global flavors, all made fresh and full of taste.
+                        </p>
+                    </div>
+                    <Link :href="route('menu')"
+                        class="inline-flex items-center gap-2 bg-white text-dark-900 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors">
+                    Browse More Dishes
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                    </Link>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 h-full">
+                    <div v-for="item in featuredMenuItems" :key="item.id"
+                        class="group p-5 h-full bg-dark-900/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-700 hover:border-yellow-400 transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="relative overflow-hidden rounded-2xl h-80 group">
+                            <img :src="item.image_path ? '/storage/' + item.image_path : '/img/food/burger.png'"
+                                :alt="item.name"
+                                class="w-full h-full object-cover object-center rounded-2xl group-hover:scale-110 transition-transform duration-300" />
+
+                            <!-- Dark overlay on hover -->
+                            <div
+                                class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 rounded-2xl">
+                            </div>
+
+                            <!-- Yellow arrow button overlay -->
+                            <div
+                                class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <button
+                                    class="bg-yellow-400 text-dark-900 w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-yellow-300 transition-colors duration-200 transform hover:scale-110">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div v-if="item.is_chef_special"
+                                class="absolute top-4 right-4 bg-yellow-400 text-dark-900 px-3 py-1 rounded-full text-sm font-bold z-10">
+                                Chef's Special
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-2xl font-bold text-yellow-400">${{ Number(item.price || 0).toFixed(2)
+                                }}</span>
+                                <span class="text-sm text-gray-200">{{ item.category?.name || 'Featured' }}</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-3">{{ item.name }}</h3>
+                            <p class="text-gray-10 text-sm leading-relaxed mb-4 line-clamp-2">{{ item.description }}</p>
+                            <!-- <button class="text-yellow-400 font-semibold hover:text-white transition-colors flex items-center gap-2">
+                                View Details
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+         <!-- Marquee Section -->
+         <div class="relative overflow-hidden py-16 bg-dark-900">
+            <div class="absolute inset-0">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30"></div>
                 <div class="absolute inset-0 opacity-10">
-                    <div class="h-full w-full" 
-                        style="background-image: repeating-linear-gradient(45deg, #f9de47 0, #f9de47 1px, transparent 0, transparent 50%),
-                                repeating-linear-gradient(-45deg, #23a04f 0, #23a04f 1px, transparent 0, transparent 50%);
-                        background-size: 40px 40px;"></div>
+                    <div class="h-full w-full" style="background-image: repeating-linear-gradient(45deg, #FBCB1E 0, #FBCB1E 1px, transparent 0, transparent 50%),
+                                 repeating-linear-gradient(-45deg, #E34234 0, #E34234 1px, transparent 0, transparent 50%);
+                         background-size: 40px 40px;"></div>
                 </div>
-
-                <!-- Animated lines -->
-                <div class="absolute inset-0">
-                    <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#f9de47]/30 to-transparent animate-slide-right"></div>
-                    <div class="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#f9de47]/30 to-transparent animate-slide-left"></div>
-                </div>
-
-                <!-- Radial Gradient Overlay -->
-                <div class="absolute inset-0 bg-[#0c4149] opacity-30"
-                    style="background-image: radial-gradient(circle at center, transparent 0%, #0c4149 70%);"></div>
             </div>
 
-            <!-- Content -->
             <div class="relative z-10">
-                <!-- Top Marquee -->
-                <div class="relative marquee-container mb-8">
+                <div class="marquee-container mb-8">
                     <div class="flex space-x-4 animate-marquee whitespace-nowrap">
-                        <div v-for="(item, index) in ['Curry', 'Jerk Chicken', 'Burger', 'Shrimp Pasta', 'Tasty Wings', 'French Fry', 'Chicken Fry', 'Chicken Patty', 'Grilled Chicken']" 
-                            :key="index" 
-                            class="group inline-flex items-center">
-                            <span class="text-4xl md:text-6xl font-black text-white/90 hover:text-[#f9de47] transition-colors duration-300 cursor-pointer transform hover:scale-105">
+                        <div v-for="(item, index) in ['Curry', 'Jerk Chicken', 'Burger', 'Shrimp Pasta', 'Tasty Wings', 'French Fry', 'Chicken Fry', 'Chicken Patty', 'Grilled Chicken']"
+                            :key="index" class="group inline-flex items-center">
+                            <span
+                                class="text-4xl md:text-6xl font-black text-white/90 hover:text-yellow-400 transition-colors duration-300 cursor-pointer transform hover:scale-105">
+                                {{ item }}
+                            </span>
+                            <img src="/img/shape/cutlery.png" alt="cutlery icon"
+                                class="w-8 h-8 md:w-12 md:h-12 mx-8 md:mx-12 opacity-40 group-hover:opacity-100 transition-all duration-300 transform rotate-12 group-hover:rotate-45 filter brightness-0 invert" />
+                        </div>
+                        <!-- Duplicate content for seamless loop -->
+                        <div v-for="(item, index) in ['Curry', 'Jerk Chicken', 'Burger', 'Shrimp Pasta', 'Tasty Wings', 'French Fry', 'Chicken Fry', 'Chicken Patty', 'Grilled Chicken']"
+                            :key="`duplicate-${index}`" class="group inline-flex items-center">
+                            <span
+                                class="text-4xl md:text-6xl font-black text-white/90 hover:text-yellow-400 transition-colors duration-300 cursor-pointer transform hover:scale-105">
                                 {{ item }}
                             </span>
                             <img src="/img/shape/cutlery.png" alt="cutlery icon"
@@ -1029,13 +885,22 @@ watch(selectedMenuCategory, (val) => {
                     </div>
                 </div>
 
-                <!-- Bottom Marquee (Reverse Direction) -->
-                <div class="relative marquee-container">
+                <div class="marquee-container">
                     <div class="flex space-x-4 animate-marquee-reverse whitespace-nowrap">
-                        <div v-for="(item, index) in ['Caribbean Style', 'Island Flavors', 'Spicy Hot', 'Fresh Ingredients', 'Home Made', 'Traditional', 'Authentic', 'Family Recipe']" 
-                            :key="index" 
-                            class="group inline-flex items-center">
-                            <span class="text-3xl md:text-5xl font-black text-[#f9de47]/80 hover:text-white transition-colors duration-300 cursor-pointer transform hover:scale-105">
+                        <div v-for="(item, index) in ['Caribbean Style', 'Island Flavors', 'Spicy Hot', 'Fresh Ingredients', 'Home Made', 'Traditional', 'Authentic', 'Family Recipe']"
+                            :key="index" class="group inline-flex items-center">
+                            <span
+                                class="text-3xl md:text-5xl font-black text-yellow-400/80 hover:text-white transition-colors duration-300 cursor-pointer transform hover:scale-105">
+                                {{ item }}
+                            </span>
+                            <img src="/img/icon/palm-tree.webp" alt="palm tree icon"
+                                class="w-8 h-8 md:w-12 md:h-12 mx-8 md:mx-12 opacity-40 group-hover:opacity-100 transition-all duration-300 transform -rotate-12 group-hover:-rotate-45 filter brightness-0 invert" />
+                        </div>
+                        <!-- Duplicate content for seamless loop -->
+                        <div v-for="(item, index) in ['Caribbean Style', 'Island Flavors', 'Spicy Hot', 'Fresh Ingredients', 'Home Made', 'Traditional', 'Authentic', 'Family Recipe']"
+                            :key="`duplicate-${index}`" class="group inline-flex items-center">
+                            <span
+                                class="text-3xl md:text-5xl font-black text-yellow-400/80 hover:text-white transition-colors duration-300 cursor-pointer transform hover:scale-105">
                                 {{ item }}
                             </span>
                             <img src="/img/icon/palm-tree.webp" alt="palm tree icon"
@@ -1046,103 +911,478 @@ watch(selectedMenuCategory, (val) => {
             </div>
         </div>
 
-        <!-- Social Proof Section -->
-        <section class="relative py-16 bg-white" v-motion-slide-visible-bottom :delay="200" :duration="400">
-            <!-- Background Pattern -->
-            <div class="absolute inset-0 opacity-5">
-                <div class="h-full w-full" style="background-image: url('/img/shape/caribbean-pattern.svg'); background-repeat: repeat;"></div>
-            </div>
+        <!-- About & Stats Section -->
+        <section class="pb-40 pt-20 bg-light-cream relative"
+            style="background: url('/img/bg/food_pattern.jpg') no-repeat center center fixed; background-size: cover;">
+            <!-- White overlay to make background lighter -->
+            <div class="absolute inset-0 bg-white/95"></div>
 
-            <div class="container mx-auto px-4">
-                <!-- Trust Indicators -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-                    <div class="text-center">
-                        <div class="text-4xl font-bold text-[#23a04f] mb-2">4.9</div>
-                        <div class="flex justify-center mb-2">
-                            <svg v-for="i in 5" :key="i" class="w-5 h-5 text-[#f9de47]" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                        </div>
-                        <div class="text-gray-800">Google Reviews</div>
-                        <div class="text-gray-500 text-sm">(200+ reviews)</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-4xl font-bold text-[#23a04f] mb-2">12K+</div>
-                        <div class="text-gray-800">Happy Customers</div>
-                        <div class="text-gray-500 text-sm">Monthly</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-4xl font-bold text-[#23a04f] mb-2">96%</div>
-                        <div class="text-gray-800">Return Rate</div>
-                        <div class="text-gray-500 text-sm">Customer Loyalty</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-4xl font-bold text-[#23a04f] mb-2">#1</div>
-                        <div class="text-gray-800">Caribbean Restaurant</div>
-                        <div class="text-gray-500 text-sm">in Ipswich</div>
-                    </div>
-                </div>
 
-                <!-- Testimonials -->
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">What Our Customers Say</h2>
-                    <p class="text-gray-600 max-w-2xl mx-auto">Real feedback from our valued customers who have experienced the authentic taste of Caribbean cuisine at Hardball.</p>
-                </div>
+            <div class="container mx-auto px-4 relative z-10">
+                <h1
+                    class="text-4xl lg:text-5xl font-bold text-green-600 my-8 knewave-regular text-center max-w-2xl mx-auto">
+                    More Than Just Food – It’s a Flavor Story</h1>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 mt-20 items-center">
+                    <!-- Left Column - Image -->
+                    <div class="relative overflow-hidden rounded-2xl h-full">
+                        <!-- Background Image -->
+                        <img src="/img/misc/image 1.avif" alt="Background" class="w-full h-full object-cover" />
 
-                <div class="grid md:grid-cols-3 gap-8">
-                    <div v-for="(testimonial, index) in [
-                        {
-                            name: 'Sarah Thompson',
-                            role: 'Food Blogger',
-                            image: '/img/icon/palm-tree.webp',
-                            text: 'The jerk chicken here is absolutely incredible! The flavors are authentic and the atmosphere is perfect. A must-visit spot in Ipswich!',
-                            rating: 5
-                        },
-                        {
-                            name: 'Michael Chen',
-                            role: 'Local Guide',
-                            image: '/img/icon/palm-tree.webp',
-                            text: 'Best Caribbean food I\'ve had outside of Jamaica. The staff is friendly and the portions are generous. Their curry goat is outstanding!',
-                            rating: 5
-                        },
-                        {
-                            name: 'Emma Williams',
-                            role: 'Regular Customer',
-                            image: '/img/icon/palm-tree.webp',
-                            text: 'Love the vibrant atmosphere and amazing cocktails. The plantain chips are addictive and the service is always top-notch!',
-                            rating: 5
-                        }
-                    ]" :key="index"
-                    class="bg-gray-50 p-6 rounded-xl hover:bg-gray-100 transition-all duration-300 group border border-gray-100 hover:border-[#23a04f]/20 shadow-sm hover:shadow-md">
-                        <div class="flex items-center mb-4">
-                            <img :src="testimonial.image" :alt="testimonial.name" class="w-12 h-12 rounded-full object-cover mr-4 ring-2 ring-green-600" />
-                            <div>
-                                <div class="font-semibold text-gray-900 group-hover:text-[#23a04f] transition-colors">{{ testimonial.name }}</div>
-                                <div class="text-gray-500 text-sm">{{ testimonial.role }}</div>
+                        <!-- Dark overlay for better text readability -->
+                        <div class="absolute inset-0 bg-black/40"></div>
+
+                        <!-- Stats Content -->
+                        <div class="absolute inset-1 flex flex-co text-white p-8">
+                            <div class="grid grid-cols-1 gap-1 text-left h-96 my-auto">
+                                <div class="text-left">
+                                    <div class="text-4xl lg:text-5xl font-bold ">255+</div>
+                                    <div class="text-sm text-gray-200">Unique Menu Items</div>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-4xl lg:text-5xl font-bold">2,000+</div>
+                                    <div class="text-sm text-gray-200">Positive Reviews</div>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-4xl lg:text-5xl font-bold">200+</div>
+                                    <div class="text-sm text-gray-200">Outlets & Growing</div>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-4xl lg:text-5xl font-bold">10,000+</div>
+                                    <div class="text-sm text-gray-200">Orders Delivered</div>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex mb-3">
-                            <svg v-for="i in testimonial.rating" :key="i" class="w-5 h-5 text-[#f9de47]" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                        </div>
-                        <p class="text-gray-600 italic">{{ testimonial.text }}</p>
-                    </div>
-                </div>
 
-                <!-- Trust Badges -->
-                <div class="mt-16 flex flex-wrap justify-center items-center gap-8">
-                    <img src="/img/icon/TripAdvisor-Logo-SVG_001.svg" alt="TripAdvisor Choice" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
-                    <img src="/img/icon/Google_Review.png" alt="Google Reviews" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
-                    <img src="/img/icon/Just-Eat-Logo.svg" alt="Just Eat" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
-                    <img src="/img/icon/Deliveroo-Logo.svg" alt="Deliveroo" class="h-16 opacity-80 hover:opacity-100 transition-opacity" />
+                        <!-- Decorative food elements -->
+                        <div class="absolute top-4 right-4">
+                            <img src="/img/food/burger.png" alt="Food"
+                                class="w-12 h-12 object-cover rounded-lg opacity-80" />
+                        </div>
+                        <div class="absolute bottom-4 left-4">
+                            <img src="/img/food/fritters.jpg" alt="Food"
+                                class="w-10 h-10 object-cover rounded-lg opacity-80" />
+                        </div>
+                    </div>
+
+
+                    <!-- center Column - Content -->
+                    <div class="bg-yellow-50 p-8 rounded-2xl">
+                        <h2 class="text-4xl lg:text-5xl font-bold text-dark-900 mb-6 knewave-regular">Satisfy Your
+                            Cravings</h2>
+                        <p class="text-lg text-gray-700 leading-relaxed mb-8">
+                            At Hardball Caribbean Smokehouse, we believe great food unites people. Our mission is to
+                            serve bold meals that blend authentic Caribbean flavors with local love. From juicy jerk
+                            chicken to chilled rum cocktails, every dish is crafted with care and a touch of island
+                            vibes.
+                        </p>
+
+                        <Link :href="route('about')"
+                            class="inline-flex items-center gap-2 border-2 border-dark-900 bg-white text-dark-900 px-6 py-3 rounded-lg font-bold hover:bg-dark-900 hover:text-white transition-colors">
+                        Learn More
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                        </Link>
+
+                        <!-- Customer Satisfaction Section -->
+                        <div class="mt-8 bg-yellow-400 p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex -space-x-2">
+                                        <img src="/img/icon/palm-tree.webp" alt="Customer"
+                                            class="w-8 h-8 rounded-full border-2 border-white" />
+                                        <img src="/img/icon/palm-tree.webp" alt="Customer"
+                                            class="w-8 h-8 rounded-full border-2 border-white" />
+                                        <img src="/img/icon/palm-tree.webp" alt="Customer"
+                                            class="w-8 h-8 rounded-full border-2 border-white" />
+                                    </div>
+                                    <span class="font-bold text-dark-900">5000+ Happy Customers</span>
+                                </div>
+                                <img src="/img/food/burger.png" alt="Food" class="w-12 h-12 object-cover rounded-lg" />
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <!-- Right Column - Stats Card -->
+                    <div class="relative h-full">
+                        <div class="relative overflow-hidden rounded-2xl h-full">
+                            <img src="/img/misc/image 2.jpg" alt="Customer enjoying Caribbean food"
+                                class="w-full h-full object-cover rounded-2xl" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
+
+        <!-- Why Choose Us Section -->
+        <section class="py-20 bg-green-100">
+            <div class="container mx-auto px-4">
+                <!-- <div class="text-center mb-16">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-dark-900 mb-4">Why Choose Us</h2>
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">Discover what makes us the premier Caribbean restaurant in Ipswich</p>
+                </div> -->
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="group">
+                        <div
+                            class="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <svg class="w-8 h-8 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Fresh Ingredients</h3>
+                        <p class="text-gray-600">Locally sourced, premium quality ingredients for authentic Caribbean
+                            flavors</p>
+                    </div>
+
+                    <div class="group">
+                        <div
+                            class="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <svg class="w-8 h-8 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Authentic Recipes</h3>
+                        <p class="text-gray-600">Traditional Caribbean recipes passed down through generations</p>
+                    </div>
+
+                    <div class="group">
+                        <div
+                            class="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <svg class="w-8 h-8 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-dark-900 mb-2">Warm Atmosphere</h3>
+                        <p class="text-gray-600">Vibrant Caribbean vibes with friendly, welcoming service</p>
+                    </div>
+
+                    <div class="group">
+                        <div
+                            class="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <svg class="w-8 h-8 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-dark-900 mb-2">Great Value</h3>
+                        <p class="text-gray-600">Generous portions and competitive prices for exceptional quality</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- catering section -->
+        <section class="flex gap-8 bg-gray-900 py-32 px-10 justify-center relative overflow-hidden">
+            <!-- Abstract Background Design -->
+            <div class="absolute inset-0 opacity-10">
+                <!-- Floating geometric shapes -->
+                <div class="absolute top-10 left-10 w-32 h-32 border-2 border-green-400 rounded-full animate-pulse"></div>
+                <div class="absolute top-20 right-20 w-24 h-24 bg-green-400 rounded-full animate-bounce"></div>
+                <div class="absolute bottom-20 left-1/4 w-16 h-16 border-2 border-green-400 transform rotate-45 animate-pulse"></div>
+                <div class="absolute bottom-10 right-1/3 w-20 h-20 bg-green-400 rounded-full animate-bounce"></div>
+                
+                <!-- Diagonal lines -->
+                <div class="absolute top-0 left-0 w-full h-full">
+                    <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-400 to-transparent transform rotate-12"></div>
+                    <div class="absolute top-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-400 to-transparent transform -rotate-6"></div>
+                    <div class="absolute bottom-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-400 to-transparent transform rotate-3"></div>
+                </div>
+                
+                <!-- Dots pattern -->
+                <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-green-400 rounded-full"></div>
+                <div class="absolute top-1/3 right-1/4 w-2 h-2 bg-green-400 rounded-full"></div>
+                <div class="absolute bottom-1/4 left-1/3 w-2 h-2 bg-green-400 rounded-full"></div>
+                <div class="absolute bottom-1/3 right-1/3 w-2 h-2 bg-green-400 rounded-full"></div>
+                
+                <!-- Curved lines -->
+                <div class="absolute top-1/2 left-10 w-20 h-20 border-2 border-green-400 rounded-full border-t-transparent border-r-transparent transform -rotate-45"></div>
+                <div class="absolute top-1/3 right-10 w-16 h-16 border-2 border-green-400 rounded-full border-b-transparent border-l-transparent transform rotate-45"></div>
+            </div>
+            
+            <div class=" lg:flex-row items-center justify-between">
+                    <div class="text-left mb-8 lg:mb-0">
+                        <h2 class="text-4xl lg:text-5xl font-bold text-green-600 mb-4 knewave-regular">Catering Cravings for Every Celebration</h2>
+                        <p class="text-xl text-gray-300 max-w-2xl">
+                            From intimate gatherings to grand celebrations, Hardball Caribbean Smokehouse delivers delicious food options that impress every guest.
+                        </p>
+                    </div>
+                    <Link :href="route('menu')"
+                        class="inline-flex items-center gap-2 mt-8 bg-white text-green-700 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors">
+                    Browse Our Gallery
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                    </Link>
+                </div>
+
+            <!-- Card 1 -->
+            <div class="group bg-gray-800 rounded-3xl border border-gray-300 w-80 text-center p-8 hover:border-green-400 transition-all duration-300 hover:scale-105" data-aos="fade-right" data-aos-delay="100">
+                <div class="w-64 h-64 mx-auto mb-6 bg-cover bg-center bg-no-repeat border-4 border-gray-400 rounded-full bg-[url('/img/gallery/drink4.jpg')] clip-path: polygon(50% 0, 83% 12%, 100% 43%, 94% 78%, 68% 100%, 32% 100%, 6% 78%, 0% 43%, 17% 12%); group-hover:scale-110 group-hover:border-green-400 transition-all duration-300">
+                </div>
+                <h3 class="text-green-400 text-2xl font-bold mb-3 group-hover:text-green-300 transition-colors">Social Event</h3>
+                <p class="text-gray-300 text-lg group-hover:text-gray-200 transition-colors">80+ Package Available</p>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="group bg-gray-800 rounded-3xl border border-gray-300 w-80 text-center p-8 hover:border-green-400  transition-all duration-300 hover:scale-105" data-aos="fade-right" data-aos-delay="300">
+                <div class="w-64 h-64 mx-auto mb-6 bg-cover bg-top bg-no-repeat border-4 border-gray-400 rounded-full bg-[url('/img/gallery/store7.JPG')] clip-path: polygon(50% 0, 83% 12%, 100% 43%, 94% 78%, 68% 100%, 32% 100%, 6% 78%, 0% 43%, 17% 12%); group-hover:scale-110 group-hover:border-green-400 transition-all duration-300" style="background-position: center 25%;">
+                </div>
+                <h3 class="text-green-400 text-2xl font-bold mb-3 group-hover:text-green-400 transition-colors">Corporate</h3>
+                <p class="text-gray-300 text-lg group-hover:text-gray-200 transition-colors">80+ Package Available</p>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="group bg-gray-800 rounded-3xl border border-gray-300 w-80 text-center p-8 hover:border-green-400 transition-all duration-300 hover:scale-105" data-aos="fade-right" data-aos-delay="500">
+                <div class="w-64 h-64 mx-auto mb-6 bg-cover bg-center bg-no-repeat border-4 border-gray-400 rounded-full bg-[url('/img/gallery/event3.jpeg')] clip-path: polygon(50% 0, 83% 12%, 100% 43%, 94% 78%, 68% 100%, 32% 100%, 6% 78%, 0% 43%, 17% 12%); group-hover:scale-110 group-hover:border-green-400 transition-all duration-300">
+                </div>
+                <h3 class="text-green-400 text-2xl font-bold mb-3 group-hover:text-green-300 transition-colors">Birthday Event</h3>
+                <p class="text-gray-300 text-lg group-hover:text-gray-200 transition-colors">80+ Package Available</p>
+            </div>
+
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="py-32 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col lg:flex-row items-center justify-between mb-16">
+                    <div class="text-left mb-8 lg:mb-0">
+                        <h2 class=" w-2/3 text-4xl lg:text-5xl font-bold text-slate-900 mb-4 knewave-regular">Here's What Our Foodies Are Raving About!</h2>
+                        <p class="text-xl text-gray-800 max-w-2xl">
+                            We serve happiness, flavor, and unforgettable experiences. Here's what our customers say about their Hardball Caribbean Smokehouse moments.
+                        </p>
+                    </div>
+                    <Link :href="route('menu')"
+                        class="inline-flex items-center gap-2 bg-white text-dark-900 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors">
+                    Browse More Dishes
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                    </Link>
+                </div>
+
+                <!-- Carousel Container -->
+                <div class="relative overflow-hidden">
+                    <!-- Pause/Play Button -->
+                    <button @click="toggleAutoPlay" 
+                            class="absolute top-4 right-4 z-20 bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg transition-all duration-300">
+                        <svg v-if="isAutoPlaying" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6" />
+                        </svg>
+                        <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+
+                    <!-- Carousel Track -->
+                    <div class="flex transition-transform duration-700 ease-out cursor-grab active:cursor-grabbing" 
+                         :style="{ transform: `translateX(calc(-${(currentSlide + testimonials.length) * 33.333}% + ${dragOffset}px))` }"
+                         @mousedown="startDrag"
+                         @mousemove="onDrag"
+                         @mouseup="endDrag"
+                         @mouseleave="endDrag"
+                         @touchstart="startDrag"
+                         @touchmove="onDrag"
+                         @touchend="endDrag">
+                        <div v-for="(testimonial, index) in infiniteTestimonials" :key="index"
+                            class="w-1/3 flex-shrink-0 px-4">
+                            <div class="bg-white border-2 border-gray-600 backdrop-blur-sm rounded-2xl p-6 text-center hover-lif hover:bg-yellow-100 hover:border-yellow-300 relative h-full">
+                                <div class="">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 310" class="w-10 h-10 text-gray-900">
+                                        <path d="M79 142.16c-6.02 0-11.42.28-16.25.81 7.1-29.03 22.95-44.36 45.88-56.04 5.33-2.71 7.63-9.1 5.23-14.57l-6.04-13.77c-2.59-5.91-9.62-8.44-15.38-5.53-22.1 11.11-37.39 23.92-48.76 40.63C28.42 116.11 21 145.6 21 183.83v16.52c0 31.95.11 57.81 58 57.81 58 0 58-25.97 58-58s.38-58-58-58zm152 0c-6.02 0-11.42.28-16.25.81 7.1-29.03 22.95-44.36 45.88-56.04 5.33-2.71 7.63-9.1 5.23-14.57l-6.04-13.77c-2.59-5.91-9.62-8.44-15.38-5.53-22.1 11.11-37.39 23.92-48.76 40.63C180.42 116.11 173 145.6 173 183.83v16.52c0 31.95.11 57.81 58 57.81 58 0 58-25.97 58-58s.38-58-58-58z" fill="currentColor"></path>
+                                    </svg>
+                                </div>
+                            
+                                <p class="text-black mb-4  italic text-xl">{{ testimonial.text }}"</p>
+                                <div>
+                                    <div class="flex justify-center mb-3">
+                                    <svg v-for="i in testimonial.rating" :key="i" class="w-4 h-4 text-yellow-400"
+                                        fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                </div>
+                                    <div class="font-bold text-black text-sm">{{ testimonial.name }}</div>
+                                    <div class="text-gray-900 text-xs">{{ testimonial.role }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Arrows -->
+                    <button @click="prevSlide" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg transition-all duration-300 z-10">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button @click="nextSlide" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg transition-all duration-300 z-10">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+
+                    <!-- Dots Indicator -->
+                    <div class="flex justify-center mt-8 space-x-2">
+                        <button v-for="(testimonial, index) in testimonials" :key="index"
+                            @click="goToSlide(index)"
+                            class="w-3 h-3 rounded-full transition-all duration-300"
+                            :class="currentSlide === index ? 'bg-yellow-400' : 'bg-gray-300'">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="py-20 bg-yellow-200">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-dark-900 mb-4">Frequently Asked Questions</h2>
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">Everything you need to know about dining with us
+                    </p>
+                </div>
+
+                <div class="max-w-3xl mx-auto">
+                    <div v-for="(faq, index) in faqItems" :key="index"
+                        class="bg-white rounded-2xl shadow-lg mb-4 overflow-hidden">
+                        <button @click="toggleFAQ(index)"
+                            class="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors">
+                            <h3 class="text-lg font-semibold text-dark-900">{{ faq.question }}</h3>
+                            <svg class="w-6 h-6 text-yellow-400 transform transition-transform duration-300"
+                                :class="{ 'rotate-180': selectedFAQ === index }" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div v-show="selectedFAQ === index" class="px-6 pb-4 text-gray-600">
+                            {{ faq.answer }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section class="py-20 bg-light-crea relative overflow-hidden">
+            <!-- Background Pattern -->
+           
+
+            <!-- Light Abstract Background Design -->
+            <div class="absolute inset-0 opacity-10">
+                <!-- Floating geometric shapes -->
+                <div class="absolute top-10 left-10 w-32 h-32 border-2 border-yellow-400 rounded-full animate-pulse"></div>
+                <div class="absolute top-20 right-20 w-24 h-24 bg-yellow-400 rounded-full animate-bounce"></div>
+                <div class="absolute bottom-20 left-1/4 w-16 h-16 border-2 border-yellow-400 transform rotate-45 animate-pulse"></div>
+                <div class="absolute bottom-10 right-1/3 w-20 h-20 bg-yellow-400 rounded-full animate-bounce"></div>
+                
+                <!-- Diagonal lines -->
+                <div class="absolute top-0 left-0 w-full h-full">
+                    <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-yellow-400 to-transparent transform rotate-12"></div>
+                    <div class="absolute top-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-yellow-400 to-transparent transform -rotate-6"></div>
+                    <div class="absolute bottom-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-yellow-400 to-transparent transform rotate-3"></div>
+                </div>
+                
+                <!-- Dots pattern -->
+                <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-yellow-400 rounded-full"></div>
+                <div class="absolute top-1/3 right-1/4 w-2 h-2 bg-yellow-400 rounded-full"></div>
+                <div class="absolute bottom-1/4 left-1/3 w-2 h-2 bg-yellow-400 rounded-full"></div>
+                <div class="absolute bottom-1/3 right-1/3 w-2 h-2 bg-yellow-400 rounded-full"></div>
+                
+                <!-- Curved lines -->
+                <div class="absolute top-1/2 left-10 w-20 h-20 border-2 border-yellow-400 rounded-full border-t-transparent border-r-transparent transform -rotate-45"></div>
+                <div class="absolute top-1/3 right-10 w-16 h-16 border-2 border-yellow-400 rounded-full border-b-transparent border-l-transparent transform rotate-45"></div>
+            </div>
+
+            <div class="container mx-auto px-4 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <!-- Left Side - Dynamic Image Carousel -->
+                    <div class="relative">
+                        <!-- Background Yellow Cards -->
+                        <div class="absolute -top-4 -left-4 w-72 h-32 bg-yellow-400 rounded-2xl transform rotate-12 animate-pulse"></div>
+                        <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-yellow-400 rounded-2xl transform -rotate-12 animate-pulse animation-delay-2000"></div>
+                        
+                        <!-- Main Image Container -->
+                        <div class="relative z-10">
+                            <div class="relative overflow-hidden rounded-2xl shadow-2xl">
+                                <!-- Image Carousel -->
+                                <div class="relative h-72 lg:h-[400px]">
+                                    <div class="absolute inset-0 transition-opacity duration-1000"
+                                         :class="{ 'opacity-100': currentImageIndex === 0, 'opacity-0': currentImageIndex !== 0 }">
+                                        <img src="/img/food/portrait5.jpg" alt="Caribbean Food" 
+                                             class="w-full h-full object-cover" />
+                                    </div>
+                                    <div class="absolute inset-0 transition-opacity duration-1000"
+                                         :class="{ 'opacity-100': currentImageIndex === 1, 'opacity-0': currentImageIndex !== 1 }">
+                                        <img src="/img/food/burger.png" alt="Caribbean Food" 
+                                             class="w-full h-full object-cover" />
+                                    </div>
+                                    <div class="absolute inset-0 transition-opacity duration-1000"
+                                         :class="{ 'opacity-100': currentImageIndex === 2, 'opacity-0': currentImageIndex !== 2 }">
+                                        <img src="/img/food/fritters.jpg" alt="Caribbean Food" 
+                                             class="w-full h-full object-cover" />
+                                    </div>
+                                    
+                                    <!-- Overlay with person -->
+                                    <div class="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent">
+                                        <div class="absolute bottom-4 right-4 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center">
+                                            <svg class="w-8 h-8 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side - Signup Form -->
+                    <div class="text-center lg:text-left">
+                        <!-- Offer Badge -->
+                        <div class="inline-block bg-yellow-400 text-dark-900 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+                            Subscribe now and get 10% off your first order!
+                        </div>
+                        
+                        <!-- Main Title -->
+                        <h2 class="text-4xl lg:text-5xl font-bold text-dark-900 mb-6">Sign Up for Tasty Updates</h2>
+                        
+                        <!-- Description -->
+                        <p class="text-lg text-gray-700 mb-8 leading-relaxed">
+                            Be the first to know about our newest dishes, exclusive discounts, seasonal specials, and foodie tips. Delivered fresh to your inbox — just like our meals!
+                        </p>
+                        
+                        <!-- Email Form -->
+                        <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto lg:mx-0">
+                            <input v-model="email" type="email" placeholder="Enter your email"
+                                class="flex-1 px-6 py-4 rounded-lg border border-gray-300 text-dark-900 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400" />
+                            <button @click="submitNewsletter"
+                                class="bg-yellow-400 text-dark-900 px-8 py-4 rounded-lg font-bold hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2">
+                                Subscribe
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Success Message -->
+                        <div v-if="newsletterSubmitted" class="mt-4 text-green-600 font-semibold">
+                            Thank you for subscribing! Check your email for a special discount.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+       
     </MainLayout>
-
-    <!-- Dessert Items Section -->
-
-
-
 </template>
