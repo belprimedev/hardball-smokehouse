@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import { Bell, Calendar, User, Phone, Mail, Clock } from 'lucide-vue-next';
+import { Bell, Calendar, User, Clock } from 'lucide-vue-next';
 import { router } from '@inertiajs/vue3';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ChevronDown } from 'lucide-vue-next';
 
 interface Notification {
     id: number;

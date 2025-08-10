@@ -14,9 +14,9 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const props = defineProps({
-    reservation: Object,
-});
+const { reservation } = defineProps<{
+    reservation: any;
+}>();
 
 const formatDate = (dateString: string) => {
     if (!dateString) return 'N/A';
