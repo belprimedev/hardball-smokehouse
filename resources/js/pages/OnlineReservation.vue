@@ -5,8 +5,22 @@ import { ref } from 'vue';
 import { Carousel, Slide } from 'vue3-carousel';
 import 'vue3-carousel/dist/carousel.css';
 
+// Props for session messages
+const props = defineProps<{
+    success?: string;
+    error?: string;
+}>();
+
 const showSuccess = ref(false);
 const isCheckingAvailability = ref(false);
+
+// Handle session messages
+if (props.success) {
+    showSuccess.value = true;
+    setTimeout(() => {
+        showSuccess.value = false;
+    }, 5000);
+}
 const availabilityStatus = ref<{ available: boolean; current_count: number; max_capacity: number } | null>(null);
 const reservationSettings = ref<any[]>([]);
 const availableTimeSlots = ref<string[]>([]);
@@ -106,7 +120,7 @@ const submitForm = () => {
                 showSuccess.value = false;
             }, 5000); // Hide after 5 seconds
         },
-        onError: (errors) => {
+        onError: () => {
             // Handle validation errors
         },
     });
@@ -490,67 +504,7 @@ cs-border-change:hover {
             rgba(0, 0, 0, 0)) 1 100%;
 }
 
-/* Update the cursor styles */
-.custom-cursor {
-    width: 30px;
-    height: 30px;
-    border: 2px solid rgba(2, 134, 37, 0.75);
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 99999;
-    transform: translate(-50%, -50%);
-    transition: all 0.15s ease-out;
-    background: rgba(122, 249, 164, 0.7);
-}
-
-.cursor-dot {
-    width: 11px;
-    height: 11px;
-    background: #019340;
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 99999;
-    transform: translate(-50%, -50%);
-    transition: all 0.08s ease-out;
-}
-
-/* Updated hover effects for links and clickable elements */
-a:hover~.custom-cursor,
-button:hover~.custom-cursor,
-[role="button"]:hover~.custom-cursor {
-    width: 40px;
-    height: 40px;
-    border-color: rgba(0, 0, 0, 0.5);
-    background-color: rgba(0, 0, 0, 0.05);
-    /* Add a clip-path to create pointer shape */
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 50% 80%, 0% 50%, 50% 20%);
-    transform: translate(-50%, -50%) rotate(-90deg);
-    /* Rotate to point right */
-}
-
-/* Optional: Adjust dot position on hover */
-a:hover~.cursor-dot,
-button:hover~.cursor-dot,
-[role="button"]:hover~.cursor-dot {
-    opacity: 0;
-    /* Hide the dot when showing pointer */
-}
-
-/* Keep these existing styles */
-*,
-*::before,
-*::after {
-    cursor: none !important;
-}
-
-a:hover,
-button:hover,
-[role="button"]:hover,
-.cursor-pointer:hover {
-    cursor: none !important;
-}
+/* Cursor styles removed - using global custom cursor component */
 
 
 .cta-section.style-white:before {
@@ -926,9 +880,9 @@ button:hover,
                     <div class="max-w-5xl grid grid-cols-1 lg:grid-cols-2 mx-auto">
                         <div class="w-full p-4 sm:p-6 md:p-10">
                             <form @submit.prevent="submitForm" class="text-white">
-                                <div v-if="showSuccess"
+                                <div v-if="showSuccess || props.success"
                                     class="success-message mb-3 sm:mb-4 p-3 sm:p-4 text-sm rounded-lg bg-green-100 text-green-700">
-                                    Reservation created successfully!
+                                    {{ props.success || 'Reservation created successfully!' }}
                                 </div>
                                 <div v-if="Object.keys(form.errors).length > 0"
                                     class="mb-3 sm:mb-4 p-3 sm:p-4 text-sm rounded-lg bg-red-100 text-red-700 border border-red-300">
@@ -948,7 +902,7 @@ button:hover,
                                         <div class="mt-2">
                                             <input type="text" id="customer_name" v-model="form.customer_name" required
                                                 :class="[
-                                                    'block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6',
+                                                    'block w-full rounded-md border-0 px-4 py-3 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6',
                                                     form.errors.customer_name 
                                                         ? 'ring-red-500 focus:ring-red-500' 
                                                         : 'ring-gray-300 focus:ring-indigo-600'
@@ -966,7 +920,7 @@ button:hover,
                                         <div class="mt-2">
                                             <input type="tel" id="customer_phone" v-model="form.customer_phone" required
                                                 :class="[
-                                                    'block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6',
+                                                    'block w-full rounded-md border-0 px-4 py-3 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6',
                                                     form.errors.customer_phone 
                                                         ? 'ring-red-500 focus:ring-red-500' 
                                                         : 'ring-gray-300 focus:ring-indigo-600'
@@ -983,7 +937,7 @@ button:hover,
                                         <div class="mt-2">
                                             <input type="email" id="customer_email" v-model="form.customer_email"
                                                 :class="[
-                                                    'block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6',
+                                                    'block w-full rounded-md border-0 px-4 py-3 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6',
                                                     form.errors.customer_email 
                                                         ? 'ring-red-500 focus:ring-red-500' 
                                                         : 'ring-gray-300 focus:ring-indigo-600'
@@ -1001,7 +955,7 @@ button:hover,
                                             <input type="date" id="reservation_date" v-model="form.reservation_date"
                                                 required
                                                 :class="[
-                                                    'block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset sm:text-sm sm:leading-6',
+                                                    'block w-full rounded-md border-0 px-4 py-3 text-gray-900 shadow-sm ring-1 ring-inset sm:text-sm sm:leading-6',
                                                     form.errors.reservation_date 
                                                         ? 'ring-red-500 focus:ring-red-500' 
                                                         : 'ring-gray-300 focus:ring-indigo-600'
@@ -1018,7 +972,7 @@ button:hover,
                                         <div class="mt-2">
                                             <select id="reservation_time" v-model="form.reservation_time" required
                                                 :class="[
-                                                    'block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset sm:text-sm sm:leading-6',
+                                                    'block w-full rounded-md border-0 px-4 py-3 text-gray-900 shadow-sm ring-1 ring-inset sm:text-sm sm:leading-6',
                                                     form.errors.reservation_time 
                                                         ? 'ring-red-500 focus:ring-red-500' 
                                                         : 'ring-gray-300 focus:ring-indigo-600'
@@ -1057,7 +1011,7 @@ button:hover,
                                             <input type="number" id="number_of_guest" v-model="form.number_of_guest"
                                                 required min="1"
                                                 :class="[
-                                                    'block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset sm:text-sm sm:leading-6',
+                                                    'block w-full rounded-md border-0 px-4 py-3 text-gray-900 shadow-sm ring-1 ring-inset sm:text-sm sm:leading-6',
                                                     form.errors.number_of_guest 
                                                         ? 'ring-red-500 focus:ring-red-500' 
                                                         : 'ring-gray-300 focus:ring-indigo-600'
@@ -1074,7 +1028,7 @@ button:hover,
                                             Requests</label>
                                         <div class="mt-2">
                                             <textarea id="special_request" v-model="form.special_request" rows="3"
-                                                class="block w-full rounded-md border-0 ps-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"></textarea>
+                                                class="block w-full rounded-md border-0 px-4 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"></textarea>
                                         </div>
                                     </div>
 

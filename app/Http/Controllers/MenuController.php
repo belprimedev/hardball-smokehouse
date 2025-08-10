@@ -13,7 +13,7 @@ class MenuController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:manage menu');
+        $this->middleware('permission:manage menu')->except(['getFeaturedItems', 'getChefSpecialItems', 'getAllMenuItems']);
     }
 
     public function index(Request $request)

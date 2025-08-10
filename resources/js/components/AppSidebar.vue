@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Folder, LayoutGrid, Moon, Sun, Calendar, Users } from 'lucide-vue-next';
+import { Folder, LayoutGrid, Moon, Sun, Calendar, Users, Shield, Briefcase, Mail, MessageSquare } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { useAppearance } from '@/composables/useAppearance';
 import { computed } from 'vue';
@@ -32,6 +32,12 @@ const canManageUsers = computed(() => {
     // Check if user has manage users permission
     const hasManageUsersPermission = auth.value.user.permissions?.some((permission: any) => permission.name === 'manage users');
     return hasManageUsersPermission;
+});
+
+// Check if user is admin
+const isAdmin = computed(() => {
+    if (!auth.value?.user) return false;
+    return auth.value.user.roles?.some((role: any) => role.name === 'admin');
 });
 
 // Toggle between light and dark themes
@@ -91,7 +97,7 @@ const footerNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="route('dashboard')">
+                        <Link :href="route('admin.dashboard')">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>
@@ -101,6 +107,8 @@ const footerNavItems: NavItem[] = [
 
         <SidebarContent class="bg-white dark:bg-gray-900">
             <NavMain :items="mainNavItems" />
+            
+
             
             <!-- User Management Section (Admin Only) -->
             <div v-if="canManageUsers" class="px-2 py-0">
@@ -113,6 +121,47 @@ const footerNavItems: NavItem[] = [
                             <Link :href="route('user-management.index')" class="text-gray-900 dark:text-white">
                                 <Users class="text-gray-700 dark:text-gray-300" />
                                 <span>User Management</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <Link :href="route('admin.vacancies.index')" class="text-gray-900 dark:text-white">
+                                <Briefcase class="text-gray-700 dark:text-gray-300" />
+                                <span>Vacancy Management</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <Link :href="route('admin.newsletters.index')" class="text-gray-900 dark:text-white">
+                                <Mail class="text-gray-700 dark:text-gray-300" />
+                                <span>Newsletter Management</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <Link :href="route('admin.contacts.index')" class="text-gray-900 dark:text-white">
+                                <MessageSquare class="text-gray-700 dark:text-gray-300" />
+                                <span>Contact Management</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </div>
+
+            <!-- Admin Panel Section (Admin Only) -->
+            <div v-if="isAdmin" class="px-2 py-0">
+                <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-3 py-2">
+                    System Admin
+                </div>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <Link :href="route('admin.dashboard')" class="text-gray-900 dark:text-white">
+                                <Shield class="text-gray-700 dark:text-gray-300" />
+                                <span>Admin Panel</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

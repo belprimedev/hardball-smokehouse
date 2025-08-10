@@ -32,6 +32,8 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,6 +44,9 @@
         @routes
         @vite(['resources/js/app.ts'])
         @inertiaHead
+        
+        <!-- Pusher for real-time notifications -->
+        <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     </head>
     <body class="font-sans antialiased">
         @inertia
