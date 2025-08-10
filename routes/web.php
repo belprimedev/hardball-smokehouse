@@ -395,4 +395,7 @@ Route::post('/test-contact', function (Request $request) {
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/user-management.php';
-require __DIR__.'/admin.php';
+// Admin routes with prefix
+Route::prefix('admin')->group(function () {
+    require __DIR__.'/admin.php';
+});

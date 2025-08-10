@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'resend'),
+    'default' => env('MAIL_MAILER', 'sendmail'),
 
     /*
     |--------------------------------------------------------------------------
@@ -110,8 +110,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'noreply@mail.hardballsmokehouse.co.uk'),
-        'name' => env('MAIL_FROM_NAME', 'Hardball Caribbean Smokehouse'),
+        'address' => 'noreply@mail.hardballsmokehouse.co.uk',
+        'name' => 'Hardball Caribbean Smokehouse',
     ],
 
 ];
