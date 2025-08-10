@@ -64,7 +64,7 @@ Route::get('/test-email', function () {
         
         // Test email configuration
         \Illuminate\Support\Facades\Mail::raw('Test email from Hardball Caribbean Smokehouse', function ($message) {
-            $message->to('shane1obdurate@gmail.com') // Your actual email
+            $message->to('info@hardballsmokehouse.co.uk') // Admin email
                     ->subject('Test Email - Hardball Caribbean Smokehouse');
         });
         
@@ -101,7 +101,7 @@ Route::get('/test-reservation', function () {
         // Create a test reservation
         $reservation = new \App\Models\Reservation([
             'customer_name' => 'Test Customer',
-            'customer_email' => 'shane1obdurate@gmail.com',
+            'customer_email' => 'info@hardballsmokehouse.co.uk',
             'customer_phone' => '1234567890',
             'reservation_date' => '2025-08-02',
             'reservation_time' => '19:00',
@@ -122,10 +122,10 @@ Route::get('/test-reservation', function () {
             }
         }
         
-        // Send admin notification (development version)
+        // Send admin notification
         $testUser = new \App\Models\User();
-        $testUser->email = 'shane1obdurate@gmail.com';
-        $testUser->name = 'Test Admin';
+        $testUser->email = 'info@hardballsmokehouse.co.uk';
+        $testUser->name = 'Hardball Admin';
         $testUser->notify(new \App\Notifications\SystemAlert(
             'New Reservation Created',
             "New reservation from {$reservation->customer_name} for {$reservation->number_of_guest} guests on {$reservation->reservation_date->format('M d, Y')} at {$reservation->reservation_time}",
