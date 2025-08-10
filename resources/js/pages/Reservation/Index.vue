@@ -12,20 +12,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 
-const props = defineProps({
-	reservations: Object,
-})
-//console.log(props.reservations);
-
 // Function to navigate to a page
-const goToPage = (url) => {
+const goToPage = (url: string) => {
 	if (url) {
 		router.get(url); // Fetch new page using Inertia
 	}
-};
-
-const updateItem = (item) => {
-	router.get(route("/reservation.edit", { reservation: item.id })); // ✅ Navigates to edit page
 };
 
 const createItem = () => {
@@ -34,7 +25,7 @@ const createItem = () => {
 
 
 
-const deleteItem = (id) => {
+const deleteItem = (id: number) => {
 	if (confirm("Are you sure you want to delete this item?")) {
 		router.delete(`/reservation/${id}`);
 	}

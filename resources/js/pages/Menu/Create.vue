@@ -139,7 +139,7 @@ const submitForm = async () => {
                 errors.value = validationErrors;
             }
         });
-    } catch (error) {
+    } catch {
         errors.value.general = 'An unexpected error occurred. Please try again.';
     } finally {
         isSubmitting.value = false;

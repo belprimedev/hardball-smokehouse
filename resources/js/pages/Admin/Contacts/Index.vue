@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -307,8 +307,9 @@ const clearFilters = () => {
                                 :disabled="!link.url || link.active"
                                 :variant="link.active ? 'default' : 'outline'"
                                 size="sm"
-                                v-html="link.label"
-                            />
+                            >
+                                {{ link.label }}
+                            </Button>
                         </div>
                     </div>
                 </CardContent>
