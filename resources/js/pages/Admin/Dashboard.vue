@@ -11,7 +11,8 @@ import {
     Clock, 
     HardDrive, 
     Activity,
-    XCircle
+    XCircle,
+    Mail
 } from 'lucide-vue-next';
 import AdminLayout from '@/layouts/app/AdminLayout.vue';
 
@@ -37,6 +38,11 @@ interface Props {
             today_reservations: number;
             this_week_reservations: number;
             this_month_reservations: number;
+        };
+        contactStats: {
+            total_contacts: number;
+            new_contacts: number;
+            recent_contacts: number;
         };
     };
     recentNotifications: any[];
@@ -90,6 +96,10 @@ const systemHealth = getSystemHealthStatus();
             <div class="flex items-center space-x-2">
                 <Button variant="outline" @click="router.visit(route('admin.system-health'))">
                     System Health
+                </Button>
+                <Button variant="outline" @click="router.visit(route('admin.contacts.index'))">
+                    <Mail class="h-4 w-4 mr-2" />
+                    Contacts
                 </Button>
                 <Button @click="router.visit(route('user-management.index'))">
                     Manage Users
@@ -148,17 +158,13 @@ const systemHealth = getSystemHealthStatus();
 
             <Card>
                 <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle class="text-sm font-medium">System Status</CardTitle>
-                    <Activity class="h-4 w-4 text-muted-foreground" />
+                    <CardTitle class="text-sm font-medium">New Contacts</CardTitle>
+                    <Mail class="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div class="text-2xl font-bold">
-                        <Badge :class="getStatusColor(systemHealth.status)">
-                            {{ systemHealth.status }}
-                        </Badge>
-                    </div>
+                    <div class="text-2xl font-bold text-blue-600">{{ stats.contactStats.new_contacts }}</div>
                     <p class="text-xs text-muted-foreground">
-                        {{ stats.recentErrors.length }} recent errors
+                        {{ stats.contactStats.total_contacts }} total contacts
                     </p>
                 </CardContent>
             </Card>

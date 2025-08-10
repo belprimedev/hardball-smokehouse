@@ -298,6 +298,28 @@ Route::delete('/vacancy/{vacancy}', [App\Http\Controllers\VacancyController::cla
 Route::post('/api/newsletters/subscribe', [NewsletterController::class, 'subscribe']);
 Route::post('/api/newsletters/unsubscribe', [NewsletterController::class, 'unsubscribe']);
 
+// Contact form submission route
+Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
+
+// Test contact route (temporary, remove in production)
+Route::post('/test-contact', function (Request $request) {
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'phone' => 'nullable|string|max:20',
+        'subject' => 'nullable|string|max:255',
+        'message' => 'required|string|max:5000',
+    ]);
+    
+    $contact = \App\Models\Contact::create($validated);
+    
+    return response()->json([
+        'success' => true,
+        'message' => 'Contact created successfully!',
+        'contact_id' => $contact->id
+    ]);
+})->name('test.contact');
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/user-management.php';

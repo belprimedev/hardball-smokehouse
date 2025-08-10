@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Models\Notification;
+use App\Models\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -66,6 +67,13 @@ class DashboardController extends Controller
             'this_month_reservations' => Reservation::whereMonth('reservation_date', now()->month)->count(),
         ];
         
+        // Get contact statistics
+        $contactStats = [
+            'total_contacts' => Contact::count(),
+            'new_contacts' => Contact::where('status', 'new')->count(),
+            'recent_contacts' => Contact::where('created_at', '>=', now()->subDays(7))->count(),
+        ];
+        
         return Inertia::render('Admin/Dashboard', [
             'stats' => [
                 'todayReservations' => $todayReservations,
@@ -75,6 +83,7 @@ class DashboardController extends Controller
                 'systemInfo' => $systemInfo,
                 'userStats' => $userStats,
                 'reservationStats' => $reservationStats,
+                'contactStats' => $contactStats,
             ],
             'recentNotifications' => $recentNotifications,
         ]);

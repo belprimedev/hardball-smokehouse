@@ -365,19 +365,19 @@ const faqItems = [
 // Promotions
 const promotions = [
     {
-        title: 'Buy 1 Get 1 Free',
-        subtitle: 'On Selected Starters',
-        description: 'Every Tuesday & Wednesday',
-        image: '/img/food/burger.png',
-        cta: 'Order Now',
+        title: 'SIGNATURE COCKTAILS',
+        subtitle: ' _',
+        description: 'Discover our unique Caribbean-inspired cocktails',
+        image: '/img/gallery/portrait9.jpg',
+        cta: 'View Menu',
         color: 'from-gray-800 to-green-700'
     },
     {
-        title: '20% Off First Order',
-        subtitle: 'New Customers Only',
-        description: 'Use code: WELCOME20',
-        image: '/img/food/fritters.jpg',
-        cta: 'Get Discount',
+        title: 'EXPLORE OUR GALLERY',
+        subtitle: ' _',
+        description: 'Take a visual journey through our Caribbean experience',
+        image: '/img/gallery/store2.JPG',
+        cta: 'See Gallery',
         color: 'from-yellow-500 to-gray-800'
     }
 ];
@@ -741,11 +741,6 @@ onMounted(() => {
             </div>
         </section>
 
-        <div class="flex items-center space-x-4 text-lg">sss
-                            <a :href="route('privacy')" class="text-gray-50 hover:text-accent-yellow transition-colors">Privacy Policy</a>
-                            <div class="w-px h-4 bg-gray-400"></div>
-                            <a :href="route('terms')" class="text-gray-50 hover:text-accent-yellow transition-colors">Terms & Conditions</a>
-                        </div>
         <!-- Promotions Section -->
         <section class="py-32 bg-white relative" style="background: url('/img/bg/food_pattern.jpg') no-repeat center center fixed; background-size: cover;">
             <!-- White overlay to make background lighter -->
@@ -761,14 +756,14 @@ onMounted(() => {
                                     <h3 class="text-3xl font-bold mb-2">{{ promo.title }}</h3>
                                     <p class="text-xl mb-2">{{ promo.subtitle }}</p>
                                     <p class="text-gray-200 mb-6">{{ promo.description }}</p>
-                                    <button
-                                        class="bg-white text-dark-900 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors">
+                                    <Link :href="promo.title === 'SIGNATURE COCKTAILS' ? route('cocktail') : route('contact')"
+                                        class="inline-block bg-white text-dark-900 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors">
                                         {{ promo.cta }}
-                                    </button>
+                                    </Link>
                                 </div>
                                 <div class="hidden lg:block">
                                     <img :src="promo.image" :alt="promo.title"
-                                        class="w-32 h-32 object-cover rounded-full transform group-hover:scale-110 transition-transform duration-300" />
+                                        class="w-44 h-44 object-cover rounded-full transform group-hover:scale-110 transition-transform duration-300" />
                                 </div>
                             </div>
                         </div>
@@ -935,20 +930,20 @@ onMounted(() => {
                         <div class="absolute inset-1 flex flex-co text-white p-8">
                             <div class="grid grid-cols-1 gap-1 text-left h-96 my-auto">
                                 <div class="text-left">
-                                    <div class="text-4xl lg:text-5xl font-bold ">255+</div>
+                                    <div class="text-4xl lg:text-5xl font-bold ">50+</div>
                                     <div class="text-sm text-gray-200">Unique Menu Items</div>
-                                </div>
-                                <div class="text-left">
-                                    <div class="text-4xl lg:text-5xl font-bold">2,000+</div>
-                                    <div class="text-sm text-gray-200">Positive Reviews</div>
                                 </div>
                                 <div class="text-left">
                                     <div class="text-4xl lg:text-5xl font-bold">200+</div>
                                     <div class="text-sm text-gray-200">Outlets & Growing</div>
                                 </div>
                                 <div class="text-left">
-                                    <div class="text-4xl lg:text-5xl font-bold">10,000+</div>
+                                    <div class="text-4xl lg:text-5xl font-bold">1,000+</div>
                                     <div class="text-sm text-gray-200">Orders Delivered</div>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-4xl lg:text-5xl font-bold">1,000+</div>
+                                    <div class="text-sm text-gray-200">Positive Reviews</div>
                                 </div>
                             </div>
                         </div>
@@ -976,14 +971,14 @@ onMounted(() => {
                             vibes.
                         </p>
 
-                        <Link :href="route('about')"
+                        <!-- <Link :href="route('about')"
                             class="inline-flex items-center gap-2 border-2 border-dark-900 bg-white text-dark-900 px-6 py-3 rounded-lg font-bold hover:bg-dark-900 hover:text-white transition-colors">
                         Learn More
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
-                        </Link>
+                        </Link> -->
 
                         <!-- Customer Satisfaction Section -->
                         <div class="mt-8 bg-yellow-400 p-4 rounded-lg">
@@ -1083,7 +1078,7 @@ onMounted(() => {
         <!-- catering section -->
         <section class="flex gap-8 bg-gray-900 py-32 px-10 justify-center relative overflow-hidden">
             <!-- Abstract Background Design -->
-            <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0 opacity-10 z-0">
                 <!-- Floating geometric shapes -->
                 <div class="absolute top-10 left-10 w-32 h-32 border-2 border-green-400 rounded-full animate-pulse"></div>
                 <div class="absolute top-20 right-20 w-24 h-24 bg-green-400 rounded-full animate-bounce"></div>
@@ -1108,16 +1103,16 @@ onMounted(() => {
                 <div class="absolute top-1/3 right-10 w-16 h-16 border-2 border-green-400 rounded-full border-b-transparent border-l-transparent transform rotate-45"></div>
             </div>
             
-            <div class=" lg:flex-row items-center justify-between">
+            <div class="lg:flex-row items-center justify-between relative z-10">
                     <div class="text-left mb-8 lg:mb-0">
                         <h2 class="text-4xl lg:text-5xl font-bold text-green-600 mb-4 knewave-regular">Catering Cravings for Every Celebration</h2>
                         <p class="text-xl text-gray-300 max-w-2xl">
                             From intimate gatherings to grand celebrations, Hardball Caribbean Smokehouse delivers delicious food options that impress every guest.
                         </p>
                     </div>
-                    <Link :href="route('menu')"
+                    <Link :href="route('contact')"
                         class="inline-flex items-center gap-2 mt-8 bg-white text-green-700 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors">
-                    Browse Our Gallery
+                    Get Catering Quote
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -1163,7 +1158,7 @@ onMounted(() => {
                     </div>
                     <Link :href="route('menu')"
                         class="inline-flex items-center gap-2 bg-white text-dark-900 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors">
-                    Browse More Dishes
+                    Browse Dishes
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 8l4 4m0 0l-4 4m4-4H3" />

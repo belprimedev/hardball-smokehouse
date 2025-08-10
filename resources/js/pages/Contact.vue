@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import MainLayout from '@/layouts/MainLayout.vue';
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3';
 
-// Form state
-const formData = reactive({
+// Form state using Inertia
+const form = useForm({
     name: '',
     email: '',
     phone: '',
@@ -11,9 +12,13 @@ const formData = reactive({
     message: ''
 });
 
+const page = usePage();
 const isSubmitting = ref(false);
 const formSubmitted = ref(false);
 const generalSettings = ref<any>(null);
+
+// Get success message from session
+const successMessage = computed(() => (page.props as any).flash?.success);
 
 // Define types for contact info
 interface ContactInfo {
@@ -145,23 +150,23 @@ const validateForm = () => {
     });
     
     // Validate name
-    if (!formData.name.trim()) {
+    if (!form.name.trim()) {
         errors.name = 'Name is required';
         isValid = false;
     }
     
     // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim()) {
+    if (!form.email.trim()) {
         errors.email = 'Email is required';
         isValid = false;
-    } else if (!emailRegex.test(formData.email)) {
+    } else if (!emailRegex.test(form.email)) {
         errors.email = 'Please enter a valid email address';
         isValid = false;
     }
     
     // Validate message
-    if (!formData.message.trim()) {
+    if (!form.message.trim()) {
         errors.message = 'Message is required';
         isValid = false;
     }
@@ -169,30 +174,28 @@ const validateForm = () => {
     return isValid;
 };
 
-const handleSubmit = async (e: Event) => {
+const handleSubmit = (e: Event) => {
     e.preventDefault();
     
     if (!validateForm()) {
         return;
     }
     
-    isSubmitting.value = true;
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    isSubmitting.value = false;
-    formSubmitted.value = true;
-    
-    // Reset form
-    Object.keys(formData).forEach(key => {
-        formData[key as keyof typeof formData] = '';
+    form.post(route('contact.store'), {
+        onSuccess: () => {
+            formSubmitted.value = true;
+            form.reset();
+            
+            // Reset success message after 5 seconds
+            setTimeout(() => {
+                formSubmitted.value = false;
+            }, 5000);
+        },
+        onError: () => {
+            // Handle validation errors
+            console.error('Form submission failed');
+        },
     });
-    
-    // Reset success message after 5 seconds
-    setTimeout(() => {
-        formSubmitted.value = false;
-    }, 5000);
 };
 </script>
 
@@ -214,9 +217,9 @@ const handleSubmit = async (e: Event) => {
             <!-- Main Content -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
                 <!-- Success Message -->
-                <div v-if="formSubmitted" class="mb-6 sm:mb-8 bg-green-600 text-white p-4 rounded-lg text-center animate-fadeIn">
+                <div v-if="formSubmitted || successMessage" class="mb-6 sm:mb-8 bg-green-600 text-white p-4 rounded-lg text-center animate-fadeIn">
                     <h3 class="text-base sm:text-lg font-semibold">Thank you for your message!</h3>
-                    <p class="text-sm sm:text-base">We'll get back to you as soon as possible.</p>
+                    <p class="text-sm sm:text-base">{{ successMessage || 'We\'ll get back to you as soon as possible.' }}</p>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12">
@@ -231,7 +234,7 @@ const handleSubmit = async (e: Event) => {
                                         <input 
                                             type="text" 
                                             id="name" 
-                                            v-model="formData.name"
+                                            v-model="form.name"
                                             :class="[
                                                 'w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2 text-sm sm:text-base',
                                                 errors.name 
@@ -248,7 +251,7 @@ const handleSubmit = async (e: Event) => {
                                         <input 
                                             type="email" 
                                             id="email" 
-                                            v-model="formData.email"
+                                            v-model="form.email"
                                             :class="[
                                                 'w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2 text-sm sm:text-base',
                                                 errors.email 
@@ -267,7 +270,7 @@ const handleSubmit = async (e: Event) => {
                                         <input 
                                             type="tel" 
                                             id="phone" 
-                                            v-model="formData.phone"
+                                            v-model="form.phone"
                                             class="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 text-sm sm:text-base"
                                             placeholder="+44 123 456 7890"
                                         >
@@ -277,7 +280,7 @@ const handleSubmit = async (e: Event) => {
                                         <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
                                         <select 
                                             id="subject" 
-                                            v-model="formData.subject"
+                                            v-model="form.subject"
                                             class="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 text-sm sm:text-base"
                                         >
                                             <option value="">Select a subject</option>
@@ -293,7 +296,7 @@ const handleSubmit = async (e: Event) => {
                                     <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Message *</label>
                                     <textarea 
                                         id="message" 
-                                        v-model="formData.message"
+                                        v-model="form.message"
                                         rows="4"
                                         :class="[
                                             'w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2 resize-none text-sm sm:text-base',

@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SystemHealthController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\VacancyController;
+use App\Http\Controllers\ContactController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -36,4 +37,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'update' => 'admin.vacancies.update',
         'destroy' => 'admin.vacancies.destroy',
     ]);
+    
+    // Contact Management
+    Route::resource('contacts', ContactController::class)->names([
+        'index' => 'admin.contacts.index',
+        'show' => 'admin.contacts.show',
+        'update' => 'admin.contacts.update',
+    ]);
+    Route::post('/contacts/{contact}/mark-replied', [ContactController::class, 'markAsReplied'])->name('admin.contacts.mark-replied');
+    Route::get('/contacts/stats', [ContactController::class, 'stats'])->name('admin.contacts.stats');
 }); 
