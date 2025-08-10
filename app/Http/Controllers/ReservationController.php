@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Reservation;
 use App\Models\ReservationSetting;
-use App\Events\NewReservationCreated;
+use App\Events\NewReservationCreated as NewReservationCreatedEvent;
 use App\Models\Notification;
-use App\Notifications\NewReservationCreated as NewReservationCreatedNotification;
+use App\Notifications\NewReservationCreated;
 use App\Notifications\ReservationCancelled;
 use App\Notifications\SystemAlert;
 use App\Models\User;
@@ -119,7 +119,7 @@ public function index()
         if ($reservation->customer_email) {
             try {
                 // Send notification to the reservation model
-                $reservation->notify(new NewReservationCreatedNotification($reservation));
+                $reservation->notify(new NewReservationCreated($reservation));
             } catch (\Exception $e) {
                 // Log the error but don't fail the reservation creation
                 Log::error('Failed to send reservation email: ' . $e->getMessage());
@@ -146,7 +146,7 @@ public function index()
         ));
 
         // Fire event for real-time notifications
-        event(new NewReservationCreated($reservation));
+        event(new NewReservationCreatedEvent($reservation));
 
         // Check if this is a public submission (from the public reservation form)
         if ($request->route()->getName() === 'reservation.store.public') {

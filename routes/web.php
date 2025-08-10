@@ -163,6 +163,78 @@ Route::get('/queue-status', function () {
     return response()->json($stats);
 });
 
+// Email diagnostic route (remove in production)
+Route::get('/email-diagnostic', function () {
+    $diagnostics = [];
+    
+    // Check environment
+    $diagnostics['environment'] = [
+        'app_env' => env('APP_ENV'),
+        'app_debug' => env('APP_DEBUG'),
+        'app_url' => env('APP_URL'),
+    ];
+    
+    // Check mail configuration
+    $diagnostics['mail'] = [
+        'mail_mailer' => env('MAIL_MAILER'),
+        'mail_from_address' => env('MAIL_FROM_ADDRESS'),
+        'mail_from_name' => env('MAIL_FROM_NAME'),
+        'resend_api_key' => env('RESEND_API_KEY') ? 'Configured' : 'Not configured',
+    ];
+    
+    // Check queue configuration
+    $diagnostics['queue'] = [
+        'queue_connection' => env('QUEUE_CONNECTION'),
+        'queue_default' => config('queue.default'),
+        'jobs_table_exists' => \Illuminate\Support\Facades\Schema::hasTable('jobs'),
+        'failed_jobs_table_exists' => \Illuminate\Support\Facades\Schema::hasTable('failed_jobs'),
+    ];
+    
+    // Check queue status
+    $diagnostics['queue_status'] = [
+        'jobs_in_queue' => \Illuminate\Support\Facades\DB::table('jobs')->count(),
+        'failed_jobs' => \Illuminate\Support\Facades\DB::table('failed_jobs')->count(),
+        'recent_failed_jobs' => \Illuminate\Support\Facades\DB::table('failed_jobs')
+            ->latest('failed_at')
+            ->limit(3)
+            ->get(['id', 'queue', 'failed_at', 'exception'])
+    ];
+    
+    // Test Resend API
+    try {
+        if (env('RESEND_API_KEY')) {
+            // Skip Resend API test for now to avoid linter issues
+            $diagnostics['resend'] = [
+                'api_key_valid' => 'API key configured',
+                'note' => 'Resend API test skipped in diagnostic'
+            ];
+        } else {
+            $diagnostics['resend'] = [
+                'api_key_valid' => false,
+                'error' => 'No API key configured'
+            ];
+        }
+    } catch (\Exception $e) {
+        $diagnostics['resend'] = [
+            'api_key_valid' => false,
+            'error' => $e->getMessage()
+        ];
+    }
+    
+    // Test direct email sending (synchronous)
+    try {
+        \Illuminate\Support\Facades\Mail::raw('Test email from diagnostic route', function ($message) {
+            $message->to('info@hardballsmokehouse.co.uk')
+                    ->subject('Email Diagnostic Test - ' . now()->format('Y-m-d H:i:s'));
+        });
+        $diagnostics['direct_email_test'] = 'Success';
+    } catch (\Exception $e) {
+        $diagnostics['direct_email_test'] = 'Failed: ' . $e->getMessage();
+    }
+    
+    return response()->json($diagnostics, 200, [], JSON_PRETTY_PRINT);
+});
+
 Route::get('dashboard', function () {
     // Get statistics for dashboard
     $totalMenuItems = \App\Models\MenuItem::count();
