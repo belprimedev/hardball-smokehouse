@@ -126,49 +126,24 @@ public function index()
             }
         }
 
-        // Send system alert to admin users (or to your email in development)
-        if (app()->environment('local')) {
-            // In development, send to both email addresses
-            $emails = ['shane1obdurate@gmail.com', 'theshanebell@gmail.com'];
-            
-            foreach ($emails as $email) {
-                $testUser = new User();
-                $testUser->email = $email;
-                $testUser->name = 'Test Admin';
-                $testUser->notify(new SystemAlert(
-                    'New Reservation Created',
-                    "New reservation from {$reservation->customer_name} for {$reservation->number_of_guest} guests on {$reservation->reservation_date->format('M d, Y')} at {$reservation->reservation_time}",
-                    'info',
-                    [
-                        'reservation_id' => $reservation->id,
-                        'customer_name' => $reservation->customer_name,
-                        'customer_email' => $reservation->customer_email,
-                        'reservation_date' => $reservation->reservation_date->format('Y-m-d'),
-                        'reservation_time' => $reservation->reservation_time,
-                    ]
-                ));
-            }
-        } else {
-            // In production, send to all admin users
-            $adminUsers = User::whereHas('roles', function ($query) {
-                $query->where('name', 'admin');
-            })->get();
-
-            foreach ($adminUsers as $admin) {
-                $admin->notify(new SystemAlert(
-                    'New Reservation Created',
-                    "New reservation from {$reservation->customer_name} for {$reservation->number_of_guest} guests on {$reservation->reservation_date->format('M d, Y')} at {$reservation->reservation_time}",
-                    'info',
-                    [
-                        'reservation_id' => $reservation->id,
-                        'customer_name' => $reservation->customer_name,
-                        'customer_email' => $reservation->customer_email,
-                        'reservation_date' => $reservation->reservation_date->format('Y-m-d'),
-                        'reservation_time' => $reservation->reservation_time,
-                    ]
-                ));
-            }
-        }
+        // Send system alert to admin email
+        $adminEmail = 'info@hardballsmokehouse.co.uk';
+        
+        $testUser = new User();
+        $testUser->email = $adminEmail;
+        $testUser->name = 'Hardball Admin';
+        $testUser->notify(new SystemAlert(
+            'New Reservation Created',
+            "New reservation from {$reservation->customer_name} for {$reservation->number_of_guest} guests on {$reservation->reservation_date->format('M d, Y')} at {$reservation->reservation_time}",
+            'info',
+            [
+                'reservation_id' => $reservation->id,
+                'customer_name' => $reservation->customer_name,
+                'customer_email' => $reservation->customer_email,
+                'reservation_date' => $reservation->reservation_date->format('Y-m-d'),
+                'reservation_time' => $reservation->reservation_time,
+            ]
+        ));
 
         // Fire event for real-time notifications
         event(new NewReservationCreated($reservation));
@@ -230,49 +205,24 @@ public function index()
             }
         }
 
-        // Send system alert to admin users
-        if (app()->environment('local')) {
-            // In development, send to both email addresses
-            $emails = ['shane1obdurate@gmail.com', 'theshanebell@gmail.com'];
-            
-            foreach ($emails as $email) {
-                $testUser = new User();
-                $testUser->email = $email;
-                $testUser->name = 'Test Admin';
-                $testUser->notify(new SystemAlert(
-                    'Reservation Cancelled',
-                    "Reservation from {$reservation->customer_name} for {$reservation->number_of_guest} guests on {$reservation->reservation_date->format('M d, Y')} at {$reservation->reservation_time} has been cancelled",
-                    'warning',
-                    [
-                        'reservation_id' => $reservation->id,
-                        'customer_name' => $reservation->customer_name,
-                        'customer_email' => $reservation->customer_email,
-                        'reservation_date' => $reservation->reservation_date->format('Y-m-d'),
-                        'reservation_time' => $reservation->reservation_time,
-                    ]
-                ));
-            }
-        } else {
-            // In production, send to all admin users
-            $adminUsers = User::whereHas('roles', function ($query) {
-                $query->where('name', 'admin');
-            })->get();
-
-            foreach ($adminUsers as $admin) {
-                $admin->notify(new SystemAlert(
-                    'Reservation Cancelled',
-                    "Reservation from {$reservation->customer_name} for {$reservation->number_of_guest} guests on {$reservation->reservation_date->format('M d, Y')} at {$reservation->reservation_time} has been cancelled",
-                    'warning',
-                    [
-                        'reservation_id' => $reservation->id,
-                        'customer_name' => $reservation->customer_name,
-                        'customer_email' => $reservation->customer_email,
-                        'reservation_date' => $reservation->reservation_date->format('Y-m-d'),
-                        'reservation_time' => $reservation->reservation_time,
-                    ]
-                ));
-            }
-        }
+        // Send system alert to admin email
+        $adminEmail = 'info@hardballsmokehouse.co.uk';
+        
+        $testUser = new User();
+        $testUser->email = $adminEmail;
+        $testUser->name = 'Hardball Admin';
+        $testUser->notify(new SystemAlert(
+            'Reservation Cancelled',
+            "Reservation from {$reservation->customer_name} for {$reservation->number_of_guest} guests on {$reservation->reservation_date->format('M d, Y')} at {$reservation->reservation_time} has been cancelled",
+            'warning',
+            [
+                'reservation_id' => $reservation->id,
+                'customer_name' => $reservation->customer_name,
+                'customer_email' => $reservation->customer_email,
+                'reservation_date' => $reservation->reservation_date->format('Y-m-d'),
+                'reservation_time' => $reservation->reservation_time,
+            ]
+        ));
 
         $reservation->delete();
 
