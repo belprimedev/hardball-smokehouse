@@ -392,6 +392,34 @@ Route::post('/test-contact', function (Request $request) {
     ]);
 })->name('test.contact');
 
+// Mail preview route for testing email templates
+Route::get('/mail-preview', function () {
+    $reservation = new \App\Models\Reservation([
+        'customer_name' => 'John Doe',
+        'customer_email' => 'john@example.com',
+        'customer_phone' => '1234567890',
+        'reservation_date' => '2025-08-25',
+        'reservation_time' => '19:00',
+        'number_of_guest' => 4,
+        'special_request' => 'Test reservation for email template'
+    ]);
+
+    return view('emails.system-alert', [
+        'title' => 'TEST - New Blue Design',
+        'alertMessage' => 'This is a test to see the NEW blue/teal email template design. The old template was brown/orange, this should be blue/teal with modern styling!',
+        'type' => 'info',
+        'data' => [
+            'reservation_id' => 9999,
+            'customer_name' => 'John Doe',
+            'customer_email' => 'john@example.com',
+            'reservation_date' => '2025-08-25',
+            'reservation_time' => '19:00',
+            'number_of_guests' => 4,
+            'special_request' => 'Testing new email template design'
+        ]
+    ]);
+});
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/user-management.php';
