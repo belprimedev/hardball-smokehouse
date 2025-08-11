@@ -518,6 +518,43 @@ onMounted(() => {
         font-size: 2.25rem;
     }
 }
+
+/* Dark mode compatibility */
+@media (prefers-color-scheme: dark) {
+    .bg-light-cream {
+        background-color: #1f2937;
+    }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .animate-pulse-slow {
+        animation-duration: 3s;
+    }
+    
+    .animation-delay-1000 {
+        animation-delay: 1s;
+    }
+    
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+    
+    .animation-delay-3000 {
+        animation-delay: 3s;
+    }
+}
+
+/* Improved touch targets for mobile */
+@media (max-width: 640px) {
+    .hover-lift:hover {
+        transform: none;
+    }
+    
+    .hover-lift:active {
+        transform: translateY(-2px);
+    }
+}
 </style>
 
 <template>
@@ -529,91 +566,89 @@ onMounted(() => {
         </Head>
 
         <!-- Hero Section -->
-        <section class="relative min-h-screen bg-gradient-to-br from-dark-900 via-green-900 to-dark-900 text-white overflow-hidden">
+        <section class="relative min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-gray-900 dark:from-gray-900 dark:via-green-900 dark:to-gray-900 text-white overflow-hidden">
             <!-- Animated Background Pattern -->
             <div class="absolute inset-0 z-0">
-                <div class="absolute inset-0 bg-[url('/img/bg/bg-5.jpg')] bg-cove bg-center bg-no-repeat op"></div>
-                <div class="absolute inset-0 bg-gradient-to-br from-dark-900 via-green-900 to-gray-900"></div>
+                <div class="absolute inset-0 bg-[url('/img/bg/bg-5.jpg')] bg-cover bg-center bg-no-repeat opacity-60 dark:opacity-40"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-green-900/80 to-gray-900/80 dark:from-gray-900/90 dark:via-green-900/90 dark:to-gray-900/90"></div>
                 
                 <!-- Floating Caribbean Elements -->
-                <div class="absolute top-20 left-10 w-24 h-24 bg-yellow-400/20 rounded-full animate-pulse animation-delay-3000"></div>
-                <div class="absolute top-40 right-20 w-16 h-16 bg-accent-red/20 rounded-full animate-pulse"></div>
-                <div class="absolute bottom-40 left-1/4 w-20 h-20 bg-green-400/20 rounded-full animate-bounce animation-delay-2000"></div>
-                <div class="absolute bottom-20 right-1/3 w-12 h-12 bg-yellow-400/20 rounded-full animate-pulse"></div>
+                <div class="absolute top-20 left-10 w-16 h-16 md:w-24 md:h-24 bg-yellow-400/20 rounded-full animate-pulse animation-delay-3000"></div>
+                <div class="absolute top-40 right-20 w-12 h-12 md:w-16 md:h-16 bg-red-500/20 rounded-full animate-pulse"></div>
+                <div class="absolute bottom-40 left-1/4 w-16 h-16 md:w-20 md:h-20 bg-green-400/20 rounded-full animate-bounce animation-delay-2000"></div>
+                <div class="absolute bottom-20 right-1/3 w-8 h-8 md:w-12 md:h-12 bg-yellow-400/20 rounded-full animate-pulse"></div>
                 
                 <!-- Diagonal Lines Pattern -->
                 <div class="absolute inset-0 opacity-10">
                     <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-yellow-400 to-transparent transform rotate-12"></div>
-                    <div class="absolute top-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-accent-red to-transparent transform -rotate-6"></div>
+                    <div class="absolute top-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-red-500 to-transparent transform -rotate-6"></div>
                     <div class="absolute bottom-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-400 to-transparent transform rotate-3"></div>
                 </div>
             </div>
 
             <!-- Content Container -->
-            <div class="relative z-10 container mx-auto px-4 py-20">
-                <div class="grid grid-cols-1 lg:grid-cols-2 items-center min-h-screen gap-12">
+            <div class="relative z-10 container mx-auto px-4 py-12 md:py-20">
+                <div class="grid grid-cols-1 lg:grid-cols-2 items-center min-h-screen gap-8 lg:gap-12">
                     
                     <!-- Left Side - Text Content -->
-                    <div class="text-center lg:text-left space-y-8 animate-slide-in-left">
+                    <div class="text-center lg:text-left space-y-6 md:space-y-8 animate-slide-in-left">
                         
-                       
-
                         <!-- Main Headlines -->
-                        <div class="space-y-4">
-                            <h1 class="text-6xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-white to-accent-red animate-pulse-slow">
+                        <div class="space-y-3 md:space-y-4">
+                            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-white to-red-500 animate-pulse-slow">
                                 HARDBALL
                             </h1>
-                            <h2 class="text-4xl lg:text-6xl knewave-regular font-bold text-white mb-4">
+                            <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl knewave-regular font-bold text-white mb-4">
                                 Caribbean Smokehouse
                             </h2>
                         </div>
 
                         <!-- Subtitle with Enhanced Typography -->
-                        <div class="space-y-4">
-                            <p class="text-xl lg:text-2xl text-gray-200 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                        <div class="space-y-3 md:space-y-4">
+                            <p class="text-lg sm:text-xl lg:text-2xl text-gray-200 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                                 Come for the <span class="text-yellow-400 font-bold">food</span>, 
                                 <span class="text-green-500 font-bold">Stay</span> for the 
                                 <span class="text-red-500 font-bold">vibes</span>!
                             </p>
-                            <p class="text-lg text-gray-300 max-w-xl mx-auto lg:mx-0">
+                            <p class="text-base sm:text-lg text-gray-300 max-w-xl mx-auto lg:mx-0">
                                 Experience authentic Caribbean flavors with a modern twist. From jerk chicken to rum cocktails, every bite tells a story.
                             </p>
                         </div>
 
                         <!-- Enhanced Stats Grid -->
-                        <div class="grid grid-cols-3 gap-6 max-w-md mx-auto lg:mx-0">
-                            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <div class="grid grid-cols-3 gap-3 md:gap-6 max-w-md mx-auto lg:mx-0">
+                            <div class="bg-white/10 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                                <div class="flex items-center gap-1 md:gap-2">
+                                    <svg class="w-4 h-4 md:w-6 md:h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                     </svg>
-                                    <div class="text-3xl font-bold text-green-500">4.9</div>
+                                    <div class="text-xl md:text-3xl font-bold text-green-500">4.9</div>
                                 </div>
-                                <div class="text-sm text-gray-300">Rating</div>
+                                <div class="text-xs md:text-sm text-gray-300">Rating</div>
                             </div>
-                            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                                <div class="text-3xl font-bold text-green-500">1000+</div>
-                                <div class="text-sm text-gray-300">Customers</div>
+                            <div class="bg-white/10 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                                <div class="text-xl md:text-3xl font-bold text-green-500">1000+</div>
+                                <div class="text-xs md:text-sm text-gray-300">Customers</div>
                             </div>
-                            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                                <div class="text-3xl font-bold text-green-500">50+</div>
-                                <div class="text-sm text-gray-300">Menu Items</div>
+                            <div class="bg-white/10 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                                <div class="text-xl md:text-3xl font-bold text-green-500">50+</div>
+                                <div class="text-xs md:text-sm text-gray-300">Menu Items</div>
                             </div>
                         </div>
 
                         <!-- Enhanced CTA Buttons -->
-                        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
                             <Link :href="route('make-reservation')"
-                                class="group inline-flex items-center gap-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-dark-900 px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:from-yellow-300 hover:to-yellow-400 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                                class="group inline-flex items-center gap-2 md:gap-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 dark:text-gray-900 px-6 md:px-8 py-3 md:py-4 rounded-full font-bold text-base md:text-lg shadow-xl hover:from-yellow-300 hover:to-yellow-400 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
                                 <span>Book a Table</span>
-                                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
                             </Link>
                             <Link :href="route('menu')"
-                                class="group inline-flex items-center gap-3 border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg backdrop-blur-sm hover:bg-white hover:text-gray-900 transition-all duration-300 transform hover:scale-105">
+                                class="group inline-flex items-center gap-2 md:gap-3 border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-bold text-base md:text-lg backdrop-blur-sm hover:bg-white hover:text-gray-900 dark:hover:text-gray-900 transition-all duration-300 transform hover:scale-105">
                                 <span>Explore Menu</span>
-                                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                 </svg>
                             </Link>
@@ -621,41 +656,41 @@ onMounted(() => {
                     </div>
 
                     <!-- Right Side - Enhanced Hero Visual -->
-                    <div class="relative flex justify-center lg:justify-end animate-slide-in-right">
+                    <div class="relative flex justify-center lg:justify-end animate-slide-in-right mt-8 lg:mt-0">
                         <div class="relative">
                             <!-- Decorative Background Elements -->
-                            <div class="absolute -top-8 -right-8 w-40 h-40 bg-gradient-to-br from-yellow-400/30 to-accent-red/30 rounded-full blur-3xl animate-pulse"></div>
-                            <div class="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br from-green-400/30 to-yellow-400/30 rounded-full blur-2xl animate-pulse animation-delay-2000"></div>
+                            <div class="absolute -top-8 -right-8 w-24 h-24 md:w-40 md:h-40 bg-gradient-to-br from-yellow-400/30 to-red-500/30 rounded-full blur-3xl animate-pulse"></div>
+                            <div class="absolute -bottom-8 -left-8 w-20 h-20 md:w-32 md:h-32 bg-gradient-to-br from-green-400/30 to-yellow-400/30 rounded-full blur-2xl animate-pulse animation-delay-2000"></div>
                             
                             <!-- Main Image Container -->
                             <div class="relative">
                                 <!-- Glowing Border Effect -->
-                                <div class="absolute -inset-6 bg-gradient-to-r from-yellow-400 via-accent-red to-green-400 rounded-full blur-xl opacity-30 animate-pulse-slow"></div>
+                                <div class="absolute -inset-4 md:-inset-6 bg-gradient-to-r from-yellow-400 via-red-500 to-green-400 rounded-full blur-xl opacity-30 animate-pulse-slow"></div>
                                 
                                 <!-- Main Image with Enhanced Styling -->
                                 <div class="relative z-10">
                                     <img src="/img/portrait1.JPG" alt="Caribbean Smokehouse Signature Dish"
-                                        class="w-96 h-96 lg:w-[28rem] lg:h-[28rem] object-cover rounded-full border-4 border-white shadow-2xl transform hover:scale-105 transition-all duration-500" style="background-position: center;" />
+                                        class="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[28rem] lg:h-[28rem] object-cover rounded-full border-4 border-white shadow-2xl transform hover:scale-105 transition-all duration-500" style="background-position: center;" />
                                     
                                     <!-- Floating Food Elements -->
-                                    <div class="absolute -top-4 -right-4 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                                        <img src="/img/food/burger.png" alt="Burger" class="w-10 h-10 object-cover rounded-full" />
+                                    <div class="absolute -top-2 -right-2 md:-top-4 md:-right-4 w-12 h-12 md:w-16 md:h-16 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                                        <img src="/img/food/burger.png" alt="Burger" class="w-6 h-6 md:w-10 md:h-10 object-cover rounded-full" />
                                     </div>
-                                    <div class="absolute -bottom-4 -left-4 w-14 h-14 bg-accent-red rounded-full flex items-center justify-center shadow-lg animate-pulse animation-delay-1000">
-                                        <img src="/img/food/fritters.jpg" alt="Fritters" class="w-8 h-8 object-cover rounded-full" />
+                                    <div class="absolute -bottom-2 -left-2 md:-bottom-4 md:-left-4 w-10 h-10 md:w-14 md:h-14 bg-red-500 rounded-full flex items-center justify-center shadow-lg animate-pulse animation-delay-1000">
+                                        <img src="/img/food/fritters.jpg" alt="Fritters" class="w-5 h-5 md:w-8 md:h-8 object-cover rounded-full" />
                                     </div>
                                 </div>
                             </div>
                             
                             <!-- Floating Rating Badge -->
-                            <div class="absolute z-50 top-8 right-8 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
-                                <div class="flex items-center gap-2">
+                            <div class="absolute z-50 top-4 right-4 md:top-8 md:right-8 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 md:px-4 md:py-2 shadow-lg">
+                                <div class="flex items-center gap-1 md:gap-2">
                                     <div class="flex">
-                                        <svg v-for="i in 5" :key="i" class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg v-for="i in 5" :key="i" class="w-3 h-3 md:w-4 md:h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                         </svg>
                                     </div>
-                                    <span class="text-dark-900 font-bold">4.9</span>
+                                    <span class="text-gray-900 dark:text-gray-900 font-bold text-sm md:text-base">4.9</span>
                                 </div>
                             </div>
                         </div>
@@ -665,27 +700,27 @@ onMounted(() => {
         </section>
 
         <!-- Food Categories Section -->
-        <section class="py-20 bg-green-100">
+        <section class="py-12 md:py-20 bg-green-100 dark:bg-gray-800">
             <div class="container mx-auto px-4">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl lg:text-5xl font-bold text-green-600 mb-4 knewave-regular">Explore Our Menu</h2>
-                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">Discover authentic Caribbean flavors across our
+                <div class="text-center mb-12 md:mb-16">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-green-600 dark:text-green-400 mb-4 knewave-regular">Explore Our Menu</h2>
+                    <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">Discover authentic Caribbean flavors across our
                         carefully curated menu categories</p>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                     <div v-for="category in menuCategories" :key="category.key"
-                        class="group relative overflow-hidden ">
-                        <div class="aspect-square relative rounded-3xl overflow-hidden">
+                        class="group relative overflow-hidden">
+                        <div class="aspect-square relative rounded-2xl md:rounded-3xl overflow-hidden">
                             <!-- Display Image or Fallback -->
                             <div v-if="category.display_image" class="w-full h-full">
                                 <img :src="`/storage/${category.display_image}`" :alt="category.label"
-                                    class="w-full h-full object-cover rounded-3xl group-hover:scale-110 transition-transform duration-300" />
+                                    class="w-full h-full object-cover rounded-2xl md:rounded-3xl group-hover:scale-110 transition-transform duration-300" />
                                 <div
                                     class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300">
                                 </div>
                             </div>
-                            <div v-else class="w-full h-full bg-gradient-to-br from-yellow-400 to-accent-red">
+                            <div v-else class="w-full h-full bg-gradient-to-br from-yellow-400 to-red-500">
                                 <div
                                     class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300">
                                 </div>
@@ -694,14 +729,14 @@ onMounted(() => {
                             <!-- Hover Overlay with View Items Button -->
                             <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <button @click="selectedMenuCategory = category.key"
-                                    class="bg-white text-dark-900 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors transform scale-90 group-hover:scale-100 duration-300 shadow-lg">
+                                    class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 md:px-6 py-2 md:py-3 rounded-full font-bold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors transform scale-90 group-hover:scale-100 duration-300 shadow-lg">
                                     View Items →
                                 </button>
                             </div>
                         </div>
-                        <div class="p-6 text-center">
-                            <h3 class="text-2xl text-green-600 knewave-regular font-extrabold ">{{ category.label }}</h3>
-                            <p class="text-gray-600 mb-4">{{ category.count }} Items</p>
+                        <div class="p-4 md:p-6 text-center">
+                            <h3 class="text-xl md:text-2xl text-green-600 dark:text-green-400 knewave-regular font-extrabold">{{ category.label }}</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-4">{{ category.count }} Items</p>
                         </div>
                     </div>
                 </div>
@@ -709,9 +744,9 @@ onMounted(() => {
                 <!-- Browse Full Menu Button -->
                 <div class="text-center mt-6">
                     <Link :href="route('menu')"
-                        class="inline-flex items-center gap-3 ring-1 ring-gray-900  text-gray-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-500 transition-all duration-300 transform hover:scale-105 shadow-">
+                        class="inline-flex items-center gap-2 md:gap-3 ring-1 ring-gray-900 dark:ring-gray-100 text-gray-900 dark:text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg hover:bg-green-500 dark:hover:bg-green-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
                         Browse Full Menu
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
@@ -721,24 +756,28 @@ onMounted(() => {
         </section>
 
         <!-- Promotions Section -->
-        <section class="py-32 bg-white relative" style="background: url('/img/bg/food_pattern.jpg') no-repeat center center fixed; background-size: cover;">
-            <!-- White overlay to make background lighter -->
-            <div class="absolute inset-0 bg-white/95"></div>
+        <section class="py-16 md:py-32 bg-white dark:bg-gray-900 relative" style="background: url('/img/bg/food_pattern.jpg') no-repeat center center fixed; background-size: cover;">
+            <!-- Overlay to make background lighter -->
+            <div class="absolute inset-0 bg-white/95 dark:bg-gray-900/95"></div>
             
             <div class="container mx-auto px-4">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                     <div v-for="(promo, index) in promotions" :key="index"
-                        class="group relative overflow-hidden rounded-2xl bg-gradient-to-r" :class="promo.color">
-                        <div class="p-12 text-white">
-                            <div class="flex items-center justify-between">
-                                <div class="flex-1">
-                                    <h3 class="text-3xl font-bold mb-2">{{ promo.title }}</h3>
-                                    <p class="text-xl mb-2">{{ promo.subtitle }}</p>
+                        class="group relative overflow-hidden rounded-xl md:rounded-2xl bg-gradient-to-r" :class="promo.color">
+                        <div class="p-6 md:p-12 text-white">
+                            <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
+                                <div class="flex-1 text-center lg:text-left">
+                                    <h3 class="text-2xl md:text-3xl font-bold mb-2">{{ promo.title }}</h3>
+                                    <p class="text-lg md:text-xl mb-2">{{ promo.subtitle }}</p>
                                     <p class="text-gray-200 mb-6">{{ promo.description }}</p>
                                     <Link :href="promo.title === 'SIGNATURE COCKTAILS' ? route('cocktail') : route('contact')"
-                                        class="inline-block bg-white text-dark-900 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors">
+                                        class="inline-block bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 md:px-6 py-2 md:py-3 rounded-full font-bold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                         {{ promo.cta }}
                                     </Link>
+                                </div>
+                                <div class="lg:hidden">
+                                    <img :src="promo.image" :alt="promo.title"
+                                        class="w-32 h-32 object-cover rounded-full transform group-hover:scale-110 transition-transform duration-300" />
                                 </div>
                                 <div class="hidden lg:block">
                                     <img :src="promo.image" :alt="promo.title"
@@ -752,13 +791,13 @@ onMounted(() => {
         </section>
 
         <!-- Featured Menu Items -->
-        <section class="py-20 mx-auto" style="background-color: rgb(9 20 32);">
+        <section class="py-12 md:py-20 mx-auto bg-gray-900 dark:bg-gray-900">
             <div class="container max-w-7xl mx-auto px-4">
-                <div class="flex flex-col lg:flex-row items-center justify-between mb-16">
-                    <div class="text-left mb-8 lg:mb-0">
-                        <h2 class="text-4xl lg:text-5xl font-bold text-white mb-4 knewave-regular">Find Your Best
+                <div class="flex flex-col lg:flex-row items-center justify-between mb-12 md:mb-16">
+                    <div class="text-center lg:text-left mb-8 lg:mb-0">
+                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 knewave-regular">Find Your Best
                             Delicious Flavor</h2>
-                        <p class="text-xl text-gray-300 max-w-2xl">
+                        <p class="text-lg md:text-xl text-gray-300 max-w-2xl">
                             Scroll, select, and savor — our diverse menu brings together the best of local favorites and
                             global flavors, all made fresh and full of taste.
                         </p>
@@ -1100,7 +1139,7 @@ onMounted(() => {
                 </div>
 
             <!-- Card 1 -->
-            <div class="group bg-gray-800 rounded-3xl border border-gray-300 w-80 text-center p-8 hover:border-green-400 transition-all duration-300 hover:scale-105" data-aos="fade-right" data-aos-delay="100">
+            <div class="group bg-gray-800 rounded-3xl border border-gray-300 w-80 text-center p-8 hover:border-green-400 transition-all duration-300 hover:scale-105" data-aos="fade-right">
                 <div class="w-64 h-64 mx-auto mb-6 bg-cover bg-center bg-no-repeat border-4 border-gray-400 rounded-full bg-[url('/img/gallery/drink4.jpg')] clip-path: polygon(50% 0, 83% 12%, 100% 43%, 94% 78%, 68% 100%, 32% 100%, 6% 78%, 0% 43%, 17% 12%); group-hover:scale-110 group-hover:border-green-400 transition-all duration-300">
                 </div>
                 <h3 class="text-green-400 text-2xl font-bold mb-3 group-hover:text-green-300 transition-colors">Social Event</h3>

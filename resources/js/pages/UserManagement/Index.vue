@@ -1,102 +1,80 @@
 <template>
   <AppLayout title="User Management">
-    <template #header>
-      <div class="flex items-center justify-between">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-          User Management
-        </h2>
-        <a
-          href="/user-management/create"
-          class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150"
-        >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-          </svg>
-          Add New User
-        </a>
+    <div class="flex h-full flex-1 flex-col gap-6 rounded-xl p-6">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 text-white">
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="text-3xl font-bold mb-2">User Management</h1>
+            <p class="text-purple-100">Manage system users, roles, and permissions</p>
+          </div>
+          <a
+            href="/user-management/create"
+            class="inline-flex items-center gap-2 bg-white text-purple-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Add New User
+          </a>
+        </div>
       </div>
-    </template>
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto w-full">
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg">
-            <div class="p-5">
-              <div class="flex items-center">
-                <div class="flex-shrink-0">
-                  <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                    </svg>
-                  </div>
-                </div>
-                <div class="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Users</dt>
-                    <dd class="text-lg font-medium text-gray-900 dark:text-white">{{ props.users.total || 0 }}</dd>
-                  </dl>
-                </div>
+          <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Users</p>
+                <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ props.users.total || 0 }}</p>
+              </div>
+              <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                </svg>
               </div>
             </div>
           </div>
 
-          <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg">
-            <div class="p-5">
-              <div class="flex items-center">
-                <div class="flex-shrink-0">
-                  <div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                    </svg>
-                  </div>
-                </div>
-                <div class="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Admins</dt>
-                    <dd class="text-lg font-medium text-gray-900 dark:text-white">{{ adminCount }}</dd>
-                  </dl>
-                </div>
+          <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Admins</p>
+                <p class="text-3xl font-bold text-red-600 dark:text-red-400">{{ adminCount }}</p>
+              </div>
+              <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                </svg>
               </div>
             </div>
           </div>
 
-          <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg">
-            <div class="p-5">
-              <div class="flex items-center">
-                <div class="flex-shrink-0">
-                  <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
-                  </div>
-                </div>
-                <div class="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Managers</dt>
-                    <dd class="text-lg font-medium text-gray-900 dark:text-white">{{ managerCount }}</dd>
-                  </dl>
-                </div>
+          <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Managers</p>
+                <p class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ managerCount }}</p>
+              </div>
+              <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
               </div>
             </div>
           </div>
 
-          <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg">
-            <div class="p-5">
-              <div class="flex items-center">
-                <div class="flex-shrink-0">
-                  <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                    </svg>
-                  </div>
-                </div>
-                <div class="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Staff</dt>
-                    <dd class="text-lg font-medium text-gray-900 dark:text-white">{{ staffCount }}</dd>
-                  </dl>
-                </div>
+          <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Staff</p>
+                <p class="text-3xl font-bold text-green-600 dark:text-green-400">{{ staffCount }}</p>
+              </div>
+              <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                </svg>
               </div>
             </div>
           </div>
