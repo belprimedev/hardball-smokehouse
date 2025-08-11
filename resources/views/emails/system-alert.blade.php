@@ -382,7 +382,7 @@
             <!-- Alert Details -->
             <div class="alert-details">
                 <div class="details-title">Alert Information</div>
-                <div class="alert-message-text">{{ e($message ?? 'No message provided') }}</div>
+                <div class="alert-message-text">{{ e($alertMessage ?? $message ?? 'No message provided') }}</div>
             </div>
             
             @if(!empty($data))
