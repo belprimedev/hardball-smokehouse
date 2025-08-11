@@ -196,34 +196,8 @@ public function index()
     {
         $reservation = Reservation::findOrFail($id);
         
-        // Send cancellation notification to customer if email is provided
-        if ($reservation->customer_email) {
-            try {
-                $reservation->notify(new ReservationCancelled($reservation, 'Cancelled by administrator'));
-            } catch (\Exception $e) {
-                Log::error('Failed to send cancellation email: ' . $e->getMessage());
-            }
-        }
-
-        // Send system alert to admin email
-        $adminEmail = 'info@hardballsmokehouse.co.uk';
+        // No emails sent when reservation is cancelled
         
-        $testUser = new User();
-        $testUser->email = $adminEmail;
-        $testUser->name = 'Hardball Admin';
-        $testUser->notify(new SystemAlert(
-            'Reservation Cancelled',
-            "Reservation from {$reservation->customer_name} for {$reservation->number_of_guest} guests on {$reservation->reservation_date->format('M d, Y')} at {$reservation->reservation_time} has been cancelled",
-            'warning',
-            [
-                'reservation_id' => $reservation->id,
-                'customer_name' => $reservation->customer_name,
-                'customer_email' => $reservation->customer_email,
-                'reservation_date' => $reservation->reservation_date->format('Y-m-d'),
-                'reservation_time' => $reservation->reservation_time,
-            ]
-        ));
-
         $reservation->delete();
 
         return redirect()->route('reservation.index')->with('success', 'Reservation deleted successfully');

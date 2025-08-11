@@ -2,6 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
+import { Plus, FolderOpen, Tag, Calendar } from 'lucide-vue-next';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -28,124 +29,184 @@ const deleteCategory = (id: number) => {
         router.delete(route("menu-category.destroy", id));
     }
 };
+
+// Calculate statistics
+const stats = {
+    total: props.categories.data.length,
+    withImages: props.categories.data.filter(cat => cat.display_image).length,
+    withDescription: props.categories.data.filter(cat => cat.description && cat.description.trim() !== '').length,
+    thisMonth: props.categories.data.length
+};
 </script>
 
 <template>
     <Head title="Menu Categories" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="flex h-full flex-1 flex-col gap-6 rounded-xl p-6">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl p-6 text-white">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">Category Management</h1>
+                        <p class="text-blue-100">Manage menu categories and organize your food items</p>
+                    </div>
+                    <a :href="route('menu-category.create')" 
+                        class="inline-flex items-center gap-2 bg-white text-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+                        <Plus class="w-5 h-5" />
+                        Add Category
+                    </a>
+                </div>
+            </div>
 
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <div class="flex flex-col">
-                <div class="-m-1.5 overflow-x-auto">
-                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden dark:bg-neutral-900 dark:border-neutral-700">
-                        <!-- Header -->
-                        <div
-                            class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200 dark:border-neutral-700">
-                            <div>
-                                <h2 class="text-xl font-semibold text-gray-800 dark:text-neutral-200">
-                                    Category Listing
-                                </h2>
-                                <p class="text-sm text-yellow-500 dark:text-neutral-400">
-                                    List of all menu categories.
-                                </p>
-                            </div>
-
-                            <div>
-                                <div class="inline-flex gap-x-2">
-                                    <a :href="route('menu-category.create')" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:bg-green-700 disabled:opacity-50 disabled:pointer-events-none">
-                                        <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg"
-                                            width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path d="M5 12h14" />
-                                            <path d="M12 5v14" />
-                                        </svg>
-                                        Create
-                                    </a>
-                                </div>
-                            </div>
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Categories</p>
+                            <p class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ stats.total }}</p>
                         </div>
-                        <!-- End Header -->
-                        <div class=" mx-auto">
-                            <table class="min-w-full h-80 divide-y divide-gray-200 dark:divide-neutral-700">
-                                <thead class="bg-gray-50 dark:bg-neutral-900">
-                                    <tr class="bg-gray-100">
-                                        <th scope="col" class="px-6 py-3 text-start">
-                                        <div class="flex items-center gap-x-2">
-                                            <span
-                                                class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
-                                                Image
-                                            </span>
-                                        </div>
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-start">
-                                        <div class="flex items-center gap-x-2">
-                                            <span
-                                                class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
-                                                Name
-                                            </span>
-                                        </div>
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-start">
-                                        <div class="flex items-center gap-x-2">
-                                            <span
-                                                class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
-                                                Description
-                                            </span>
-                                        </div>
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-end"></th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
-                                    <tr v-for="category in props.categories.data" :key="category.id">
-                                        <td class="size-px whitespace-nowrap">
-                                            <div class="px-6 py-3">
-                                                <div v-if="category.display_image" class="w-16 h-16 rounded-lg overflow-hidden">
-                                                    <img 
-                                                        :src="`/storage/${category.display_image}`" 
-                                                        :alt="category.name"
-                                                        class="w-full h-full object-cover"
-                                                    />
-                                                </div>
-                                                <div v-else class="w-16 h-16 rounded-lg bg-gray-200 flex items-center justify-center">
-                                                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="size-px whitespace-nowrap">
-                                            <div class="px-6 py-3">
-                                                <span class="text-sm text-gray-600 dark:text-neutral-400">{{
-                                                    category.name }}</span>
-                                            </div>
-                                        </td>
-                                        <td class="size-px whitespace-nowrap">
-                                            <div class="px-6 py-3">
-                                                <span class="text-sm text-gray-600 dark:text-neutral-400">{{
-                                                    category.description }}</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-5 flex justify-end h-full mx-auto items-center">
-                                            <a :href="route('menu-category.edit', category.id)" 
-                                                class="bg-orange-500 items-center rounded-l-md p-2 text-white hover:shadow-lg text-xs font-thin">
-                                                Edit
-                                            </a>
-                                            <a @click="deleteCategory(category.id)"
-                                                class="bg-red-600 rounded-r-md p-2 text-white hover:shadow-lg text-xs font-thin cursor-pointer">
-                                                Remove
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                            <FolderOpen class="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                        </div>
+                    </div>
+                </div>
 
-                            <div class="mt-4">
-                                <button v-if="props.categories.prev_page_url" @click="router.get(props.categories.prev_page_url)" class="mr-2 px-4 py-2 bg-gray-200">Prev</button>
-                                <button v-if="props.categories.next_page_url" @click="router.get(props.categories.next_page_url)" class="px-4 py-2 bg-gray-200">Next</button>
-                            </div>
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">With Images</p>
+                            <p class="text-3xl font-bold text-green-600 dark:text-green-400">{{ stats.withImages }}</p>
+                        </div>
+                        <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                            <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">With Description</p>
+                            <p class="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{{ stats.withDescription }}</p>
+                        </div>
+                        <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+                            <Tag class="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Active</p>
+                            <p class="text-3xl font-bold text-purple-600 dark:text-purple-400">{{ stats.thisMonth }}</p>
+                        </div>
+                        <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                            <Calendar class="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Table -->
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Menu Categories</h2>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Image
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Name
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Description
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                            <tr v-for="category in props.categories.data" :key="category.id" class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div v-if="category.display_image" class="w-16 h-16 rounded-lg overflow-hidden">
+                                        <img 
+                                            :src="`/storage/${category.display_image}`" 
+                                            :alt="category.name"
+                                            class="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div v-else class="w-16 h-16 rounded-lg bg-gray-200 flex items-center justify-center">
+                                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ category.name }}</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
+                                        {{ category.description || 'No description' }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <a :href="route('menu-category.edit', category.id)" 
+                                            class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
+                                            Edit
+                                        </a>
+                                        <button @click="deleteCategory(category.id)"
+                                            class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div v-if="props.categories.data.length === 0" class="text-center py-8">
+                        <FolderOpen class="mx-auto h-12 w-12 text-gray-400" />
+                        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No categories</h3>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new category.</p>
+                        <div class="mt-6">
+                            <a :href="route('menu-category.create')" 
+                                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <Plus class="-ml-1 mr-2 h-5 w-5" />
+                                Add Category
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div v-if="props.categories.prev_page_url || props.categories.next_page_url" class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-700 dark:text-gray-300">
+                            Showing {{ props.categories.data.length }} categories
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <button v-if="props.categories.prev_page_url" @click="router.get(props.categories.prev_page_url)" 
+                                class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors">
+                                Previous
+                            </button>
+                            
+                            <button v-if="props.categories.next_page_url" @click="router.get(props.categories.next_page_url)" 
+                                class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors">
+                                Next
+                            </button>
                         </div>
                     </div>
                 </div>

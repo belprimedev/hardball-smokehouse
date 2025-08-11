@@ -58,9 +58,7 @@ const selectedMenuCategory = ref('Starters');
 // Fetch menu categories from backend
 onMounted(async () => {
     try {
-        console.log('Fetching menu categories...');
         const response = await axios.get('/api/menu-categories');
-        console.log('API response:', response.data);
 
         // Filter to only show the 4 specific categories we want
         const desiredCategories = ['Starters', 'Jerk Dishes', 'Curry Dishes', 'Meals'];
@@ -74,14 +72,11 @@ onMounted(async () => {
                 display_image: category.display_image
             }));
 
-        console.log('Processed menu categories:', menuCategories.value);
-
         // Set first category as selected if available
         if (menuCategories.value.length > 0) {
             selectedMenuCategory.value = menuCategories.value[0].key;
         }
-    } catch (error) {
-        console.error('Error fetching menu categories:', error);
+    } catch {
         // Fallback to hardcoded data if API fails
         menuCategories.value = [
             { key: 'Starters', label: 'Starters', count: 8, display_image: null },
@@ -92,25 +87,7 @@ onMounted(async () => {
     }
 });
 
-const groupedMenuItems = computed(() => {
-    if (!props.menuItems) return {};
 
-    const groups: Record<string, any[]> = {};
-
-    props.menuItems.forEach((item: any) => {
-        if (!item.category) {
-            return;
-        }
-
-        const cat = item.category.name;
-        if (!groups[cat]) {
-            groups[cat] = [];
-        }
-        groups[cat].push(item);
-    });
-
-    return groups;
-});
 
 // Newsletter submission
 const submitNewsletter = async () => {
@@ -382,11 +359,8 @@ const promotions = [
     }
 ];
 
-watch(selectedMenuCategory, (val) => {
-    console.log('Selected category:', val);
-    console.log('Available categories:', Object.keys(groupedMenuItems.value));
-    console.log('Items for category:', groupedMenuItems.value[val]);
-    console.log('All menu items:', props.menuItems);
+watch(selectedMenuCategory, () => {
+    // Category selection changed
 });
 
 onMounted(() => {
@@ -1314,7 +1288,7 @@ onMounted(() => {
                                 <div class="relative h-72 lg:h-[400px]">
                                     <div class="absolute inset-0 transition-opacity duration-1000"
                                          :class="{ 'opacity-100': currentImageIndex === 0, 'opacity-0': currentImageIndex !== 0 }">
-                                        <img src="/img/food/portrait5.jpg" alt="Caribbean Food" 
+                                        <img src="/img/food/burger.png" alt="Caribbean Food" 
                                              class="w-full h-full object-cover" />
                                     </div>
                                     <div class="absolute inset-0 transition-opacity duration-1000"
