@@ -3,6 +3,26 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 
+// Define props to receive data from the backend
+const props = defineProps<{
+    reservations: {
+        data: Array<{
+            id: number;
+            customer_name: string;
+            customer_phone: string;
+            customer_email: string;
+            reservation_date: string;
+            reservation_time: string;
+            number_of_guest: number;
+            special_request: string;
+        }>;
+        current_page: number;
+        last_page: number;
+        total: number;
+        prev_page_url: string | null;
+        next_page_url: string | null;
+    };
+}>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -132,7 +152,7 @@ const deleteItem = (id: number) => {
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
-                                        <tr v-for="item in reservations.data" :key="item.id" class="hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-200">
+                                        <tr v-for="item in props.reservations.data" :key="item.id" class="hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors duration-200">
                                             <td class="whitespace-nowrap px-5 text-sm ">
                                                 <div class="flex items-center">
                                                     <div class="w-[32px] h-[32px] p-0 flex-shrink-0">
@@ -197,15 +217,15 @@ const deleteItem = (id: number) => {
                                     <div>
                                         <p class="text-sm text-gray-600 dark:text-neutral-400">
                                             <span class="font-semibold text-gray-800 dark:text-neutral-200">{{
-                                                reservations.total }}</span>
+                                                props.reservations.total }}</span>
                                             results
                                         </p>
                                     </div>
 
                                     <div>
                                         <div class="inline-flex items-center gap-x-2">
-                                            <button type="button" v-if="reservations.prev_page_url"
-                                                @click="goToPage(reservations.prev_page_url)"
+                                            <button type="button" v-if="props.reservations.prev_page_url"
+                                                @click="goToPage(props.reservations.prev_page_url)"
                                                 class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
                                                 <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg"
                                                     width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -216,11 +236,11 @@ const deleteItem = (id: number) => {
                                                 Prev
                                             </button>
 
-                                            <span class="px-1">Page {{ reservations.current_page }} of {{
-                                                reservations.last_page }}</span>
+                                            <span class="px-1">Page {{ props.reservations.current_page }} of {{
+                                                props.reservations.last_page }}</span>
 
-                                            <button type="button" v-if="reservations.next_page_url"
-                                                @click="goToPage(reservations.next_page_url)"
+                                            <button type="button" v-if="props.reservations.next_page_url"
+                                                @click="goToPage(props.reservations.next_page_url)"
                                                 class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
                                                 Next
                                                 <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg"
