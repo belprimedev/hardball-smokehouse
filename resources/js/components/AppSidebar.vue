@@ -106,24 +106,18 @@ const footerNavItems: NavItem[] = [
         </SidebarHeader>
 
         <SidebarContent class="bg-white dark:bg-gray-900">
+            <!-- Main Navigation -->
             <NavMain :items="mainNavItems" />
             
-
+            <!-- Visual Separator -->
+            <div v-if="canManageUsers" class="mx-3 my-2 border-t border-gray-200 dark:border-gray-700"></div>
             
-            <!-- User Management Section (Admin Only) -->
+            <!-- Administration Section (Admin Only) -->
             <div v-if="canManageUsers" class="px-2 py-0">
-                <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-3 py-2">
+                <div class="text-xs font-medium text-gray-700 bg-indigo-50 dark:text-gray-300 uppercase tracking-wider px-3 py-2">
                     Administration
                 </div>
                 <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
-                            <Link :href="route('user-management.index')" class="text-gray-900 dark:text-white">
-                                <Users class="text-gray-700 dark:text-gray-300" />
-                                <span>User Management</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
                             <Link :href="route('admin.vacancies.index')" class="text-gray-900 dark:text-white">
@@ -151,12 +145,23 @@ const footerNavItems: NavItem[] = [
                 </SidebarMenu>
             </div>
 
-            <!-- Admin Panel Section (Admin Only) -->
+            <!-- Visual Separator -->
+            <div v-if="isAdmin" class="mx-3 my-2 border-t border-gray-200 dark:border-gray-700"></div>
+
+            <!-- System Admin Section (Admin Only) -->
             <div v-if="isAdmin" class="px-2 py-0">
-                <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-3 py-2">
+                <div class="text-xs font-medium text-gray-700 bg-orange-50 dark:text-gray-300 uppercase tracking-wider px-3 py-2">
                     System Admin
                 </div>
                 <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <Link :href="route('user-management.index')" class="text-gray-900 dark:text-white">
+                                <Users class="text-gray-700 dark:text-gray-300" />
+                                <span>User Management</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
                             <Link :href="route('admin.dashboard')" class="text-gray-900 dark:text-white">

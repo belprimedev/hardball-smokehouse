@@ -19,7 +19,7 @@ const page = usePage<SharedData>();
 
 <template>
     <SidebarGroup class="px-2 py-0">
-        <SidebarGroupLabel class="text-gray-700 dark:text-gray-300">Platform</SidebarGroupLabel>
+        <SidebarGroupLabel class="text-gray-700 bg-green-50 dark:text-gray-300">MAIN</SidebarGroupLabel>
         <SidebarMenu>
             <SidebarMenuItem v-for="item in items" :key="item.title">
                 <template v-if="item.children" >
