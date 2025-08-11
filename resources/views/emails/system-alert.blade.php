@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title }} - Hardball Caribbean Smokehouse</title>
+    <title>{{ e(is_string($title) ? $title : (string) $title) }} - Hardball Caribbean Smokehouse</title>
     <style>
         /* Reset and base styles */
         * {
@@ -289,7 +289,7 @@
         <!-- Alert Section -->
         <div class="alert-section">
             <div class="alert-icon">🔔</div>
-            <div class="alert-title">{{ $title }}</div>
+            <div class="alert-title">{{ e(is_string($title) ? $title : (string) $title) }}</div>
             <div class="alert-message">System Alert Notification</div>
         </div>
         
@@ -300,7 +300,7 @@
             <!-- Alert Details -->
             <div class="alert-details">
                 <div class="details-title">Alert Information</div>
-                <div class="alert-message-text">{{ $message }}</div>
+                <div class="alert-message-text">{{ e(is_string($message) ? $message : (string) $message) }}</div>
             </div>
             
             @if(!empty($data))
@@ -311,7 +311,7 @@
                 @foreach($data as $key => $value)
                 <div class="data-item">
                     <span class="data-label">{{ ucfirst(str_replace('_', ' ', $key)) }}:</span>
-                    <span class="data-value">{{ is_string($value) ? $value : (is_object($value) ? 'Object' : (string) $value) }}</span>
+                    <span class="data-value">{{ e(is_string($value) ? $value : (is_object($value) ? 'Object' : (is_array($value) ? 'Array' : (string) $value))) }}</span>
                 </div>
                 @endforeach
             </div>
