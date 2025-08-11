@@ -47,7 +47,7 @@ class SystemAlert extends Notification
             ->subject('🔔 ' . $this->title . ' - Hardball Caribbean Smokehouse')
             ->view('emails.system-alert', [
                 'title' => $this->title,
-                'message' => $this->message,
+                'alertMessage' => $this->message,
                 'type' => $this->type,
                 'data' => $this->data
             ]);
