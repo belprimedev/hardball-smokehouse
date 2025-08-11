@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ e(is_string($title) ? $title : (string) $title) }} - Hardball Caribbean Smokehouse</title>
+    <title>{{ e(is_string($title) ? $title : (is_object($title) && method_exists($title, '__toString') ? (string) $title : 'System Alert')) }} - Hardball Caribbean Smokehouse</title>
     <style>
         /* Reset and base styles */
         * {
@@ -289,7 +289,7 @@
         <!-- Alert Section -->
         <div class="alert-section">
             <div class="alert-icon">🔔</div>
-            <div class="alert-title">{{ e(is_string($title) ? $title : (string) $title) }}</div>
+            <div class="alert-title">{{ e(is_string($title) ? $title : (is_object($title) && method_exists($title, '__toString') ? (string) $title : 'System Alert')) }}</div>
             <div class="alert-message">System Alert Notification</div>
         </div>
         
@@ -300,7 +300,7 @@
             <!-- Alert Details -->
             <div class="alert-details">
                 <div class="details-title">Alert Information</div>
-                <div class="alert-message-text">{{ e(is_string($message) ? $message : (string) $message) }}</div>
+                <div class="alert-message-text">{{ e(is_string($message) ? $message : (is_object($message) && method_exists($message, '__toString') ? (string) $message : 'Message content unavailable')) }}</div>
             </div>
             
             @if(!empty($data))
