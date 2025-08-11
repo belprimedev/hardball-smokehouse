@@ -311,7 +311,7 @@
                 @foreach($data as $key => $value)
                 <div class="data-item">
                     <span class="data-label">{{ ucfirst(str_replace('_', ' ', $key)) }}:</span>
-                    <span class="data-value">{{ $value }}</span>
+                    <span class="data-value">{{ is_string($value) ? $value : (is_object($value) ? 'Object' : (string) $value) }}</span>
                 </div>
                 @endforeach
             </div>
