@@ -38,8 +38,8 @@
                             </table>
                         </td>
                     </tr>
-                    
-                    <!-- Alert Section -->
+        
+        <!-- Alert Section -->
                     <tr>
                         <td bgcolor="#28a745" style="background-color: #28a745; padding: 30px; text-align: center; color: #ffffff;">
                             <table width="100%" cellpadding="0" cellspacing="0">
@@ -76,8 +76,8 @@
                                     </td>
                                 </tr>
                             </table>
-                            
-                            <!-- Alert Details -->
+            
+            <!-- Alert Details -->
                             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px; background-color: #e8f5e8; border-radius: 8px; border-left: 4px solid #28a745;">
                                 <tr>
                                     <td style="padding: 25px;">
@@ -93,16 +93,16 @@
                                                 <td style="margin-top: 15px;">
                                                     <div style="font-size: 16px; color: #2c3e50; line-height: 1.6; padding: 15px; background-color: rgba(255, 255, 255, 0.7); border-radius: 6px;">
                                                         {{ e($alertMessage ?? $message ?? 'No message provided') }}
-                                                    </div>
+            </div>
                                                 </td>
                                             </tr>
                                         </table>
                                     </td>
                                 </tr>
                             </table>
-                            
-                            @if(!empty($data))
-                            <!-- Additional Data -->
+            
+            @if(!empty($data))
+            <!-- Additional Data -->
                             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px; background-color: #f0f8ff; border-radius: 8px; border-left: 4px solid #1a5f7a;">
                                 <tr>
                                     <td style="padding: 25px;">
@@ -114,7 +114,7 @@
                                                     </span>
                                                 </td>
                                             </tr>
-                                            @foreach($data as $key => $value)
+                @foreach($data as $key => $value)
                                             <tr>
                                                 <td style="padding: 8px 0; border-bottom: 1px solid #e6f3ff;">
                                                     <table width="100%" cellpadding="0" cellspacing="0">
@@ -131,14 +131,14 @@
                                                     </table>
                                                 </td>
                                             </tr>
-                                            @endforeach
+                @endforeach
                                         </table>
                                     </td>
                                 </tr>
                             </table>
-                            @endif
-                            
-                            <!-- Dashboard Info -->
+            @endif
+            
+            <!-- Dashboard Info -->
                             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px; background-color: #1a5f7a; border-radius: 8px;">
                                 <tr>
                                     <td style="padding: 25px; color: #ffffff;">
@@ -193,8 +193,8 @@
                                             <tr>
                                                 <td bgcolor="#28a745" style="background-color: #28a745; padding: 15px 30px; border-radius: 25px;">
                                                     <a href="{{ url('/dashboard') }}" style="color: #ffffff; text-decoration: none; font-weight: bold; font-size: 16px;">
-                                                        📊 View Dashboard
-                                                    </a>
+                    📊 View Dashboard
+                </a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -224,16 +224,16 @@
                                 <tr>
                                     <td style="margin-bottom: 20px;">
                                         <span style="font-size: 16px; font-weight: 500;">
-                                            Stay informed with real-time system alerts!
+                Stay informed with real-time system alerts!
                                         </span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="margin-bottom: 15px; line-height: 1.6;">
                                         <span style="font-size: 14px; opacity: 0.9;">
-                                            <strong>Hardball Caribbean Smokehouse</strong><br>
-                                            24 Lloyds Ave, Ipswich IP1 3HD<br>
-                                            +44 01473 807117
+                <strong>Hardball Caribbean Smokehouse</strong><br>
+                24 Lloyds Ave, Ipswich IP1 3HD<br>
+                +44 01473 807117
                                         </span>
                                     </td>
                                 </tr>

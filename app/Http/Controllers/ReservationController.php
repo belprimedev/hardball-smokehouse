@@ -24,23 +24,23 @@ class ReservationController extends Controller
     
 public function index()
 {
-    $reservation = Reservation::latest('created_at')
+    $reservations = Reservation::latest('created_at')
         ->paginate(8)
-        ->through(function ($reservations) {
+        ->through(function ($reservation) {
             return [
-                'id' => $reservations->id,
-                'customer_name' => $reservations->customer_name,
-                'customer_phone' => $reservations->customer_phone,
-                'customer_email' => $reservations->customer_email,
-                'reservation_date' => $reservations->reservation_date->format('Y-m-d'), // ✅ Format date
-                'reservation_time' => \Carbon\Carbon::parse($reservations->reservation_time)->format('h:i A'), // ✅ Format time
-                'number_of_guest' => $reservations->number_of_guest,
-                'special_request' => $reservations->special_request,
+                'id' => $reservation->id,
+                'customer_name' => $reservation->customer_name,
+                'customer_phone' => $reservation->customer_phone,
+                'customer_email' => $reservation->customer_email,
+                'reservation_date' => $reservation->reservation_date->format('Y-m-d'), // ✅ Format date
+                'reservation_time' => \Carbon\Carbon::parse($reservation->reservation_time)->format('h:i A'), // ✅ Format time
+                'number_of_guest' => $reservation->number_of_guest,
+                'special_request' => $reservation->special_request,
             ];
         });
 
         return Inertia::render('Reservation/Index', [
-            'reservations' => $reservation,
+            'reservations' => $reservations,
         ]);
     }
 
