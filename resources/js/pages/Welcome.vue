@@ -618,13 +618,13 @@ onMounted(() => {
                                 <span class="text-green-500 font-bold">Stay</span> for the 
                                 <span class="text-red-500 font-bold">vibes</span>!
                             </p>
-                            <p class="text-lg sm:text-xl lg:text-2xl text-gray-300 max-w-xl mt-20 mx-auto lg:mx-0">
+                            <p class="text-lg sm:text-xl lg:text-2xl text-gray-300 max-w-xl mt-4 md:mt-20 mx-auto lg:mx-0">
                                 Experience authentic Caribbean flavors with a modern twist. From jerk chicken to rum cocktails, every bite tells a story.
                             </p>
                         </div>
 
                         <!-- Enhanced Stats Grid -->
-                        <div class="grid grid-cols-3 gap-2 my-10 md:gap-6 max-w-md mx-auto lg:mx-0">
+                        <div class="grid grid-cols-3 gap-2 my-6 md:my-10 md:gap-6 max-w-md mx-auto lg:mx-0">
                             <div class="bg-white/10 backdrop-blur-sm rounded-xl md:rounded-2xl p-2 md:p-4 border border-white/20 hover:bg-white/20 transition-all duration-300">
                                 <div class="flex items-center gap-1 md:gap-2">
                                     <svg class="w-4 h-4 md:w-6 md:h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -1149,29 +1149,29 @@ onMounted(() => {
 
             <!-- Cards Container -->
             <div class="max-w-7xl mx-auto relative z-10">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-items-center">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 justify-items-center">
                     <!-- Card 1 -->
-                    <div class="group bg-gray-800 rounded-2xl md:rounded-3xl border border-gray-300 w-full max-w-sm text-center p-6 md:p-8 hover:border-green-400 transition-all duration-300 hover:scale-105" data-aos="fade-right">
-                        <div class="w-48 h-48 md:w-64 md:h-64 mx-auto mb-4 md:mb-6 bg-cover bg-center bg-no-repeat border-4 border-gray-400 rounded-full bg-[url('/img/gallery/drink4.jpg')] group-hover:scale-110 group-hover:border-green-400 transition-all duration-300">
+                    <div class="group bg-gray-800 rounded-2xl md:rounded-3xl border border-gray-300 w-full max-w-sm text-center p-4 md:p-8 hover:border-green-400 transition-all duration-300 hover:scale-105">
+                        <div class="w-32 h-32 md:w-64 md:h-64 mx-auto mb-3 md:mb-6 bg-cover bg-center bg-no-repeat border-4 border-gray-400 rounded-full bg-[url('/img/gallery/drink4.jpg')] group-hover:scale-110 group-hover:border-green-400 transition-all duration-300">
                         </div>
-                        <h3 class="text-green-400 text-xl md:text-2xl font-bold mb-2 md:mb-3 group-hover:text-green-300 transition-colors">Social Event</h3>
-                        <p class="text-gray-300 text-base md:text-lg group-hover:text-gray-200 transition-colors">80+ Package Available</p>
+                        <h3 class="text-green-400 text-lg md:text-2xl font-bold mb-2 md:mb-3 group-hover:text-green-300 transition-colors">Social Event</h3>
+                        <p class="text-gray-300 text-sm md:text-lg group-hover:text-gray-200 transition-colors">80+ Package Available</p>
                     </div>
 
                     <!-- Card 2 -->
-                    <div class="group bg-gray-800 rounded-2xl md:rounded-3xl border border-gray-300 w-full max-w-sm text-center p-6 md:p-8 hover:border-green-400 transition-all duration-300 hover:scale-105" data-aos="fade-right" data-aos-delay="300">
-                        <div class="w-48 h-48 md:w-64 md:h-64 mx-auto mb-4 md:mb-6 bg-cover bg-top bg-no-repeat border-4 border-gray-400 rounded-full bg-[url('/img/gallery/store7.JPG')] group-hover:scale-110 group-hover:border-green-400 transition-all duration-300" style="background-position: center 25%;">
+                    <div class="group bg-gray-800 rounded-2xl md:rounded-3xl border border-gray-300 w-full max-w-sm text-center p-4 md:p-8 hover:border-green-400 transition-all duration-300 hover:scale-105">
+                        <div class="w-32 h-32 md:w-64 md:h-64 mx-auto mb-3 md:mb-6 bg-cover bg-top bg-no-repeat border-4 border-gray-400 rounded-full bg-[url('/img/gallery/store7.JPG')] group-hover:scale-110 group-hover:border-green-400 transition-all duration-300" style="background-position: center 25%;">
                         </div>
-                        <h3 class="text-green-400 text-xl md:text-2xl font-bold mb-2 md:mb-3 group-hover:text-green-400 transition-colors">Corporate</h3>
-                        <p class="text-gray-300 text-base md:text-lg group-hover:text-gray-200 transition-colors">80+ Package Available</p>
+                        <h3 class="text-green-400 text-lg md:text-2xl font-bold mb-2 md:mb-3 group-hover:text-green-400 transition-colors">Corporate</h3>
+                        <p class="text-gray-300 text-sm md:text-lg group-hover:text-gray-200 transition-colors">80+ Package Available</p>
                     </div>
 
                     <!-- Card 3 -->
-                    <div class="group bg-gray-800 rounded-2xl md:rounded-3xl border border-gray-300 w-full max-w-sm text-center p-6 md:p-8 hover:border-green-400 transition-all duration-300 hover:scale-105 md:col-span-2 lg:col-span-1" data-aos="fade-right" data-aos-delay="500">
-                        <div class="w-48 h-48 md:w-64 md:h-64 mx-auto mb-4 md:mb-6 bg-cover bg-center bg-no-repeat border-4 border-gray-400 rounded-full bg-[url('/img/gallery/event3.jpeg')] group-hover:scale-110 group-hover:border-green-400 transition-all duration-300">
+                    <div class="group bg-gray-800 rounded-2xl md:rounded-3xl border border-gray-300 w-full max-w-sm text-center p-4 md:p-8 hover:border-green-400 transition-all duration-300 hover:scale-105 md:col-span-2 lg:col-span-1">
+                        <div class="w-32 h-32 md:w-64 md:h-64 mx-auto mb-3 md:mb-6 bg-cover bg-center bg-no-repeat border-4 border-gray-400 rounded-full bg-[url('/img/gallery/event3.jpeg')] group-hover:scale-110 group-hover:border-green-400 transition-all duration-300">
                         </div>
-                        <h3 class="text-green-400 text-xl md:text-2xl font-bold mb-2 md:mb-3 group-hover:text-green-300 transition-colors">Birthday Event</h3>
-                        <p class="text-gray-300 text-base md:text-lg group-hover:text-gray-200 transition-colors">80+ Package Available</p>
+                        <h3 class="text-green-400 text-lg md:text-2xl font-bold mb-2 md:mb-3 group-hover:text-green-300 transition-colors">Birthday Event</h3>
+                        <p class="text-gray-300 text-sm md:text-lg group-hover:text-gray-200 transition-colors">80+ Package Available</p>
                     </div>
                 </div>
             </div>
