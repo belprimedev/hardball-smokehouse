@@ -27,54 +27,66 @@ class RolesAndPermissionsSeeder extends Seeder
             'view dashboard',
             'manage settings',
             'manage staff',
+            'manage vacancies',
+            'manage newsletters',
+            'manage contacts',
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Create roles and assign permissions
-        $adminRole = Role::create(['name' => 'admin']);
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $adminRole->givePermissionTo(Permission::all());
 
-        $managerRole = Role::create(['name' => 'manager']);
+        $managerRole = Role::firstOrCreate(['name' => 'manager']);
         $managerRole->givePermissionTo([
             'manage reservations',
             'manage menu',
             'view reports',
             'view dashboard',
             'manage staff',
+            'manage vacancies',
+            'manage newsletters',
+            'manage contacts',
         ]);
 
-        $staffRole = Role::create(['name' => 'staff']);
+        $staffRole = Role::firstOrCreate(['name' => 'staff']);
         $staffRole->givePermissionTo([
             'manage reservations',
             'view dashboard',
         ]);
 
-        // Create initial users
-        $admin = User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@restaurant.com',
-            'password' => Hash::make('password'),
-            'email_verified_at' => now(),
-        ]);
+        // Create or update initial users
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@restaurant.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
         $admin->assignRole('admin');
 
-        $manager = User::create([
-            'name' => 'Manager User',
-            'email' => 'manager@restaurant.com',
-            'password' => Hash::make('password'),
-            'email_verified_at' => now(),
-        ]);
+        $manager = User::firstOrCreate(
+            ['email' => 'manager@restaurant.com'],
+            [
+                'name' => 'Manager User',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
         $manager->assignRole('manager');
 
-        $staff = User::create([
-            'name' => 'Staff User',
-            'email' => 'staff@restaurant.com',
-            'password' => Hash::make('password'),
-            'email_verified_at' => now(),
-        ]);
+        $staff = User::firstOrCreate(
+            ['email' => 'staff@restaurant.com'],
+            [
+                'name' => 'Staff User',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
         $staff->assignRole('staff');
     }
 } 

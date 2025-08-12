@@ -41,7 +41,21 @@ class HandleInertiaRequests extends Middleware
 
         $user = $request->user();
         if ($user) {
-            $user->load(['roles', 'permissions']);
+            $user->load(['roles']);
+            // Get all permissions through roles
+            $allPermissions = $user->getAllPermissions();
+            $permissionsArray = [];
+            foreach ($allPermissions as $permission) {
+                $permissionsArray[] = [
+                    'id' => $permission->id,
+                    'name' => $permission->name,
+                    'guard_name' => $permission->guard_name
+                ];
+            }
+            // Convert user to array and add permissions
+            $userData = $user->toArray();
+            $userData['permissions'] = $permissionsArray;
+            $user = (object) $userData;
         }
 
         return [

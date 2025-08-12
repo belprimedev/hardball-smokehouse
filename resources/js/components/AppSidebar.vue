@@ -40,6 +40,27 @@ const isAdmin = computed(() => {
     return auth.value.user.roles?.some((role: any) => role.name === 'admin');
 });
 
+// Check specific permissions
+const canManageVacancies = computed(() => {
+    if (!auth.value?.user) return false;
+    return auth.value.user.permissions?.some((permission: any) => permission.name === 'manage vacancies');
+});
+
+const canManageNewsletters = computed(() => {
+    if (!auth.value?.user) return false;
+    return auth.value.user.permissions?.some((permission: any) => permission.name === 'manage newsletters');
+});
+
+const canManageContacts = computed(() => {
+    if (!auth.value?.user) return false;
+    return auth.value.user.permissions?.some((permission: any) => permission.name === 'manage contacts');
+});
+
+// Check if user has any management permissions
+const hasManagementPermissions = computed(() => {
+    return canManageUsers.value || canManageVacancies.value || canManageNewsletters.value || canManageContacts.value;
+});
+
 // Toggle between light and dark themes
 const toggleTheme = () => {
     if (appearance.value === 'dark') {
@@ -105,20 +126,20 @@ const footerNavItems: NavItem[] = [
             </SidebarMenu>
         </SidebarHeader>
 
-        <SidebarContent class="bg-white dark:bg-gray-900">
-            <!-- Main Navigation -->
-            <NavMain :items="mainNavItems" />
+                    <SidebarContent class="bg-white dark:bg-gray-900">
+                <!-- Main Navigation -->
+                <NavMain :items="mainNavItems" />
             
             <!-- Visual Separator -->
-            <div v-if="canManageUsers" class="mx-3 my-2 border-t border-gray-200 dark:border-gray-700"></div>
+            <div v-if="hasManagementPermissions" class="mx-3 my-2 border-t border-gray-200 dark:border-gray-700"></div>
             
-            <!-- Administration Section (Admin Only) -->
-            <div v-if="canManageUsers" class="px-2 py-0">
-                <div class="text-xs font-medium text-gray-700 bg-indigo-50 dark:text-gray-300 uppercase tracking-wider px-3 py-2">
+            <!-- Administration Section -->
+            <div v-if="hasManagementPermissions" class="px-2 py-0">
+                <div class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider px-3 py-2">
                     Administration
                 </div>
                 <SidebarMenu>
-                    <SidebarMenuItem>
+                    <SidebarMenuItem v-if="canManageVacancies">
                         <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
                             <Link :href="route('admin.vacancies.index')" class="text-gray-900 dark:text-white">
                                 <Briefcase class="text-gray-700 dark:text-gray-300" />
@@ -126,7 +147,7 @@ const footerNavItems: NavItem[] = [
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
-                    <SidebarMenuItem>
+                    <SidebarMenuItem v-if="canManageNewsletters">
                         <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
                             <Link :href="route('admin.newsletters.index')" class="text-gray-900 dark:text-white">
                                 <Mail class="text-gray-700 dark:text-gray-300" />
@@ -134,7 +155,7 @@ const footerNavItems: NavItem[] = [
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
-                    <SidebarMenuItem>
+                    <SidebarMenuItem v-if="canManageContacts">
                         <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
                             <Link :href="route('admin.contacts.index')" class="text-gray-900 dark:text-white">
                                 <MessageSquare class="text-gray-700 dark:text-gray-300" />
