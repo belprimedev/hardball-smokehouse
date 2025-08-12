@@ -595,7 +595,7 @@ onMounted(() => {
             </div>
 
             <!-- Content Container -->
-            <div class="relative z-10 container mx-auto px-4 pt-16 md:pt-16">
+            <div class="relative z-10 container mx-auto px-4 pt-16 pb-10 md:pt-16 md:pb-0">
                 <div class="grid grid-cols-1 lg:grid-cols-2 items-center min-h-[calc(100vh-2rem)] md:min-h-screen gap-6 md:gap-12">
                     
                     <!-- Left Side - Text Content -->
@@ -645,16 +645,16 @@ onMounted(() => {
                         </div>
 
                         <!-- Enhanced CTA Buttons -->
-                        <div class=" flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
+                        <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
                             <Link :href="route('make-reservation')"
-                                class="group inline-flex items-center gap-2 md:gap-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 dark:text-gray-900 px-5 md:px-8 py-3 md:py-4 rounded-full font-bold text-lg md:text-xl shadow-xl hover:from-yellow-300 hover:to-yellow-400 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                                class="group inline-flex items-center justify-center mx-auto gap-2 md:gap-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 dark:text-gray-900 px-6 md:px-8 py-3 md:py-4 rounded-full font-bold text-lg md:text-xl shadow-xl hover:from-yellow-300 hover:to-yellow-400 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl w-fit">
                                 <span>Book a Table</span>
                                 <svg class="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
                             </Link>
                             <Link :href="route('menu')"
-                                class="group inline-flex items-center gap-2 md:gap-3 border-2 border-white text-white px-5 md:px-8 py-3 md:py-4 rounded-full font-bold text-lg md:text-xl backdrop-blur-sm hover:bg-white hover:text-gray-900 dark:hover:text-gray-900 transition-all duration-300 transform hover:scale-105">
+                                class="group inline-flex items-center justify-center mx-auto gap-2 md:gap-3 border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-bold text-lg md:text-xl backdrop-blur-sm hover:bg-white hover:text-gray-900 dark:hover:text-gray-900 transition-all duration-300 transform hover:scale-105 w-fit">
                                 <span>Explore Menu</span>
                                 <svg class="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
