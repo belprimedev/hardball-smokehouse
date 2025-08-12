@@ -40,8 +40,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Redirect to admin dashboard for now (can be enhanced later)
-        return redirect()->intended(route('admin.dashboard', absolute: false));
+        // Redirect to regular dashboard
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 
     /**
