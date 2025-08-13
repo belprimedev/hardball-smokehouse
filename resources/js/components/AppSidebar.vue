@@ -40,7 +40,13 @@ const isAdmin = computed(() => {
     return auth.value.user.roles?.some((role: any) => role.name === 'admin');
 });
 
-// Check specific permissions
+// Check if user is admin or manager
+const isAdminOrManager = computed(() => {
+    if (!auth.value?.user) return false;
+    return auth.value.user.roles?.some((role: any) => role.name === 'admin' || role.name === 'manager');
+});
+
+// Check specific permissions (for backward compatibility)
 const canManageVacancies = computed(() => {
     if (!auth.value?.user) return false;
     return auth.value.user.permissions?.some((permission: any) => permission.name === 'manage vacancies');
@@ -58,7 +64,7 @@ const canManageContacts = computed(() => {
 
 // Check if user has any management permissions
 const hasManagementPermissions = computed(() => {
-    return canManageUsers.value || canManageVacancies.value || canManageNewsletters.value || canManageContacts.value;
+    return canManageUsers.value || isAdminOrManager.value;
 });
 
 // Toggle between light and dark themes
@@ -141,7 +147,7 @@ const footerNavItems: NavItem[] = [
                     Administration
                 </div>
                 <SidebarMenu>
-                    <SidebarMenuItem v-if="canManageVacancies">
+                    <SidebarMenuItem v-if="isAdminOrManager">
                         <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
                             <Link :href="route('admin.vacancies.index')" class="text-gray-900 dark:text-white">
                                 <Briefcase class="text-gray-700 dark:text-gray-300" />
@@ -149,7 +155,7 @@ const footerNavItems: NavItem[] = [
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
-                    <SidebarMenuItem v-if="canManageNewsletters">
+                    <SidebarMenuItem v-if="isAdminOrManager">
                         <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
                             <Link :href="route('admin.newsletters.index')" class="text-gray-900 dark:text-white">
                                 <Mail class="text-gray-700 dark:text-gray-300" />
@@ -157,7 +163,7 @@ const footerNavItems: NavItem[] = [
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
-                    <SidebarMenuItem v-if="canManageContacts">
+                    <SidebarMenuItem v-if="isAdminOrManager">
                         <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
                             <Link :href="route('admin.contacts.index')" class="text-gray-900 dark:text-white">
                                 <MessageSquare class="text-gray-700 dark:text-gray-300" />
