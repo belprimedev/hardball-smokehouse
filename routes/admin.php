@@ -33,17 +33,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
     
     // Vacancy Management - accessible by admin and manager
-    Route::middleware(['permission:manage vacancies'])->group(function () {
-        Route::resource('vacancies', VacancyController::class)->names([
-            'index' => 'admin.vacancies.index',
-            'create' => 'admin.vacancies.create',
-            'store' => 'admin.vacancies.store',
-            'show' => 'admin.vacancies.show',
-            'edit' => 'admin.vacancies.edit',
-            'update' => 'admin.vacancies.update',
-            'destroy' => 'admin.vacancies.destroy',
-        ]);
-    });
+    Route::resource('vacancies', VacancyController::class)->names([
+        'index' => 'admin.vacancies.index',
+        'create' => 'admin.vacancies.create',
+        'store' => 'admin.vacancies.store',
+        'show' => 'admin.vacancies.show',
+        'edit' => 'admin.vacancies.edit',
+        'update' => 'admin.vacancies.update',
+        'destroy' => 'admin.vacancies.destroy',
+    ]);
     
     // Contact Management - accessible by admin and manager
     Route::middleware(['permission:manage contacts'])->group(function () {
