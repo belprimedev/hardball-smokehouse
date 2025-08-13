@@ -266,8 +266,11 @@ onMounted(() => {
                     </div>
                     <!-- Notification Bell -->
                     <div class="relative notification-bell">
-                        <button @click="toggleNotifications" class="relative p-2 text-white hover:text-green-100 transition-colors">
-                            <Bell class="w-6 h-6" />
+                        <button @click="toggleNotifications" class="relative p-2 text-orange-400 hover:scale-110 hover:cursor-auto hover:rounded-full transition-colors">
+                            <div class="relative">
+                                <div class="group absolute -inset-2 bg-white rounded-full opacity-90"></div>
+                                <Bell class="w-8 h-8 relative z-10" />
+                            </div>
                             <span v-if="unreadCount > 0" 
                                   class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
                                 {{ unreadCount }}
