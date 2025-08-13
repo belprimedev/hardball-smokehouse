@@ -184,6 +184,13 @@ body {
                                 ]">Gallery</a>
                         </li>
                         <li>
+                            <a :href="route('about')"
+                                :class="[
+                                    'block py-2 px-3 text-gray-300 text-2xl font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700',
+                                    { 'border-b-2 border-yellow-500': route().current('about') }
+                                ]">About</a>
+                        </li>
+                        <li>
                             <a :href="route('contact')"
                                 :class="[
                                     'block py-2 px-3 text-gray-300 text-2xl font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700',
@@ -212,6 +219,12 @@ body {
                         class="block py-2 px-3 text-gray-900 text-xl font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                         :href="route('gallery')" aria-current="page">
                         Gallery
+                    </a>
+
+                    <a
+                        class="block py-2 px-3 text-gray-900 text-xl font-black knewave-regular rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-green-700 md:p-0 md:dark:hover:text-green-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                        :href="route('about')" aria-current="page">
+                        About
                     </a>
 
                     <a
@@ -330,13 +343,13 @@ body {
                                 </svg>
                                 Gallery
                             </a>
-                            <a href="/About" class="flex items-center text-gray-50 hover:text-accent-yellow transition-colors">
+                            <a :href="route('about')" class="flex items-center text-gray-50 hover:text-accent-yellow transition-colors">
                                 <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
                                 </svg>
                                 About Us
                             </a>
-                            <a href="#" class="flex items-center text-gray-50 hover:text-accent-yellow transition-colors">
+                            <a href="/vacancy" class="flex items-center text-gray-50 hover:text-accent-yellow transition-colors">
                                 <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
                                 </svg>

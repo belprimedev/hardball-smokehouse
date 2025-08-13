@@ -27,15 +27,43 @@ const props = defineProps<Props>();
 <template>
     <MainLayout>
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900 py-12">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center">
-                    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-8">Join Our Team</h1>
-                    <p class="text-xl text-gray-600 dark:text-gray-300">Current job opportunities at Hardball Caribbean Smokehouse</p>
+            <section class="relative py-20 bg-gradient-to-br from-dark-900 via-green-900 to-dark-900 text-white overflow-hidden">
+            <!-- Animated Background Pattern -->
+            <div class="absolute inset-0 z-0">
+                <div class="absolute inset-0 bg-[url('/img/bg/bg-5.jpg')] bg-cover bg-center bg-no-repeat"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-dark-900 via-green-900 to-gray-900"></div>
+                
+                <!-- Floating Caribbean Elements -->
+                <div class="absolute top-20 left-10 w-24 h-24 bg-yellow-400/20 rounded-full animate-pulse animation-delay-3000"></div>
+                <div class="absolute top-40 right-20 w-16 h-16 bg-accent-red/20 rounded-full animate-pulse"></div>
+                <div class="absolute bottom-40 left-1/4 w-20 h-20 bg-green-400/20 rounded-full animate-bounce animation-delay-2000"></div>
+                <div class="absolute bottom-20 right-1/3 w-12 h-12 bg-yellow-400/20 rounded-full animate-pulse"></div>
+            </div>
+
+            <!-- Content Container -->
+            <div class="relative z-10 container mx-auto px-4">
+                <div class="text-center max-w-5xl mx-auto">
+                    <div class="mb-8">
+                        <div class="w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-10 h-10 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <h1 class="text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-white to-accent-red mb-4 knewave-regular">
+                            Join Our Team
+                        </h1>
+                        <p class="text-xl lg:text-2xl text-gray-200 leading-relaxed">
+                            Current job opportunities at Hardball Caribbean Smokehouse
+                        </p>
+                    </div>
                 </div>
+            </div>
+        </section>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
                 <div class="mt-12 space-y-8">
                     <!-- Job listings -->
-                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg">
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Available Positions</h2>
                         
                         <div v-if="props.vacancies.length > 0" class="space-y-6">
@@ -114,12 +142,12 @@ const props = defineProps<Props>();
                     </div>
                     
                     <!-- Application information -->
-                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">How to Apply</h2>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                        <h2 class="text-2xl font-bold text-green-600 dark:text-white mb-4">How to Apply</h2>
                         <p class="text-gray-600 dark:text-gray-300 mb-4">
                             To apply for any of our positions, please send your CV and a cover letter to 
                             <a href="mailto:careers@hardballsmokehouse.co.uk" class="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300">
-                                careers@hardballsmokehouse.co.uk
+                                info@hardballsmokehouse.co.uk
                             </a>
                         </p>
                         <p class="text-gray-600 dark:text-gray-300">
