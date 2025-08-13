@@ -613,12 +613,13 @@ onMounted(() => {
 
                         <!-- Subtitle with Enhanced Typography -->
                         <div class="space-y-2 md:space-y-4">
-                            <p class="italic text-xl sm:text-2xl lg:text-3xl text-gray-200 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-medium">
-                                Come for the <span class="text-yellow-400 font-bold">food</span>, 
-                                <span class="text-green-500 font-bold">Stay</span> for the 
-                                <span class="text-red-500 font-bold">vibes</span>!
-                            </p>
-                            <p class="text-lg sm:text-xl lg:text-2xl text-gray-300 max-w-xl mt-4 md:mt-20 mx-auto lg:mx-0">
+                            <div class=" sm:mt-5 max-w-3xl">
+                                    <p v-motion-slide-visible-bottom :delay="300" :duration="800"
+                                        class="text-2xl sm:text-3xl md:text-4xl text-yellow-400 great-vibes font-bold dark:text-neutral-400">
+                                        Come for the food, <span class="font-serif text-red-700">Stay</span> for
+                                        the <span class="font-serif text-green-700">vibes</span>!</p>
+                                </div>
+                            <p class="text-sm sm:text-md lg:text-lg text-gray-300 max-w-xl mt-4 md:mt-20 mx-auto lg:mx-0">
                                 Experience authentic Caribbean flavors with a modern twist. From jerk chicken to rum cocktails, every bite tells a story.
                             </p>
                         </div>
@@ -645,16 +646,16 @@ onMounted(() => {
                         </div>
 
                         <!-- Enhanced CTA Buttons -->
-                        <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
+                        <div class="flex flex-col sm:flex-row gap-4  md:justify-start lg:justify-start">
                             <Link :href="route('make-reservation')"
-                                class="group inline-flex items-center justify-center mx-auto gap-2 md:gap-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 dark:text-gray-900 px-6 md:px-8 py-3 md:py-4 rounded-full font-bold text-lg md:text-xl shadow-xl hover:from-yellow-300 hover:to-yellow-400 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl w-fit">
+                                class="group inline-flex items-center mx-auto gap-1 md:mx-0 sm:justify-center md:justify-start md:gap-1 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 dark:text-gray-900 px-6 md:px-8 py-3 md:py-4 rounded-full font-bold text-lg md:text-xl shadow-xl hover:from-yellow-300 hover:to-yellow-400 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl w-fit">
                                 <span>Book a Table</span>
                                 <svg class="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
                             </Link>
                             <Link :href="route('menu')"
-                                class="group inline-flex items-center justify-center mx-auto gap-2 md:gap-3 border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-bold text-lg md:text-xl backdrop-blur-sm hover:bg-white hover:text-gray-900 dark:hover:text-gray-900 transition-all duration-300 transform hover:scale-105 w-fit">
+                                class="group inline-flex items-center mx-auto md:mx-0 gap-1 md:gap-1 border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-bold text-lg md:text-xl backdrop-blur-sm hover:bg-white hover:text-gray-900 dark:hover:text-gray-900 transition-all duration-300 transform hover:scale-105 w-fit">
                                 <span>Explore Menu</span>
                                 <svg class="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
