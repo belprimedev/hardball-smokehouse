@@ -3,7 +3,7 @@
 use App\Http\Controllers\UserManagementController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified', 'permission:manage users'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // User Management Routes
     Route::resource('user-management', UserManagementController::class)->parameters([
         'user-management' => 'user'

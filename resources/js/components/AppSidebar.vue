@@ -171,6 +171,14 @@ const footerNavItems: NavItem[] = [
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
+                    <SidebarMenuItem v-if="isAdminOrManager">
+                        <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <Link :href="route('user-management.index')" class="text-gray-900 dark:text-white">
+                                <Users class="text-gray-700 dark:text-gray-300" />
+                                <span>User Management</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                 </SidebarMenu>
             </div>
 
@@ -183,14 +191,6 @@ const footerNavItems: NavItem[] = [
                     System Admin
                 </div>
                 <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
-                            <Link :href="route('user-management.index')" class="text-gray-900 dark:text-white">
-                                <Users class="text-gray-700 dark:text-gray-300" />
-                                <span>User Management</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
                             <Link :href="route('admin.dashboard')" class="text-gray-900 dark:text-white">
