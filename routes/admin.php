@@ -15,22 +15,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
     
     // Newsletter Management - accessible by admin and manager
-    Route::middleware(['permission:manage newsletters'])->group(function () {
-        Route::resource('newsletters', NewsletterController::class)->names([
-            'index' => 'admin.newsletters.index',
-            'create' => 'admin.newsletters.create',
-            'store' => 'admin.newsletters.store',
-            'show' => 'admin.newsletters.show',
-            'edit' => 'admin.newsletters.edit',
-            'update' => 'admin.newsletters.update',
-            'destroy' => 'admin.newsletters.destroy',
-        ]);
-        
-        // Newsletter API endpoints
-        Route::post('/newsletters/subscribe', [NewsletterController::class, 'subscribe'])->name('admin.newsletters.subscribe');
-        Route::post('/newsletters/unsubscribe', [NewsletterController::class, 'unsubscribe'])->name('admin.newsletters.unsubscribe');
-        Route::get('/newsletters/stats', [NewsletterController::class, 'stats'])->name('admin.newsletters.stats');
-    });
+    Route::resource('newsletters', NewsletterController::class)->names([
+        'index' => 'admin.newsletters.index',
+        'create' => 'admin.newsletters.create',
+        'store' => 'admin.newsletters.store',
+        'show' => 'admin.newsletters.show',
+        'edit' => 'admin.newsletters.edit',
+        'update' => 'admin.newsletters.update',
+        'destroy' => 'admin.newsletters.destroy',
+    ]);
+    
+    // Newsletter API endpoints
+    Route::post('/newsletters/subscribe', [NewsletterController::class, 'subscribe'])->name('admin.newsletters.subscribe');
+    Route::post('/newsletters/unsubscribe', [NewsletterController::class, 'unsubscribe'])->name('admin.newsletters.unsubscribe');
+    Route::get('/newsletters/stats', [NewsletterController::class, 'stats'])->name('admin.newsletters.stats');
     
     // Vacancy Management - accessible by admin and manager
     Route::resource('vacancies', VacancyController::class)->names([
@@ -44,13 +42,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ]);
     
     // Contact Management - accessible by admin and manager
-    Route::middleware(['permission:manage contacts'])->group(function () {
-        Route::resource('contacts', ContactController::class)->names([
-            'index' => 'admin.contacts.index',
-            'show' => 'admin.contacts.show',
-            'update' => 'admin.contacts.update',
-        ]);
-        Route::post('/contacts/{contact}/mark-replied', [ContactController::class, 'markAsReplied'])->name('admin.contacts.mark-replied');
-        Route::get('/contacts/stats', [ContactController::class, 'stats'])->name('admin.contacts.stats');
-    });
+    Route::resource('contacts', ContactController::class)->names([
+        'index' => 'admin.contacts.index',
+        'show' => 'admin.contacts.show',
+        'update' => 'admin.contacts.update',
+    ]);
+    Route::post('/contacts/{contact}/mark-replied', [ContactController::class, 'markAsReplied'])->name('admin.contacts.mark-replied');
+    Route::get('/contacts/stats', [ContactController::class, 'stats'])->name('admin.contacts.stats');
 }); 
