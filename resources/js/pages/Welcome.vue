@@ -613,7 +613,7 @@ onMounted(() => {
 
                         <!-- Subtitle with Enhanced Typography -->
                         <div class="space-y-2 md:space-y-4">
-                            <p class="text-xl sm:text-2xl lg:text-3xl text-gray-200 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-medium">
+                            <p class="italic text-xl sm:text-2xl lg:text-3xl text-gray-200 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-medium">
                                 Come for the <span class="text-yellow-400 font-bold">food</span>, 
                                 <span class="text-green-500 font-bold">Stay</span> for the 
                                 <span class="text-red-500 font-bold">vibes</span>!
