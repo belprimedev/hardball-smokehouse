@@ -143,7 +143,7 @@ const footerNavItems: NavItem[] = [
             
             <!-- Administration Section -->
             <div v-if="hasManagementPermissions" class="px-2 py-0">
-                <div class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider px-3 py-2">
+                <div class="text-xs font-medium text-gray-700 bg-green-50 dark:bg-gray-900 dark:text-gray-500 uppercase tracking-wider px-3 py-2">
                     Administration
                 </div>
                 <SidebarMenu>
@@ -187,7 +187,7 @@ const footerNavItems: NavItem[] = [
 
             <!-- System Admin Section (Admin Only) -->
             <div v-if="isAdmin" class="px-2 py-0">
-                <div class="text-xs font-medium text-gray-700 bg-orange-50 dark:text-gray-300 uppercase tracking-wider px-3 py-2">
+                <div class="text-xs font-medium text-gray-700 bg-orange-50 dark:bg-gray-900 dark:text-gray-500 uppercase tracking-wider px-3 py-2">
                     System Admin
                 </div>
                 <SidebarMenu>

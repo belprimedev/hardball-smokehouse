@@ -1,6 +1,6 @@
 <template>
   <AppLayout title="User Management">
-    <div class="flex h-full flex-1 flex-col gap-6 rounded-xl p-6">
+    <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-hidden">
       <!-- Header -->
       <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 text-white">
         <div class="flex justify-between items-center">
@@ -20,9 +20,9 @@
         </div>
       </div>
 
-      <div class="max-w-7xl mx-auto w-full">
+      <div class="w-full overflow-hidden">
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between">
               <div>
@@ -81,8 +81,8 @@
         </div>
 
         <!-- Search and Filters -->
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg mb-6">
-          <div class="p-6">
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg mb-4">
+          <div class="p-4">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
               <div class="flex-1 max-w-lg">
                 <label for="search" class="sr-only">Search users</label>
@@ -126,8 +126,8 @@
         </div>
 
         <!-- Users Table -->
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg">
-          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg flex-1 min-h-0">
+          <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white flex items-center">
               <svg class="w-5 h-5 mr-2 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
@@ -145,33 +145,30 @@
             </a>
           </div>
           
-          <div class="overflow-x-auto">
+          <div class="overflow-x-auto overflow-y-auto max-h-96">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead class="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     User
                   </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Email
                   </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Roles
                   </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Last Login
-                  </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Status
                   </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 <tr v-for="user in filteredUsers" :key="user.id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
-                  <td class="px-6 py-4 whitespace-nowrap">
+                  <td class="px-4 py-3 whitespace-nowrap">
                     <div class="flex items-center">
                       <div class="flex-shrink-0 h-10 w-10">
                         <div class="h-10 w-10 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center">
@@ -190,7 +187,7 @@
                       </div>
                     </div>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
+                  <td class="px-4 py-3 whitespace-nowrap">
                     <div class="text-sm text-gray-900 dark:text-white">{{ user.email }}</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">
                       <span v-if="user.email_verified_at" class="inline-flex items-center text-green-600 dark:text-green-400">
@@ -207,7 +204,7 @@
                       </span>
                     </div>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
+                  <td class="px-4 py-3 whitespace-nowrap">
                     <div class="flex flex-wrap gap-1">
                       <span
                         v-for="role in user.roles"
@@ -226,15 +223,8 @@
                       </span>
                     </div>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    <div class="flex items-center">
-                      <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
-                      {{ user.last_login_at ? new Date(user.last_login_at).toLocaleDateString() : 'Never' }}
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
+
+                  <td class="px-4 py-3 whitespace-nowrap">
                     <div class="flex items-center">
                       <span
                         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
@@ -257,7 +247,7 @@
                       </span>
                     </div>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
                     <div class="flex items-center space-x-2">
                       <!-- Edit Button -->
                       <a
