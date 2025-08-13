@@ -127,20 +127,7 @@ const footerNavItems: NavItem[] = [
         </SidebarHeader>
 
                     <SidebarContent class="bg-white dark:bg-gray-900">
-                <!-- Debug Section (temporary) -->
-                <div class="px-4 py-2 text-xs bg-red-100 border border-red-300 text-red-800">
-                    <div><strong>DEBUG INFO:</strong></div>
-                    <div>User: {{ auth?.user?.name || 'NO USER' }}</div>
-                    <div>Roles: {{ auth?.user?.roles?.map(r => r.name).join(', ') || 'NO ROLES' }}</div>
-                    <div>Permissions: {{ auth?.user?.permissions?.map(p => p.name).join(', ') || 'NO PERMISSIONS' }}</div>
-                    <div>Can Manage Vacancies: {{ canManageVacancies }}</div>
-                    <div>Can Manage Newsletters: {{ canManageNewsletters }}</div>
-                    <div>Can Manage Contacts: {{ canManageContacts }}</div>
-                    <div>Can Manage Users: {{ canManageUsers }}</div>
-                    <div>Has Management Permissions: {{ hasManagementPermissions }}</div>
-                    <div>Permissions Count: {{ auth?.user?.permissions?.length || 0 }}</div>
-                    <div>Raw Permissions: {{ JSON.stringify(auth?.user?.permissions) }}</div>
-                </div>
+
                 
                 <!-- Main Navigation -->
                 <NavMain :items="mainNavItems" />
