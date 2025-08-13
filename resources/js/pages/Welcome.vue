@@ -847,7 +847,7 @@ onMounted(() => {
 
                             <div v-if="item.is_chef_special"
                                 class="absolute top-4 right-4 bg-yellow-400 text-dark-900 px-3 py-1 rounded-full text-sm font-bold z-10">
-                                Chef's Special
+                                Chef's Special 
                             </div>
                         </div>
                         <div class="p-6">
