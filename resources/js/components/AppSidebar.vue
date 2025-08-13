@@ -136,7 +136,10 @@ const footerNavItems: NavItem[] = [
                     <div>Can Manage Vacancies: {{ canManageVacancies }}</div>
                     <div>Can Manage Newsletters: {{ canManageNewsletters }}</div>
                     <div>Can Manage Contacts: {{ canManageContacts }}</div>
+                    <div>Can Manage Users: {{ canManageUsers }}</div>
                     <div>Has Management Permissions: {{ hasManagementPermissions }}</div>
+                    <div>Permissions Count: {{ auth?.user?.permissions?.length || 0 }}</div>
+                    <div>Raw Permissions: {{ JSON.stringify(auth?.user?.permissions) }}</div>
                 </div>
                 
                 <!-- Main Navigation -->
