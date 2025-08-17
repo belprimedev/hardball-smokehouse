@@ -683,7 +683,7 @@ onMounted(() => {
                                     
                                     <!-- Floating Food Elements -->
                                     <div class="absolute -top-2 -right-2 md:-top-4 md:-right-4 w-12 h-12 md:w-16 md:h-16 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                                        <img src="/img/food/burger.png" alt="Burger" class="w-6 h-6 md:w-10 md:h-10 object-cover rounded-full" />
+                                        <img src="/img/icon/girl.png" alt="girl" class="w-6 h-6 md:w-10 md:h-10 object-cover rounded-full" />
                                     </div>
                                     <div class="absolute -bottom-2 -left-2 md:-bottom-4 md:-left-4 w-10 h-10 md:w-14 md:h-14 bg-yellow-300 rounded-full flex items-center justify-center shadow-lg animate-pulse animation-delay-1000">
                                         <img src="/img/food/fritters.jpg" alt="Fritters" class="w-5 h-5 md:w-8 md:h-8 object-cover rounded-full" />
@@ -1013,15 +1013,15 @@ onMounted(() => {
                                 <div class="flex items-center gap-3">
                                     <div class="flex -space-x-2">
                                         <img src="/img/icon/palm-tree.webp" alt="Customer"
-                                            class="w-8 h-8 rounded-full border-2 border-white" />
+                                            class="w-8 h-8 rounded-full" />
                                         <img src="/img/icon/palm-tree.webp" alt="Customer"
-                                            class="w-8 h-8 rounded-full border-2 border-white" />
+                                            class="w-8 h-8 rounded-full" />
                                         <img src="/img/icon/palm-tree.webp" alt="Customer"
-                                            class="w-8 h-8 rounded-full border-2 border-white" />
+                                            class="w-8 h-8 rounded-full " />
                                     </div>
-                                    <span class="font-bold text-dark-900">5000+ Happy Customers</span>
+                                    <span class="font-bold text-dark-900">1000+ Happy Customers</span>
                                 </div>
-                                <img src="/img/food/burger.png" alt="Food" class="w-12 h-12 object-cover rounded-lg" />
+                                <img src="/img/icon/girl.png" alt="Food" class="w-12 h-12 object-cover rounded-lg" />
                             </div>
                         </div>
 
@@ -1132,13 +1132,15 @@ onMounted(() => {
             
             <!-- Header Section -->
             <div class="max-w-7xl mx-auto relative z-10 mb-12 md:mb-16">
-                <div class="text-center md:text-left mb-8 md:mb-0">
-                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-green-600 mb-4 knewave-regular">Catering Cravings for Every Celebration</h2>
-                    <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto md:mx-0">
-                        From intimate gatherings to grand celebrations, Hardball Caribbean Smokehouse delivers delicious food options that impress every guest.
-                    </p>
+                <div class="flex flex-col md:flex-row items-center justify-between text-center mb-8 md:mb-0">
+                    <div class="md:w-2/3 md:text-left">
+                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-green-600 mb-4 knewave-regular">Catering Cravings for Every Celebration</h2>
+                        <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto md:mx-0">
+                            From intimate gatherings to grand celebrations, <br>Hardball Caribbean Smokehouse delivers delicious food options that impress every guest.
+                        </p>
+                    </div>
                     <Link :href="route('contact')"
-                        class="inline-flex items-center gap-2 mt-6 md:mt-8 bg-white text-green-700 px-4 md:px-6 py-2 md:py-3 rounded-full font-bold hover:bg-gray-100 transition-colors text-sm md:text-base">
+                        class="inline-flex items-center gap-2 mx-auto mt-6 md:mt-8 bg-white text-green-700 px-4 md:px-6 py-2 md:py-3 rounded-full font-bold hover:bg-green-600 hover:text-white transition-colors text-sm md:text-base">
                         Get Catering Quote
                         <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1301,7 +1303,7 @@ onMounted(() => {
         </section>
 
         <!-- Newsletter Section -->
-        <section class="py-20 bg-light-crea relative overflow-hidden">
+        <section class="py-20 relative overflow-hidden">
             <!-- Background Pattern -->
            
 
