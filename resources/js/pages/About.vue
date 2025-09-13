@@ -342,7 +342,7 @@ const values = [
                         <p class="text-xl mb-6 opacity-90 text-center">
                             Book your table today and join us for an unforgettable dining experience
                         </p>
-                        <div class="flex flex-col sm:flex-row gap-4 justify-start">
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
                             <a href="/reservation" 
                                class="bg-white text-green-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
                                 Book a Table
@@ -358,6 +358,6 @@ const values = [
         </div>
         
         <!-- Bottom spacing -->
-        <div class="py-16 bg-gray-50 dark:bg-gray-900"></div>
+        
     </MainLayout>
 </template> 

@@ -683,7 +683,7 @@ onMounted(() => {
                                     
                                     <!-- Floating Food Elements -->
                                     <div class="absolute -top-2 -right-2 md:-top-4 md:-right-4 w-12 h-12 md:w-16 md:h-16 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                                        <img src="/img/food/burger.png" alt="Burger" class="w-6 h-6 md:w-10 md:h-10 object-cover rounded-full" />
+                                        <img src="/img/icon/girl.png" alt="girl" class="w-6 h-6 md:w-10 md:h-10 object-cover rounded-full" />
                                     </div>
                                     <div class="absolute -bottom-2 -left-2 md:-bottom-4 md:-left-4 w-10 h-10 md:w-14 md:h-14 bg-yellow-300 rounded-full flex items-center justify-center shadow-lg animate-pulse animation-delay-1000">
                                         <img src="/img/food/fritters.jpg" alt="Fritters" class="w-5 h-5 md:w-8 md:h-8 object-cover rounded-full" />
@@ -764,6 +764,96 @@ onMounted(() => {
             </div>
         </section>
 
+        <!-- Party Event Section -->
+        <section class="py-16 md:py-24 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+            <div class="container max-w-5xl mx-auto px-4">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-4 items-center">
+                    <!-- Left Column - Image (2/3 width) -->
+                    <div class="lg:col-span-2">
+                        <div class="relative overflow-hidden rounded-xl md:rounded-2xl shadow-2xl group max-w-lg mx-auto lg:mx-0">
+                            <img src="/img/event/domino.JPG" alt="Party Event at Hardball Caribbean Smokehouse" 
+                                 class="w-full h-72 md:h-5/6 object-cover rounded-xl md:rounded-2xl group-hover:scale-105 transition-transform duration-500" />
+                            
+                            <!-- Overlay with party details -->
+                            <!-- <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-xl md:rounded-2xl">
+                                <div class="absolute bottom-6 left-6 right-6">
+                                    <div class="bg-white/90 backdrop-blur-sm rounded-lg p-4">
+                                        <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-2">Join the Party!</h3>
+                                        <p class="text-sm md:text-base text-gray-700">Experience the vibrant Caribbean atmosphere</p>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Party Event Details (1/3 width) -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="text-center lg:text-left">
+                            <h2 class="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 knewave-regular">
+                                Party Time at <span class="text-green-600">Hardball</span> <span class="text-yellow-400">Smokehouse!</span>
+                            </h2>
+                            <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                                Get ready for an unforgettable Caribbean party experience with Domino Tournament, music, delicious food, and amazing vibes!
+                            </p>
+                        </div>
+
+                        <!-- Event Features -->
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900 dark:text-white">Chill Music</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Caribbean beats and modern hits</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900 dark:text-white">Special Party Menu</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Exclusive dishes and cocktails</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900 dark:text-white">Every Weekend</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Saturday Oct 18, 2025</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CTA Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                            <Link :href="route('make-reservation')"
+                                class="inline-flex items-center justify-center gap-2 bg-yellow-400 text-gray-900 px-6 py-3 rounded-full font-bold hover:bg-yellow-500 transition-colors transform hover:scale-105 shadow-lg">
+                                <span>Reserve Your Spot</span>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                            </Link>
+                            
+                        </div>
+
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Promotions Section -->
         <section class="py-16 md:py-32 bg-white dark:bg-gray-900 relative" style="background: url('/img/bg/food_pattern.jpg') no-repeat center center fixed; background-size: cover;">
             <!-- Overlay to make background lighter -->
@@ -771,6 +861,7 @@ onMounted(() => {
             
             <div class="container mx-auto px-4">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                    
                     <div v-for="(promo, index) in promotions" :key="index"
                         class="group relative overflow-hidden rounded-xl md:rounded-2xl bg-gradient-to-r" :class="promo.color">
                         <div class="p-6 md:p-12 text-white">
@@ -1013,15 +1104,15 @@ onMounted(() => {
                                 <div class="flex items-center gap-3">
                                     <div class="flex -space-x-2">
                                         <img src="/img/icon/palm-tree.webp" alt="Customer"
-                                            class="w-8 h-8 rounded-full border-2 border-white" />
+                                            class="w-8 h-8 rounded-full" />
                                         <img src="/img/icon/palm-tree.webp" alt="Customer"
-                                            class="w-8 h-8 rounded-full border-2 border-white" />
+                                            class="w-8 h-8 rounded-full" />
                                         <img src="/img/icon/palm-tree.webp" alt="Customer"
-                                            class="w-8 h-8 rounded-full border-2 border-white" />
+                                            class="w-8 h-8 rounded-full " />
                                     </div>
-                                    <span class="font-bold text-dark-900">5000+ Happy Customers</span>
+                                    <span class="font-bold text-dark-900">1000+ Happy Customers</span>
                                 </div>
-                                <img src="/img/food/burger.png" alt="Food" class="w-12 h-12 object-cover rounded-lg" />
+                                <img src="/img/icon/girl.png" alt="Food" class="w-12 h-12 object-cover rounded-lg" />
                             </div>
                         </div>
 
@@ -1132,13 +1223,15 @@ onMounted(() => {
             
             <!-- Header Section -->
             <div class="max-w-7xl mx-auto relative z-10 mb-12 md:mb-16">
-                <div class="text-center md:text-left mb-8 md:mb-0">
-                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-green-600 mb-4 knewave-regular">Catering Cravings for Every Celebration</h2>
-                    <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto md:mx-0">
-                        From intimate gatherings to grand celebrations, Hardball Caribbean Smokehouse delivers delicious food options that impress every guest.
-                    </p>
+                <div class="flex flex-col md:flex-row items-center justify-between text-center mb-8 md:mb-0">
+                    <div class="md:w-2/3 md:text-left">
+                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-green-600 mb-4 knewave-regular">Catering Cravings for Every Celebration</h2>
+                        <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto md:mx-0">
+                            From intimate gatherings to grand celebrations, <br>Hardball Caribbean Smokehouse delivers delicious food options that impress every guest.
+                        </p>
+                    </div>
                     <Link :href="route('contact')"
-                        class="inline-flex items-center gap-2 mt-6 md:mt-8 bg-white text-green-700 px-4 md:px-6 py-2 md:py-3 rounded-full font-bold hover:bg-gray-100 transition-colors text-sm md:text-base">
+                        class="inline-flex items-center gap-2 mx-auto mt-6 md:mt-8 bg-white text-green-700 px-4 md:px-6 py-2 md:py-3 rounded-full font-bold hover:bg-green-600 hover:text-white transition-colors text-sm md:text-base">
                         Get Catering Quote
                         <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1301,7 +1394,7 @@ onMounted(() => {
         </section>
 
         <!-- Newsletter Section -->
-        <section class="py-20 bg-light-crea relative overflow-hidden">
+        <section class="py-20 relative overflow-hidden">
             <!-- Background Pattern -->
            
 
