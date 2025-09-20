@@ -187,9 +187,9 @@ const getImageSource = (imagePath: string | null): string => {
                             <div class="bg-yellow-400 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-4">
                                 <span class="text-xl sm:text-2xl">🍹</span>
                             </div>
-                            <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">Cocktail Hour</h3>
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">Happy Hour</h3>
                             <p class="text-gray-600 text-sm sm:text-base">5-7 PM Daily</p>
-                            <p class="text-yellow-600 font-bold text-sm sm:text-base">20% Off All Cocktails</p>
+                            <p class="text-yellow-600 font-bold text-sm sm:text-base">2 for 1 on All Cocktails</p>
                         </div>
                         <div class="text-center">
                             <div class="bg-yellow-400 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-4">
@@ -197,7 +197,7 @@ const getImageSource = (imagePath: string | null): string => {
                             </div>
                             <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">Beer Special</h3>
                             <p class="text-gray-600 text-sm sm:text-base">All Day Sunday</p>
-                            <p class="text-yellow-600 font-bold text-sm sm:text-base">Buy 2 Get 1 Free</p>
+                            <p class="text-yellow-600 font-bold text-sm sm:text-base"></p>
                         </div>
                         <div class="text-center sm:col-span-2 lg:col-span-1">
                             <div class="bg-yellow-400 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-4">
