@@ -269,16 +269,6 @@ watch([() => form.reservation_date, () => form.reservation_time], ([date, time])
 });
 </script>
 <style>
-/* Force light background for carousel section */
-.carousel-section {
-    background: linear-gradient(
-        rgba(255, 255, 255, 0.95),
-        rgba(255, 255, 255, 0.85)
-    ), url('../img/landscape5.jpg') !important;
-    background-size: cover !important;
-    background-position: right !important;
-}
-
 /* Only keep styles that are actually used in the template */
 
 /* Footer positioning */
@@ -321,7 +311,7 @@ footer {
     z-index: -1;
     position: absolute;
     inset: 0;
-    background: #000;
+    background: transparent;
     transform: translate3d(0, 0, 0) scale(0.95);
     filter: blur(20px);
     padding: 10px 5px;
