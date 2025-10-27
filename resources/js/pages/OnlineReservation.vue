@@ -355,10 +355,10 @@ footer {
         <Head title="Make a Reservation" />
 
 
-        <div class="bg-gray-700 mt-4 text-black/75 dark:bg-black dark:text-white/50" style="
+        <div class="mt-4 text-gray-800" style="
                 background: linear-gradient(
-                        rgba(0, 0, 0, 0.9),
-                        rgba(0, 0, 0, 0.4)
+                        rgba(255, 255, 255, 0.9),
+                        rgba(255, 255, 255, 0.7)
                     ),
                     url('../img/landscape5.jpg');
                 background-size: cover;
@@ -439,7 +439,7 @@ footer {
                                             </span>
                                             <p class="text-gray-700 text-left leading-relaxed italic text-sm sm:text-base md:text-lg">"{{ item.review }}"</p>
                                         </div>
-                                        <div class="flex justify-between items-center text-xs sm:text-sm text-gray-500">
+                                        <div class="flex justify-between items-center text-xs sm:text-sm text-gray-8000">
                                             <span>📅 {{ item.date }}</span>
                                             <span class="text-green-600 font-semibold">Verified Customer</span>
                                         </div>
@@ -457,16 +457,16 @@ footer {
             <section class="flex flex-col w-full p-6 sm:p-12 md:p-24 bg-cover bg-fixed bg-center justify-center items-center"
                 style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/img/bg/store2.JPG');">
                 <div
-                    class="sm:pt-6 sm:pb-6 md:pt-10 md:pb-10 rounded-2xl overflow-hidden relative bg-opacity-0 bg-white/10 backdrop-blur-sm border-2 border-white">
+                    class="sm:pt-6 sm:pb-6 md:pt-10 md:pb-10 rounded-2xl overflow-hidden relative bg-opacity-0 bg-white/80 backdrop-blur-sm border-2 border-gray-300">
                     <h2 class="ml-2 sm:ml-4 max-w-xl items-center rounded-full px-2 sm:px-4 py-1 sm:py-2 mb-3 sm:mb-4 text-emerald-600 ring-1 ring-inset ring-emerald-600"
                         id="starters-title"><span class="font-mono text-xs sm:text-sm" aria-hidden="true">01</span>
-                        <span class="ml-2 sm:ml-3 h-2 sm:h-3.5 w-px bg-white"></span>
-                        <span class="ml-2 sm:ml-3 text-center text-white text-xl sm:text-2xl md:text-3xl font-black font-serif tracking-tight">Make a
+                        <span class="ml-2 sm:ml-3 h-2 sm:h-3.5 w-px bg-gray-600"></span>
+                        <span class="ml-2 sm:ml-3 text-center text-gray-800 text-xl sm:text-2xl md:text-3xl font-black font-serif tracking-tight">Make a
                             Reservation</span>
                     </h2>
                     <div class="max-w-5xl grid grid-cols-1 lg:grid-cols-2 mx-auto">
                         <div class="w-full p-4 sm:p-6 md:p-10">
-                            <form @submit.prevent="submitForm" class="text-white">
+                            <form @submit.prevent="submitForm" class="text-gray-800">
                                 <div v-if="showSuccess || props.success"
                                     class="success-message mb-3 sm:mb-4 p-3 sm:p-4 text-sm rounded-lg bg-green-100 text-green-700">
                                     {{ props.success || 'Reservation created successfully!' }}
@@ -484,7 +484,7 @@ footer {
 
                                     <div class="sm:col-span-3 w-full">
                                         <label for="customer_name"
-                                            class="block text-sm font-medium leading-6 text-gray-50">Full
+                                            class="block text-sm font-medium leading-6 text-gray-800">Full
                                             Name</label>
                                         <div class="mt-2">
                                             <input type="text" id="customer_name" v-model="form.customer_name" required
@@ -502,7 +502,7 @@ footer {
 
                                     <div class="sm:col-span-3 w-full">
                                         <label for="customer_phone"
-                                            class="block text-sm font-medium leading-6 text-gray-50">Phone
+                                            class="block text-sm font-medium leading-6 text-gray-800">Phone
                                             Number</label>
                                         <div class="mt-2">
                                             <input type="tel" id="customer_phone" v-model="form.customer_phone" required
@@ -520,7 +520,7 @@ footer {
 
                                     <div class="sm:col-span-4">
                                         <label for="customer_email"
-                                            class="block text-sm font-medium leading-6 text-gray-50">Email</label>
+                                            class="block text-sm font-medium leading-6 text-gray-800">Email</label>
                                         <div class="mt-2">
                                             <input type="email" id="customer_email" v-model="form.customer_email"
                                                 :class="[
@@ -537,7 +537,7 @@ footer {
 
                                     <div class="sm:col-span-3">
                                         <label for="reservation_date"
-                                            class="block text-sm font-medium leading-6 text-gray-50">Date</label>
+                                            class="block text-sm font-medium leading-6 text-gray-800">Date</label>
                                         <div class="mt-2">
                                             <input type="date" id="reservation_date" v-model="form.reservation_date"
                                                 required
@@ -555,7 +555,7 @@ footer {
 
                                     <div class="sm:col-span-3">
                                         <label for="reservation_time"
-                                            class="block text-sm font-medium leading-6 text-gray-50">Time</label>
+                                            class="block text-sm font-medium leading-6 text-gray-800">Time</label>
                                         <div class="mt-2">
                                             <select id="reservation_time" v-model="form.reservation_time" required
                                                 :class="[
@@ -592,7 +592,7 @@ footer {
 
                                     <div class="sm:col-span-2">
                                         <label for="number_of_guest"
-                                            class="block text-sm font-medium leading-6 text-gray-50">Number
+                                            class="block text-sm font-medium leading-6 text-gray-800">Number
                                             of Guests</label>
                                         <div class="mt-2">
                                             <input type="number" id="number_of_guest" v-model="form.number_of_guest"
@@ -611,7 +611,7 @@ footer {
 
                                     <div class="col-span-full">
                                         <label for="special_request"
-                                            class="block text-sm font-medium leading-6 text-gray-50">Special
+                                            class="block text-sm font-medium leading-6 text-gray-800">Special
                                             Requests</label>
                                         <div class="mt-2">
                                             <textarea id="special_request" v-model="form.special_request" rows="3"
@@ -641,7 +641,7 @@ footer {
                             <div class="mb-4 sm:mb-6 max-w-3xl text-center sm:text-center md:mx-auto md:mb-12">
 
                                 <h2
-                                    class="font-heading mb-3 sm:mb-4 knewave-regular font-bold tracking-tight text-gray-50 dark:text-white text-2xl sm:text-3xl md:text-5xl">
+                                    class="font-heading mb-3 sm:mb-4 knewave-regular font-bold tracking-tight text-gray-800 dark:text-white text-2xl sm:text-3xl md:text-5xl">
                                     JOIN US
                                 </h2>
                                 <div class="mt-3 sm:mt-5 max-w-3xl text-center mx-auto">
@@ -654,7 +654,7 @@ footer {
                             <ul class="mb-4 sm:mb-6 md:mb-0">
                                 <li class="flex">
                                     <div
-                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-gray-50">
+                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-gray-800">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 sm:h-6 sm:w-6">
@@ -665,17 +665,17 @@ footer {
                                         </svg>
                                     </div>
                                     <div class="ml-3 sm:ml-4 mb-3 sm:mb-4">
-                                        <h3 class="mb-1 sm:mb-2 text-base sm:text-lg font-medium leading-6 text-white dark:text-white">
+                                        <h3 class="mb-1 sm:mb-2 text-base sm:text-lg font-medium leading-6 text-gray-800">
                                             Our Address
                                         </h3>
-                                        <p class="text-gray-300 dark:text-slate-400 text-sm sm:text-base">{{ restaurantInfo.address }}
+                                        <p class="text-gray-600 text-sm sm:text-base">{{ restaurantInfo.address }}
                                         </p>
-                                        <p class="text-gray-300 dark:text-slate-400 text-sm sm:text-base">United Kingdom</p>
+                                        <p class="text-gray-600 text-sm sm:text-base">United Kingdom</p>
                                     </div>
                                 </li>
                                 <li class="flex">
                                     <div
-                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-gray-50">
+                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-gray-800">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 sm:h-6 sm:w-6">
@@ -687,17 +687,17 @@ footer {
                                         </svg>
                                     </div>
                                     <div class="ml-3 sm:ml-4 mb-3 sm:mb-4">
-                                        <h3 class="mb-1 sm:mb-2 text-base sm:text-lg font-medium leading-6 text-white dark:text-white">
+                                        <h3 class="mb-1 sm:mb-2 text-base sm:text-lg font-medium leading-6 text-gray-800">
                                             Contact
                                         </h3>
-                                        <p class="text-gray-300 dark:text-slate-400 text-sm sm:text-base">Phone: {{ restaurantInfo.phone }}</p>
-                                        <p class="text-gray-300 dark:text-slate-400 text-sm sm:text-base">Mail:
+                                        <p class="text-gray-600 text-sm sm:text-base">Phone: {{ restaurantInfo.phone }}</p>
+                                        <p class="text-gray-600 text-sm sm:text-base">Mail:
                                             {{ restaurantInfo.email }}</p>
                                     </div>
                                 </li>
                                 <li class="flex">
                                     <div
-                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-gray-50">
+                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-gray-800">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 sm:h-6 sm:w-6">
@@ -706,15 +706,15 @@ footer {
                                         </svg>
                                     </div>
                                     <div class="ml-3 sm:ml-4 mb-3 sm:mb-4">
-                                        <h3 class="mb-1 sm:mb-2 text-base sm:text-lg font-medium leading-6 text-white dark:text-white">
+                                        <h3 class="mb-1 sm:mb-2 text-base sm:text-lg font-medium leading-6 text-gray-800">
                                             Working Hours</h3>
                                         <div v-if="openingHours.length > 0">
                                             <p v-for="(hour, index) in openingHours" :key="index" 
-                                               class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">
+                                               class="text-gray-600 text-xs sm:text-sm">
                                                 {{ hour.day }}: <span class="text-emerald-400 font-semibold">{{ hour.hours }}</span>
                                             </p>
                                         </div>
-                                        <div v-else class="text-gray-300 dark:text-slate-400 text-xs sm:text-sm">
+                                        <div v-else class="text-gray-600 text-xs sm:text-sm">
                                             <p>Monday - Friday: <span class="text-emerald-400 font-semibold">1:00 PM - 9:30 PM</span></p>
                                             <p>Saturday: <span class="text-emerald-400 font-semibold">1:00 PM - 11:00 PM</span></p>
                                             <p>Sunday: <span class="text-emerald-400 font-semibold">1:00 PM - 8:30 PM</span></p>
