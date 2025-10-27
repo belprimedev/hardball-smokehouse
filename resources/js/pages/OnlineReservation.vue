@@ -269,10 +269,16 @@ watch([() => form.reservation_date, () => form.reservation_time], ([date, time])
 });
 </script>
 <style>
-body {
-    background-color: rgb(239, 254, 255);
+/* Only keep styles that are actually used in the template */
+
+/* Footer positioning */
+footer {
+    position: relative;
+    z-index: 10;
+    background-color: #111827;
 }
 
+/* Testimonial card styles */
 .card {
     position: relative;
     background-color: #FFF;
@@ -286,15 +292,14 @@ body {
     cursor: pointer;
 }
 
-card::before {
+.card::before {
     content: '';
     position: absolute;
     inset: 0;
     left: -5px;
     margin: auto;
-
     border-radius: 10px;
-    background: linear-gradient(-45deg, #5a5701 0%, #04ee81 100%);
+    background: transparent;
     z-index: -10;
     pointer-events: none;
     transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -304,29 +309,12 @@ card::before {
 .card::after {
     content: "";
     z-index: -1;
-    position: absolut;
+    position: absolute;
     inset: 0;
-    background: #000;
-    /* background: linear-gradient(-45deg, #f7ef07 0%, #00dbde 100%); */
+    background: transparent;
     transform: translate3d(0, 0, 0) scale(0.95);
     filter: blur(20px);
     padding: 10px 5px;
-}
-
-.heading {
-    font-size: 20px;
-    text-transform: capitalize;
-    font-weight: 900;
-    text-align: left;
-}
-
-.card p:not(.heading) {
-    font-size: 14px;
-}
-
-.card p:last-child {
-
-    font-weight: 600;
 }
 
 .card:hover::after {
@@ -337,407 +325,7 @@ card::before {
     transform: rotate(-90deg) scaleX(1.34) scaleY(0.77);
 }
 
-.card1 {
-    position: relative;
-    background: rgb(248, 250, 250);
-    width: 100%;
-    height: 200px;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-    font-weight: bold;
-    border-radius: 0px;
-    cursor: pointer;
-    overflow: hidden;
-}
-
-.card1::before,
-.card1::after {
-    position: absolute;
-    content: "";
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-    font-weight: bold;
-    background-color: rgb(244, 216, 8);
-    border-radius: 10px;
-    transition: all 0.5s;
-}
-
-.card1::before {
-    top: 0;
-    right: 0;
-    border-radius: 0 10px 0 100%;
-}
-
-.card1::after {
-    bottom: 0;
-    left: 0;
-    border-radius: 0 100% 0 10px;
-}
-
-.card1:hover::before,
-.card1:hover:after {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    transition: all 0.5s;
-}
-
-.card1:hover:after {
-    content: "Smokehouse Special";
-    font-family: monospace;
-    font-weight: bolder;
-}
-
-/* From Uiverse.io by aadium */
-.cs-border-change:hover {
-    max-width: 250px;
-    padding: 2px;
-    margin: 10px;
-    color: white;
-    border-width: 2px;
-    border-style: solid;
-    border-image:
-        linear-gradient(to bottom,
-            yellow,
-            rgba(0, 0, 0, 0)) 1 100%;
-}
-
-
-
-body {
-    background-color: #f7f5f1;
-}
-
-.container {
-    width: 100%;
-    height: 200px;
-    position: relative;
-    overflow: hidden;
-}
-
-.img_card {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.img_card:hover {
-    transform: scale(1.1);
-}
-
-.card1 {
-    position: relative;
-    background: rgb(248, 250, 250);
-    width: 100%;
-    height: 200px;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-    font-weight: bold;
-    border-radius: 0px;
-    cursor: pointer;
-    overflow: hidden;
-}
-
-.card1::before,
-.card1::after {
-    position: absolute;
-    content: "";
-    width: 90%;
-    height: 20%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-    font-weight: bold;
-    background-color: rgb(244, 216, 8);
-    border-radius: 10px;
-    transition: all 0.5s;
-}
-
-.card1::before {
-    top: 0;
-    right: 0;
-    border-radius: 0 0px 0 100%;
-}
-
-.card1::after {
-    bottom: 0;
-    left: 0;
-    border-radius: 0 100% 0 0px;
-}
-
-.card1:hover::before,
-.card1:hover:after {
-    width: 98%;
-    height: 98%;
-    border-top-left-radius: 1px;
-    border-top-right-radius: 60%;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-    transition: all 0.5s;
-}
-
-.card1:hover:after {
-    content: "Smokehouse Special";
-    font-family: monospace;
-    font-weight: bolder;
-}
-
-/* From Uiverse.io by aadium */
-cs-border-change:hover {
-    max-width: 250px;
-    padding: 1px;
-    margin: 10px;
-    color: white;
-    border-width: 2px;
-    border-style: solid;
-    border-image:
-        linear-gradient(to bottom,
-            yellow,
-            rgba(0, 0, 0, 0)) 1 100%;
-}
-
-/* Cursor styles removed - using global custom cursor component */
-
-
-.cta-section.style-white:before {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    content: "";
-    background-color: var(--white);
-    top: 50%
-}
-
-.popular-dishes-wrapper.style1 {
-    position: relative
-}
-
-.popular-dishes-wrapper.style1 .btn-wrapper {
-    display: block;
-    margin: 60px auto 0
-}
-
-.popular-dishes-wrapper.style1 .shape1 {
-    position: absolute;
-    bottom: -120px;
-    left: 0;
-    z-index: 1
-}
-
-.popular-dishes-wrapper.style1 .shape2 {
-    position: absolute;
-    top: -50px;
-    right: 0;
-    z-index: 1
-}
-
-.popular-dishes-wrapper.style2 {
-    position: relative
-}
-
-.popular-dishes-wrapper.style2 .shape1 {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    z-index: 1
-}
-
-.popular-dishes-wrapper.style2 .shape2 {
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 1
-}
-
-.popular-dishes-wrapper.style2 .btn-wrapper {
-    max-width: 195px;
-    margin: 0 auto
-}
-
-.popular-dishes-wrapper.style3 {
-    position: relative
-}
-
-.popular-dishes-wrapper.style3 .swiper {
-    overflow: visible
-}
-
-.popular-dishes-wrapper.style3 .shape1 {
-    position: absolute;
-    top: -60px;
-    left: 0
-}
-
-.popular-dishes-wrapper.style3 .shape2 {
-    position: absolute;
-    top: -30px;
-    right: 0
-}
-
-.popular-dishes-wrapper.style4 {
-    position: relative
-}
-
-.popular-dishes-wrapper.style4 .shape1 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1
-}
-
-.dishes-card-wrap.style1 {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 5px
-}
-
-.dishes-card.style2 {
-    padding: 40px 25px;
-    margin-top: 140px;
-    background: linear-gradient(180deg, #ffffff4d, #fff 63.33%);
-    text-align: center;
-    border-radius: 16px;
-    background: var(--white);
-    box-shadow: 0 4px 54px #00000014;
-}
-
-.dishes-card.style2 .dishes-thumb {
-    position: relative;
-    margin-top: -120px;
-    border-radius: 50%;
-    -webkit-border-radius: 50%;
-    -moz-border-radius: 50%;
-    -ms-border-radius: 50%;
-    -o-border-radius: 50%;
-}
-
-.dishes-thumb {
-    position: relative;
-    text-align: center;
-}
-
-.dishes-card.style2 .dishes-thumb .circle-shape {
-    position: absolute;
-    top: -7px;
-    left: 50%;
-    width: 100%;
-    transform: translate(-50%);
-    z-index: 1;
-    -webkit-transform: translateX(-50%);
-    -moz-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    -o-transform: translateX(-50%)
-}
-
-@keyframes cir36 {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-.cir36 {
-    animation: cir36 20s linear infinite;
-    -webkit-animation: cir36 20s linear infinite;
-}
-
-.dishes-card.style2 .dishes-thumb .circle-shape {
-    position: absolute;
-    top: -7px;
-    left: 50%;
-    width: 100%;
-    transform: translate(-50%);
-    z-index: 1;
-    -webkit-transform: translateX(-50%);
-    -moz-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    -o-transform: translateX(-50%)
-}
-
-.dishes-card.style2 .dishes-content {
-    margin-top: 24px
-}
-
-.dishes-card.style2 .dishes-content h3 {
-    color: var(--title);
-    font-family: var(--title);
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 1;
-    text-transform: capitalize;
-    margin-bottom: 1px;
-    transition: all .4s;
-    -webkit-transition: all .4s;
-    -moz-transition: all .4s;
-    -ms-transition: all .4s;
-    -o-transition: all .4s
-}
-
-.dishes-card.style2 .dishes-content h3:hover {
-    color: var(--theme)
-}
-
-.dishes-card.style2 .dishes-content .text {
-    color: var(--text);
-    font-family: var(--body-font);
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1;
-    text-transform: capitalize;
-    margin-bottom: 16px;
-    margin-top: 3px
-}
-
-.dishes-card.style2 .dishes-content h6 {
-    color: var(--theme);
-    font-family: var(--title-font);
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 1;
-    text-transform: capitalize;
-    margin-bottom: 24px
-}
-
-.dishes-card.style3 {
-    margin-top: 40px
-}
-
-.dishes-card.style3 .dishes-thumb {
-    position: relative;
-    transition: all .4s;
-    -webkit-transition: all .4s;
-    -moz-transition: all .4s;
-    -ms-transition: all .4s;
-    -o-transition: all .4s
-}
-
-.dishes-card.style3 .dishes-thumb img {
-    position: relative;
-    width: 100%;
-    transition: all .4s;
-    -webkit-transition: all .4s;
-    -moz-transition: all .4s;
-    -ms-transition: all .4s;
-    -o-transition: all .4s
-}
-
+/* Title area styles */
 .title-area .title {
     color: var(--title);
     text-align: center;
@@ -764,8 +352,7 @@ cs-border-change:hover {
 
 <template>
     <MainLayout>
-
-        <Head title="Cocktail Menu" />
+        <Head title="Make a Reservation" />
 
 
         <div class="bg-gray-700 mt-4 text-black/75 dark:bg-black dark:text-white/50" style="
@@ -812,7 +399,7 @@ cs-border-change:hover {
         </div>
         <main class="mt-4 sm:mt-6">
             <section id="starters" aria-labelledby="starters-title"
-                class="max-w-7xl mx-auto text-center pb-8 sm:pb-10 md:pb-14">
+                class="max-w-7xl mx-auto text-center pb-8 sm:pb-10 md:pb-14 bg-white">
                 <div class="title-area relative z-10 py-12 sm:py-16 md:py-20">
                     <div class="flex justify-self-center text-center wow mb-4 sm:mb-7 font-bold text-orange-600"
                         data-wow-delay="0.5s">
@@ -834,7 +421,7 @@ cs-border-change:hover {
                                     <div class="md:col-span-2 flex flex-col items-center">
                                         <img :src="item.image" :alt="item.name" class="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 rounded-full object-cover shadow-lg border-4 border-orange-200" />
                                         <div class="mt-3 sm:mt-4 text-center">
-                                            <h3 class="text-base sm:text-lg font-bold text-gray-800">{{ item.name }}</h3>
+                                            <h3 class="text-base sm:text-lg font-bold text-white dark:text-white">{{ item.name }}</h3>
                                             <p class="text-xs sm:text-sm text-orange-600 font-semibold">{{ item.role }}</p>
                                             <div class="flex justify-center mt-2">
                                                 <div class="flex space-x-1">
@@ -852,7 +439,7 @@ cs-border-change:hover {
                                             </span>
                                             <p class="text-gray-700 text-left leading-relaxed italic text-sm sm:text-base md:text-lg">"{{ item.review }}"</p>
                                         </div>
-                                        <div class="flex justify-between items-center text-xs sm:text-sm text-gray-500">
+                                        <div class="flex justify-between items-center text-xs sm:text-sm text-white dark:text-white0">
                                             <span>📅 {{ item.date }}</span>
                                             <span class="text-green-600 font-semibold">Verified Customer</span>
                                         </div>
@@ -893,11 +480,11 @@ cs-border-change:hover {
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="grid grid-cols-1 w-full border-b border-gray-900/10 pb-4 sm:pb-5">
+                                <div class="grid grid-cols-1 w-full pb-4 sm:pb-5">
 
                                     <div class="sm:col-span-3 w-full">
                                         <label for="customer_name"
-                                            class="block text-sm font-medium leading-6 text-gray-50">Full
+                                            class="block text-sm font-medium leading-6 text-white dark:text-white">Full
                                             Name</label>
                                         <div class="mt-2">
                                             <input type="text" id="customer_name" v-model="form.customer_name" required
@@ -915,7 +502,7 @@ cs-border-change:hover {
 
                                     <div class="sm:col-span-3 w-full">
                                         <label for="customer_phone"
-                                            class="block text-sm font-medium leading-6 text-gray-50">Phone
+                                            class="block text-sm font-medium leading-6 text-white dark:text-white">Phone
                                             Number</label>
                                         <div class="mt-2">
                                             <input type="tel" id="customer_phone" v-model="form.customer_phone" required
@@ -933,7 +520,7 @@ cs-border-change:hover {
 
                                     <div class="sm:col-span-4">
                                         <label for="customer_email"
-                                            class="block text-sm font-medium leading-6 text-gray-50">Email</label>
+                                            class="block text-sm font-medium leading-6 text-white dark:text-white">Email</label>
                                         <div class="mt-2">
                                             <input type="email" id="customer_email" v-model="form.customer_email"
                                                 :class="[
@@ -950,7 +537,7 @@ cs-border-change:hover {
 
                                     <div class="sm:col-span-3">
                                         <label for="reservation_date"
-                                            class="block text-sm font-medium leading-6 text-gray-50">Date</label>
+                                            class="block text-sm font-medium leading-6 text-white dark:text-white">Date</label>
                                         <div class="mt-2">
                                             <input type="date" id="reservation_date" v-model="form.reservation_date"
                                                 required
@@ -968,7 +555,7 @@ cs-border-change:hover {
 
                                     <div class="sm:col-span-3">
                                         <label for="reservation_time"
-                                            class="block text-sm font-medium leading-6 text-gray-50">Time</label>
+                                            class="block text-sm font-medium leading-6 text-white dark:text-white">Time</label>
                                         <div class="mt-2">
                                             <select id="reservation_time" v-model="form.reservation_time" required
                                                 :class="[
@@ -1005,7 +592,7 @@ cs-border-change:hover {
 
                                     <div class="sm:col-span-2">
                                         <label for="number_of_guest"
-                                            class="block text-sm font-medium leading-6 text-gray-50">Number
+                                            class="block text-sm font-medium leading-6 text-white dark:text-white">Number
                                             of Guests</label>
                                         <div class="mt-2">
                                             <input type="number" id="number_of_guest" v-model="form.number_of_guest"
@@ -1024,7 +611,7 @@ cs-border-change:hover {
 
                                     <div class="col-span-full">
                                         <label for="special_request"
-                                            class="block text-sm font-medium leading-6 text-gray-50">Special
+                                            class="block text-sm font-medium leading-6 text-white dark:text-white">Special
                                             Requests</label>
                                         <div class="mt-2">
                                             <textarea id="special_request" v-model="form.special_request" rows="3"
@@ -1054,7 +641,7 @@ cs-border-change:hover {
                             <div class="mb-4 sm:mb-6 max-w-3xl text-center sm:text-center md:mx-auto md:mb-12">
 
                                 <h2
-                                    class="font-heading mb-3 sm:mb-4 knewave-regular font-bold tracking-tight text-gray-50 dark:text-white text-2xl sm:text-3xl md:text-5xl">
+                                    class="font-heading mb-3 sm:mb-4 knewave-regular font-bold tracking-tight text-white dark:text-white text-2xl sm:text-3xl md:text-5xl">
                                     JOIN US
                                 </h2>
                                 <div class="mt-3 sm:mt-5 max-w-3xl text-center mx-auto">
@@ -1067,7 +654,7 @@ cs-border-change:hover {
                             <ul class="mb-4 sm:mb-6 md:mb-0">
                                 <li class="flex">
                                     <div
-                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-gray-50">
+                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-white dark:text-white">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 sm:h-6 sm:w-6">
@@ -1088,7 +675,7 @@ cs-border-change:hover {
                                 </li>
                                 <li class="flex">
                                     <div
-                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-gray-50">
+                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-white dark:text-white">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 sm:h-6 sm:w-6">
@@ -1110,7 +697,7 @@ cs-border-change:hover {
                                 </li>
                                 <li class="flex">
                                     <div
-                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-gray-50">
+                                        class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded bg-emerald-700 text-white dark:text-white">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 sm:h-6 sm:w-6">
