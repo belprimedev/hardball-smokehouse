@@ -269,23 +269,11 @@ watch([() => form.reservation_date, () => form.reservation_time], ([date, time])
 });
 </script>
 <style>
-/* Ensure footer is visible and properly positioned */
+/* Ensure footer displays properly without interference */
 footer {
-    position: relative !important;
-    z-index: 10 !important;
-    background-color: #111827 !important;
-    margin-top: auto !important;
-}
-
-/* Fix any potential overflow issues */
-body, html {
-    overflow-x: hidden;
-}
-
-/* Ensure main content doesn't interfere with footer */
-main {
     position: relative;
-    z-index: 1;
+    z-index: 10;
+    background-color: #111827;
 }
 
 .card {
@@ -820,7 +808,7 @@ cs-border-change:hover {
                 </div>
             </div>
         </div>
-        <main class="mt-4 sm:mt-6 min-h-screen">
+        <main class="mt-4 sm:mt-6">
             <section id="starters" aria-labelledby="starters-title"
                 class="max-w-7xl mx-auto text-center pb-8 sm:pb-10 md:pb-14">
                 <div class="title-area relative z-10 py-12 sm:py-16 md:py-20">
@@ -903,7 +891,7 @@ cs-border-change:hover {
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="grid grid-cols-1 w-full border-b border-gray-900/10 pb-4 sm:pb-5">
+                                <div class="grid grid-cols-1 w-full pb-4 sm:pb-5">
 
                                     <div class="sm:col-span-3 w-full">
                                         <label for="customer_name"
@@ -1154,9 +1142,6 @@ cs-border-change:hover {
             </section>
 
         </main>
-        
-        <!-- Ensure footer spacing -->
-        <div class="h-16"></div>
     </MainLayout>
 </template>
 
