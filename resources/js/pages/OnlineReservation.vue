@@ -269,8 +269,23 @@ watch([() => form.reservation_date, () => form.reservation_time], ([date, time])
 });
 </script>
 <style>
-body {
-    background-color: rgb(239, 254, 255);
+/* Ensure footer is visible and properly positioned */
+footer {
+    position: relative !important;
+    z-index: 10 !important;
+    background-color: #111827 !important;
+    margin-top: auto !important;
+}
+
+/* Fix any potential overflow issues */
+body, html {
+    overflow-x: hidden;
+}
+
+/* Ensure main content doesn't interfere with footer */
+main {
+    position: relative;
+    z-index: 1;
 }
 
 .card {
@@ -408,10 +423,6 @@ card::before {
 }
 
 
-
-body {
-    background-color: #f7f5f1;
-}
 
 .container {
     width: 100%;
@@ -764,8 +775,7 @@ cs-border-change:hover {
 
 <template>
     <MainLayout>
-
-        <Head title="Cocktail Menu" />
+        <Head title="Make a Reservation" />
 
 
         <div class="bg-gray-700 mt-4 text-black/75 dark:bg-black dark:text-white/50" style="
@@ -810,7 +820,7 @@ cs-border-change:hover {
                 </div>
             </div>
         </div>
-        <main class="mt-4 sm:mt-6">
+        <main class="mt-4 sm:mt-6 min-h-screen">
             <section id="starters" aria-labelledby="starters-title"
                 class="max-w-7xl mx-auto text-center pb-8 sm:pb-10 md:pb-14">
                 <div class="title-area relative z-10 py-12 sm:py-16 md:py-20">
@@ -1144,6 +1154,9 @@ cs-border-change:hover {
             </section>
 
         </main>
+        
+        <!-- Ensure footer spacing -->
+        <div class="h-16"></div>
     </MainLayout>
 </template>
 
