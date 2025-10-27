@@ -355,14 +355,14 @@ footer {
         <Head title="Make a Reservation" />
 
 
-        <div class="mt-4 text-white dark:text-white !bg-white carousel-section" style="
+        <div class="bg-gray-700 mt-4 text-black/75 dark:bg-black dark:text-white/50" style="
                 background: linear-gradient(
-                        rgba(255, 255, 255, 0.95),
-                        rgba(255, 255, 255, 0.85)
+                        rgba(0, 0, 0, 0.9),
+                        rgba(0, 0, 0, 0.4)
                     ),
-                    url('../img/landscape5.jpg') !important;
-                background-size: cover !important;
-                background-position: right !important;
+                    url('../img/landscape5.jpg');
+                background-size: cover;
+                background-position: right;
             ">
             <div class="relative flex flex-col selection:bg-[#FF2D20] selection:text-white">
                 <div class="relative w-full">
