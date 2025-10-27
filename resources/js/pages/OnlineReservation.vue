@@ -299,7 +299,7 @@ footer {
     left: -5px;
     margin: auto;
     border-radius: 10px;
-    background: linear-gradient(-45deg, #5a5701 0%, #04ee81 100%);
+    background: transparent;
     z-index: -10;
     pointer-events: none;
     transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
