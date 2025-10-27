@@ -27,7 +27,7 @@ class GeneralSetting extends Model
         return self::first() ?? self::create([
             'business_name' => 'Hardball Smokehouse',
             'business_email' => 'info@hardballsmokehouse.com.uk',
-            'contact_number' => '07398 951462',
+            'contact_number' => '01473 807117',
             'address' => '24 Lloyds Ave, Ipswich IP1 3HD, United Kingdom',
             'operation_hours' => 'Monday - Sunday: 1:00 PM - 10:00 PM',
             'website' => 'https://hardballsmokehouse.com.uk',
