@@ -269,6 +269,16 @@ watch([() => form.reservation_date, () => form.reservation_time], ([date, time])
 });
 </script>
 <style>
+/* Force light background for carousel section */
+.carousel-section {
+    background: linear-gradient(
+        rgba(255, 255, 255, 0.95),
+        rgba(255, 255, 255, 0.85)
+    ), url('../img/landscape5.jpg') !important;
+    background-size: cover !important;
+    background-position: right !important;
+}
+
 /* Only keep styles that are actually used in the template */
 
 /* Footer positioning */
@@ -355,14 +365,14 @@ footer {
         <Head title="Make a Reservation" />
 
 
-        <div class="mt-4 text-gray-800" style="
+        <div class="mt-4 text-gray-800 !bg-white carousel-section" style="
                 background: linear-gradient(
-                        rgba(255, 255, 255, 0.9),
-                        rgba(255, 255, 255, 0.7)
+                        rgba(255, 255, 255, 0.95),
+                        rgba(255, 255, 255, 0.85)
                     ),
-                    url('../img/landscape5.jpg');
-                background-size: cover;
-                background-position: right;
+                    url('../img/landscape5.jpg') !important;
+                background-size: cover !important;
+                background-position: right !important;
             ">
             <div class="relative flex flex-col selection:bg-[#FF2D20] selection:text-white">
                 <div class="relative w-full">
@@ -455,7 +465,7 @@ footer {
 
             <!-- Parallax Background -->
             <section class="flex flex-col w-full p-6 sm:p-12 md:p-24 bg-cover bg-fixed bg-center justify-center items-center"
-                style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/img/bg/store2.JPG');">
+                style="background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6)), url('/img/bg/store2.JPG');">
                 <div
                     class="sm:pt-6 sm:pb-6 md:pt-10 md:pb-10 rounded-2xl overflow-hidden relative bg-opacity-0 bg-white/80 backdrop-blur-sm border-2 border-gray-300">
                     <h2 class="ml-2 sm:ml-4 max-w-xl items-center rounded-full px-2 sm:px-4 py-1 sm:py-2 mb-3 sm:mb-4 text-emerald-600 ring-1 ring-inset ring-emerald-600"
