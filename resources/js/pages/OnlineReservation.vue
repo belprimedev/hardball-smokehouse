@@ -269,13 +269,16 @@ watch([() => form.reservation_date, () => form.reservation_time], ([date, time])
 });
 </script>
 <style>
-/* Ensure footer displays properly without interference */
+/* Only keep styles that are actually used in the template */
+
+/* Footer positioning */
 footer {
     position: relative;
     z-index: 10;
     background-color: #111827;
 }
 
+/* Testimonial card styles */
 .card {
     position: relative;
     background-color: #FFF;
@@ -289,13 +292,12 @@ footer {
     cursor: pointer;
 }
 
-card::before {
+.card::before {
     content: '';
     position: absolute;
     inset: 0;
     left: -5px;
     margin: auto;
-
     border-radius: 10px;
     background: linear-gradient(-45deg, #5a5701 0%, #04ee81 100%);
     z-index: -10;
@@ -307,29 +309,12 @@ card::before {
 .card::after {
     content: "";
     z-index: -1;
-    position: absolut;
+    position: absolute;
     inset: 0;
     background: #000;
-    /* background: linear-gradient(-45deg, #f7ef07 0%, #00dbde 100%); */
     transform: translate3d(0, 0, 0) scale(0.95);
     filter: blur(20px);
     padding: 10px 5px;
-}
-
-.heading {
-    font-size: 20px;
-    text-transform: capitalize;
-    font-weight: 900;
-    text-align: left;
-}
-
-.card p:not(.heading) {
-    font-size: 14px;
-}
-
-.card p:last-child {
-
-    font-weight: 600;
 }
 
 .card:hover::after {
@@ -340,403 +325,7 @@ card::before {
     transform: rotate(-90deg) scaleX(1.34) scaleY(0.77);
 }
 
-.card1 {
-    position: relative;
-    background: rgb(248, 250, 250);
-    width: 100%;
-    height: 200px;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-    font-weight: bold;
-    border-radius: 0px;
-    cursor: pointer;
-    overflow: hidden;
-}
-
-.card1::before,
-.card1::after {
-    position: absolute;
-    content: "";
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-    font-weight: bold;
-    background-color: rgb(244, 216, 8);
-    border-radius: 10px;
-    transition: all 0.5s;
-}
-
-.card1::before {
-    top: 0;
-    right: 0;
-    border-radius: 0 10px 0 100%;
-}
-
-.card1::after {
-    bottom: 0;
-    left: 0;
-    border-radius: 0 100% 0 10px;
-}
-
-.card1:hover::before,
-.card1:hover:after {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    transition: all 0.5s;
-}
-
-.card1:hover:after {
-    content: "Smokehouse Special";
-    font-family: monospace;
-    font-weight: bolder;
-}
-
-/* From Uiverse.io by aadium */
-.cs-border-change:hover {
-    max-width: 250px;
-    padding: 2px;
-    margin: 10px;
-    color: white;
-    border-width: 2px;
-    border-style: solid;
-    border-image:
-        linear-gradient(to bottom,
-            yellow,
-            rgba(0, 0, 0, 0)) 1 100%;
-}
-
-
-
-.container {
-    width: 100%;
-    height: 200px;
-    position: relative;
-    overflow: hidden;
-}
-
-.img_card {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.img_card:hover {
-    transform: scale(1.1);
-}
-
-.card1 {
-    position: relative;
-    background: rgb(248, 250, 250);
-    width: 100%;
-    height: 200px;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-    font-weight: bold;
-    border-radius: 0px;
-    cursor: pointer;
-    overflow: hidden;
-}
-
-.card1::before,
-.card1::after {
-    position: absolute;
-    content: "";
-    width: 90%;
-    height: 20%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-    font-weight: bold;
-    background-color: rgb(244, 216, 8);
-    border-radius: 10px;
-    transition: all 0.5s;
-}
-
-.card1::before {
-    top: 0;
-    right: 0;
-    border-radius: 0 0px 0 100%;
-}
-
-.card1::after {
-    bottom: 0;
-    left: 0;
-    border-radius: 0 100% 0 0px;
-}
-
-.card1:hover::before,
-.card1:hover:after {
-    width: 98%;
-    height: 98%;
-    border-top-left-radius: 1px;
-    border-top-right-radius: 60%;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-    transition: all 0.5s;
-}
-
-.card1:hover:after {
-    content: "Smokehouse Special";
-    font-family: monospace;
-    font-weight: bolder;
-}
-
-/* From Uiverse.io by aadium */
-cs-border-change:hover {
-    max-width: 250px;
-    padding: 1px;
-    margin: 10px;
-    color: white;
-    border-width: 2px;
-    border-style: solid;
-    border-image:
-        linear-gradient(to bottom,
-            yellow,
-            rgba(0, 0, 0, 0)) 1 100%;
-}
-
-/* Cursor styles removed - using global custom cursor component */
-
-
-.cta-section.style-white:before {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    content: "";
-    background-color: var(--white);
-    top: 50%
-}
-
-.popular-dishes-wrapper.style1 {
-    position: relative
-}
-
-.popular-dishes-wrapper.style1 .btn-wrapper {
-    display: block;
-    margin: 60px auto 0
-}
-
-.popular-dishes-wrapper.style1 .shape1 {
-    position: absolute;
-    bottom: -120px;
-    left: 0;
-    z-index: 1
-}
-
-.popular-dishes-wrapper.style1 .shape2 {
-    position: absolute;
-    top: -50px;
-    right: 0;
-    z-index: 1
-}
-
-.popular-dishes-wrapper.style2 {
-    position: relative
-}
-
-.popular-dishes-wrapper.style2 .shape1 {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    z-index: 1
-}
-
-.popular-dishes-wrapper.style2 .shape2 {
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 1
-}
-
-.popular-dishes-wrapper.style2 .btn-wrapper {
-    max-width: 195px;
-    margin: 0 auto
-}
-
-.popular-dishes-wrapper.style3 {
-    position: relative
-}
-
-.popular-dishes-wrapper.style3 .swiper {
-    overflow: visible
-}
-
-.popular-dishes-wrapper.style3 .shape1 {
-    position: absolute;
-    top: -60px;
-    left: 0
-}
-
-.popular-dishes-wrapper.style3 .shape2 {
-    position: absolute;
-    top: -30px;
-    right: 0
-}
-
-.popular-dishes-wrapper.style4 {
-    position: relative
-}
-
-.popular-dishes-wrapper.style4 .shape1 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1
-}
-
-.dishes-card-wrap.style1 {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 5px
-}
-
-.dishes-card.style2 {
-    padding: 40px 25px;
-    margin-top: 140px;
-    background: linear-gradient(180deg, #ffffff4d, #fff 63.33%);
-    text-align: center;
-    border-radius: 16px;
-    background: var(--white);
-    box-shadow: 0 4px 54px #00000014;
-}
-
-.dishes-card.style2 .dishes-thumb {
-    position: relative;
-    margin-top: -120px;
-    border-radius: 50%;
-    -webkit-border-radius: 50%;
-    -moz-border-radius: 50%;
-    -ms-border-radius: 50%;
-    -o-border-radius: 50%;
-}
-
-.dishes-thumb {
-    position: relative;
-    text-align: center;
-}
-
-.dishes-card.style2 .dishes-thumb .circle-shape {
-    position: absolute;
-    top: -7px;
-    left: 50%;
-    width: 100%;
-    transform: translate(-50%);
-    z-index: 1;
-    -webkit-transform: translateX(-50%);
-    -moz-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    -o-transform: translateX(-50%)
-}
-
-@keyframes cir36 {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-.cir36 {
-    animation: cir36 20s linear infinite;
-    -webkit-animation: cir36 20s linear infinite;
-}
-
-.dishes-card.style2 .dishes-thumb .circle-shape {
-    position: absolute;
-    top: -7px;
-    left: 50%;
-    width: 100%;
-    transform: translate(-50%);
-    z-index: 1;
-    -webkit-transform: translateX(-50%);
-    -moz-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    -o-transform: translateX(-50%)
-}
-
-.dishes-card.style2 .dishes-content {
-    margin-top: 24px
-}
-
-.dishes-card.style2 .dishes-content h3 {
-    color: var(--title);
-    font-family: var(--title);
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 1;
-    text-transform: capitalize;
-    margin-bottom: 1px;
-    transition: all .4s;
-    -webkit-transition: all .4s;
-    -moz-transition: all .4s;
-    -ms-transition: all .4s;
-    -o-transition: all .4s
-}
-
-.dishes-card.style2 .dishes-content h3:hover {
-    color: var(--theme)
-}
-
-.dishes-card.style2 .dishes-content .text {
-    color: var(--text);
-    font-family: var(--body-font);
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1;
-    text-transform: capitalize;
-    margin-bottom: 16px;
-    margin-top: 3px
-}
-
-.dishes-card.style2 .dishes-content h6 {
-    color: var(--theme);
-    font-family: var(--title-font);
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 1;
-    text-transform: capitalize;
-    margin-bottom: 24px
-}
-
-.dishes-card.style3 {
-    margin-top: 40px
-}
-
-.dishes-card.style3 .dishes-thumb {
-    position: relative;
-    transition: all .4s;
-    -webkit-transition: all .4s;
-    -moz-transition: all .4s;
-    -ms-transition: all .4s;
-    -o-transition: all .4s
-}
-
-.dishes-card.style3 .dishes-thumb img {
-    position: relative;
-    width: 100%;
-    transition: all .4s;
-    -webkit-transition: all .4s;
-    -moz-transition: all .4s;
-    -ms-transition: all .4s;
-    -o-transition: all .4s
-}
-
+/* Title area styles */
 .title-area .title {
     color: var(--title);
     text-align: center;
