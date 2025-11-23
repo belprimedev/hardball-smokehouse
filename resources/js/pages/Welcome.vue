@@ -771,7 +771,7 @@ onMounted(() => {
                     <!-- Left Column - Image (2/3 width) -->
                     <div class="lg:col-span-2">
                         <div class="relative overflow-hidden rounded-xl md:rounded-2xl shadow-2xl group max-w-lg mx-auto lg:mx-0">
-                            <img src="/img/event/reggae-brunch.JPG" alt="Party Event at Hardball Caribbean Smokehouse" 
+                            <img src="/img/event/christmas-dinner.png" alt="Party Event at Hardball Caribbean Smokehouse" 
                                  class="w-full h-72 md:h-5/6 object-cover rounded-xl md:rounded-2xl group-hover:scale-105 transition-transform duration-500" />
                             
                             <!-- Overlay with party details -->
@@ -790,10 +790,10 @@ onMounted(() => {
                     <div class="lg:col-span-1 space-y-6">
                         <div class="text-center lg:text-left">
                             <h2 class="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 knewave-regular">
-                                <span class="text-green-600">Reggae</span> <span class="text-yellow-400">Brunch</span> at Hardball!
+                                <span class="text-green-600">Christmas</span> <span class="text-yellow-400">Dinner</span> at Hardball!
                             </h2>
                             <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
-                                Join us for the ultimate Caribbean brunch experience! Reggae music, unlimited food, and bottomless cocktails!
+                                Celebrate the festive season with a Caribbean twist! Join us for an unforgettable Christmas dinner experience with authentic flavors and warm hospitality.
                             </p>
                         </div>
 
@@ -802,12 +802,12 @@ onMounted(() => {
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center flex-shrink-0">
                                     <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 class="font-bold text-gray-900 dark:text-white">Reggae Music</h3>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">Authentic Caribbean vibes & DJ sets</p>
+                                    <h3 class="font-bold text-gray-900 dark:text-white">Festive Menu</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Special Christmas dishes with Caribbean flair</p>
                                 </div>
                             </div>
 
@@ -818,8 +818,8 @@ onMounted(() => {
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 class="font-bold text-gray-900 dark:text-white">Unlimited Food & Cocktails</h3>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">Delicious food, and amazing vibes!</p>
+                                    <h3 class="font-bold text-gray-900 dark:text-white">Warm Atmosphere</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Cozy festive setting perfect for family gatherings</p>
                                 </div>
                             </div>
 
