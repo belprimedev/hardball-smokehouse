@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
 
 class Event extends Model
 {
@@ -86,13 +87,13 @@ class Event extends Model
     public static function rules(): array
     {
         return [
-            'title_primary' => 'required_without:title_segments|nullable|string|max:255',
-            'title_secondary' => 'required_without:title_segments|nullable|string|max:255',
+            'title_primary' => [Rule::requiredIf(fn () => empty(request()->title_segments)), 'nullable', 'string', 'max:255'],
+            'title_secondary' => [Rule::requiredIf(fn () => empty(request()->title_segments)), 'nullable', 'string', 'max:255'],
             'title_suffix' => 'nullable|string|max:255',
             'title_segments' => 'nullable|array',
             'title_segments.*.text' => 'required_with:title_segments|string|max:255',
             'title_segments.*.color' => 'nullable|string|in:green,yellow,white',
-            'description' => 'required_without:content_blocks|nullable|string|max:2000',
+            'description' => [Rule::requiredIf(fn () => empty(request()->content_blocks)), 'nullable', 'string', 'max:2000'],
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'image_path' => 'required_without:image|nullable|string|max:500',
             'features' => 'nullable|array',

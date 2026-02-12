@@ -56,6 +56,41 @@ php artisan horizon:terminate  # if using Horizon; otherwise restart your queue 
 
 ---
 
+## Fix: "Permission denied" on deploy (hardballsmokehouse.co.uk)
+
+If deploy fails because `public` is read-only or some files are root-owned (e.g. "cannot create directory at 'public/fonts'", "unable to unlink old 'public/...'"):
+
+**1. SSH in and fix permissions (run once, you’ll be prompted for your sudo password):**
+
+```bash
+ssh forge@159.223.188.251
+cd /home/forge/hardballsmokehouse.co.uk
+sudo chown -R forge:forge public
+sudo chmod -R u+w public
+```
+
+**2. Set Forge to deploy from `development`**
+
+In Forge → Site → App → **Branch**, set to `development` (not `main`).
+
+**3. Deploy again from Forge** (or run manually):
+
+```bash
+cd /home/forge/hardballsmokehouse.co.uk
+git fetch origin development
+git checkout -B development FETCH_HEAD
+composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+npm ci
+npm run build
+php artisan migrate --force
+php artisan config:cache
+php artisan horizon:terminate   # if you use Horizon
+```
+
+In **Forge → Site → App**, set **Branch** to `development` so future "Deploy Now" uses this branch.
+
+---
+
 ## What to send if you need more help
 
 - **Where** you deploy (Laravel Forge, VPS manual, shared host, etc.).

@@ -60,11 +60,16 @@ const onFileChange = (e: Event) => {
 };
 
 const submit = () => {
-    const options: { onSuccess?: () => void; forceFormData?: boolean } = {
+    const options: { onSuccess?: () => void; forceFormData?: boolean; transform?: (data: Record<string, unknown>) => Record<string, unknown> } = {
         onSuccess: () => form.reset(),
     };
     if (form.image) {
         options.forceFormData = true;
+        options.transform = (data: Record<string, unknown>) => ({
+            ...data,
+            title_segments: JSON.stringify(data.title_segments ?? []),
+            content_blocks: JSON.stringify(data.content_blocks ?? []),
+        });
     }
     form.post(route('admin.events.store'), options);
 };
