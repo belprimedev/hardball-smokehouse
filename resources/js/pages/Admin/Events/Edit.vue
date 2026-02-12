@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-vue-next';
+import { ref, onUnmounted } from 'vue';
 
 interface EventFeature {
     title: string;
@@ -100,9 +101,34 @@ const onFileChange = (e: Event) => {
     form.image = target.files?.[0] ?? null;
 };
 
+const submitTimedOut = ref(false);
+const submitTimeoutId = ref<ReturnType<typeof setTimeout> | null>(null);
+const SUBMIT_TIMEOUT_MS = 55_000; // show message before typical server/nginx timeout
+
+const clearSubmitTimeout = () => {
+    if (submitTimeoutId.value) {
+        clearTimeout(submitTimeoutId.value);
+        submitTimeoutId.value = null;
+    }
+};
+
+onUnmounted(clearSubmitTimeout);
+
 const submit = () => {
-    const options: { forceFormData?: boolean } = {};
+    submitTimedOut.value = false;
+    clearSubmitTimeout();
+
+    const options: { forceFormData?: boolean; onFinish?: () => void } = {};
     if (form.image) options.forceFormData = true;
+    options.onFinish = () => {
+        clearSubmitTimeout();
+    };
+
+    submitTimeoutId.value = setTimeout(() => {
+        submitTimeoutId.value = null;
+        submitTimedOut.value = true;
+    }, SUBMIT_TIMEOUT_MS);
+
     form.put(route('admin.events.update', props.event.id), options);
 };
 </script>
@@ -124,6 +150,12 @@ const submit = () => {
                 </div>
                 <h1 class="text-3xl font-bold mt-4">Edit Event</h1>
                 <p class="text-green-100 mt-2">Update event details</p>
+            </div>
+
+            <div v-if="submitTimedOut" class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+                <p class="text-sm text-amber-800 dark:text-amber-200">
+                    <strong>Update is taking longer than expected.</strong> Try a smaller image (under 2MB), refresh the page and try again, or use the image path field instead of uploading.
+                </p>
             </div>
 
             <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -177,6 +209,7 @@ const submit = () => {
 
                     <div class="space-y-3">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Image</label>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Max 5MB. Use JPEG, PNG, GIF or WebP. Large images may take a minute to upload.</p>
                         <div v-if="eventImageUrl()" class="mb-2">
                             <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Current image</p>
                             <img :src="eventImageUrl()" alt="Event" class="h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-600" />
