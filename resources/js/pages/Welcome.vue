@@ -50,7 +50,38 @@ onMounted(async () => {
     }
 });
 
-const props = defineProps<{ dessertItems: any[]; menuItems: MenuItem[] }>();
+interface TitleSegment {
+    text: string;
+    color: string | null;
+}
+
+interface ContentBlock {
+    type: 'paragraph' | 'heading' | 'feature';
+    text?: string;
+    title?: string;
+    description?: string;
+    icon?: string | null;
+}
+
+interface FeaturedEvent {
+    id: number;
+    title_primary: string;
+    title_secondary: string;
+    title_suffix: string | null;
+    description: string;
+    image_path: string;
+    features: { title: string; description: string }[] | null;
+    cta_text: string;
+    cta_link: string | null;
+    display_title_segments?: TitleSegment[];
+    display_content_blocks?: ContentBlock[];
+}
+
+const props = defineProps<{
+    dessertItems: any[];
+    menuItems: MenuItem[];
+    featuredEvent?: FeaturedEvent | null;
+}>();
 
 const menuCategories = ref<MenuCategory[]>([]);
 const selectedMenuCategory = ref('Starters');
@@ -764,81 +795,102 @@ onMounted(() => {
             </div>
         </section>
 
-        <!-- Party Event Section -->
-        <section class="py-16 md:py-24 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+        <!-- Featured Event Section (from Event Management) -->
+        <section v-if="props.featuredEvent" class="py-16 md:py-24 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
             <div class="container max-w-5xl mx-auto px-4">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-4 items-center">
                     <!-- Left Column - Image (2/3 width) -->
                     <div class="lg:col-span-2">
                         <div class="relative overflow-hidden rounded-xl md:rounded-2xl shadow-2xl group max-w-lg mx-auto lg:mx-0">
-                            <img src="/img/event/christmas-dinner.png" alt="Party Event at Hardball Caribbean Smokehouse" 
+                            <img :src="props.featuredEvent.image_path.startsWith('/') ? props.featuredEvent.image_path : '/storage/' + props.featuredEvent.image_path" :alt="`${props.featuredEvent.title_primary} ${props.featuredEvent.title_secondary} at Hardball`"
                                  class="w-full h-72 md:h-5/6 object-cover rounded-xl md:rounded-2xl group-hover:scale-105 transition-transform duration-500" />
-                            
-                            <!-- Overlay with party details -->
-                            <!-- <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-xl md:rounded-2xl">
-                                <div class="absolute bottom-6 left-6 right-6">
-                                    <div class="bg-white/90 backdrop-blur-sm rounded-lg p-4">
-                                        <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-2">Join the Party!</h3>
-                                        <p class="text-sm md:text-base text-gray-700">Experience the vibrant Caribbean atmosphere</p>
-                                    </div>
-                                </div>
-                            </div> -->
                         </div>
                     </div>
 
-                    <!-- Right Column - Party Event Details (1/3 width) -->
+                    <!-- Right Column - Event Details (versatile: title segments + content blocks) -->
                     <div class="lg:col-span-1 space-y-6">
                         <div class="text-center lg:text-left">
-                            <h2 class="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 knewave-regular">
-                                <span class="text-green-600">Christmas</span> <span class="text-yellow-400">Dinner</span> at Hardball!
+                            <!-- Versatile title: segments with optional colors -->
+                            <h2 class="text-2xl md:text-4xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4 knewave-regular">
+                                <template v-if="props.featuredEvent.display_title_segments && props.featuredEvent.display_title_segments.length">
+                                    <span
+                                        v-for="(seg, i) in props.featuredEvent.display_title_segments"
+                                        :key="i"
+                                        :class="{
+                                            'text-green-600': seg.color === 'green',
+                                            'text-yellow-400': seg.color === 'yellow',
+                                            'text-gray-900 dark:text-white': seg.color === 'white' || !seg.color
+                                        }"
+                                    >{{ seg.text }}</span>
+                                </template>
+                                <template v-else>
+                                    <span class="text-green-600">{{ props.featuredEvent.title_primary }}</span>
+                                    <span class="text-yellow-400"> {{ props.featuredEvent.title_secondary }}</span>
+                                    <span v-if="props.featuredEvent.title_suffix"> {{ props.featuredEvent.title_suffix }}</span>
+                                </template>
                             </h2>
-                            <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
-                                Celebrate the festive season with a Caribbean twist! Join us for an unforgettable Christmas dinner experience with authentic flavors and warm hospitality.
-                            </p>
+
+                            <!-- Versatile content: paragraph, heading, feature blocks -->
+                            <template v-if="props.featuredEvent.display_content_blocks && props.featuredEvent.display_content_blocks.length">
+                                <div v-for="(block, idx) in props.featuredEvent.display_content_blocks" :key="idx" class="mb-4">
+                                    <p v-if="block.type === 'paragraph'" class="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+                                        {{ block.text }}
+                                    </p>
+                                    <h3 v-else-if="block.type === 'heading'" class="text-lg font-bold text-gray-900 dark:text-white mt-4 mb-2">
+                                        {{ block.text }}
+                                    </h3>
+                                    <div v-else-if="block.type === 'feature'" class="flex items-center gap-3 mt-4">
+                                        <div
+                                            class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                                            :class="(block.icon === 'flame' || !block.icon) ? 'bg-green-500' : 'bg-yellow-400'"
+                                        >
+                                            <svg v-if="block.icon !== 'flame'" class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                            </svg>
+                                            <svg v-else class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-bold text-gray-900 dark:text-white">{{ block.title }}</h3>
+                                            <p v-if="block.description" class="text-sm text-gray-600 dark:text-gray-300">{{ block.description }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            <template v-else>
+                                <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                                    {{ props.featuredEvent.description }}
+                                </p>
+                                <div v-if="props.featuredEvent.features && props.featuredEvent.features.length" class="space-y-4">
+                                    <div v-for="(feat, idx) in props.featuredEvent.features" :key="idx" class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" :class="idx % 2 === 0 ? 'bg-yellow-400' : 'bg-green-500'">
+                                            <svg v-if="idx % 2 === 0" class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                            </svg>
+                                            <svg v-else class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-bold text-gray-900 dark:text-white">{{ feat.title }}</h3>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300">{{ feat.description }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
 
-                        <!-- Event Features -->
-                        <div class="space-y-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="font-bold text-gray-900 dark:text-white">Festive Menu</h3>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">Special Christmas dishes with Caribbean flair</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="font-bold text-gray-900 dark:text-white">Warm Atmosphere</h3>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">Cozy festive setting perfect for family gatherings</p>
-                                </div>
-                            </div>
-
-                            
-                        </div>
-
-                        <!-- CTA Buttons -->
+                        <!-- CTA -->
                         <div class="flex flex-col sm:flex-row gap-3 pt-4">
-                            <Link :href="route('make-reservation')"
+                            <Link :href="props.featuredEvent.cta_link || route('make-reservation')"
                                 class="inline-flex items-center justify-center gap-2 bg-yellow-400 text-gray-900 px-6 py-3 rounded-full font-bold hover:bg-yellow-500 transition-colors transform hover:scale-105 shadow-lg">
-                                <span>Reserve Your Spot</span>
+                                <span>{{ props.featuredEvent.cta_text }}</span>
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
                             </Link>
-                            
                         </div>
-
-                        
                     </div>
                 </div>
             </div>
@@ -1239,7 +1291,7 @@ onMounted(() => {
                         <div class="w-32 h-32 md:w-64 md:h-64 mx-auto mb-3 md:mb-6 bg-cover bg-center bg-no-repeat border-4 border-gray-400 rounded-full bg-[url('/img/gallery/drink4.jpg')] group-hover:scale-110 group-hover:border-green-400 transition-all duration-300">
                         </div>
                         <h3 class="text-green-400 text-lg md:text-2xl font-bold mb-2 md:mb-3 group-hover:text-green-300 transition-colors">Social Event</h3>
-                        <p class="text-gray-300 text-sm md:text-lg group-hover:text-gray-200 transition-colors">80+ Package Available</p>
+                        <p class="text-gray-300 text-sm md:text-lg group-hover:text-gray-200 transition-colors">Custom Package Available</p>
                     </div>
 
                     <!-- Card 2 -->
@@ -1247,7 +1299,7 @@ onMounted(() => {
                         <div class="w-32 h-32 md:w-64 md:h-64 mx-auto mb-3 md:mb-6 bg-cover bg-top bg-no-repeat border-4 border-gray-400 rounded-full bg-[url('/img/gallery/store7.JPG')] group-hover:scale-110 group-hover:border-green-400 transition-all duration-300" style="background-position: center 25%;">
                         </div>
                         <h3 class="text-green-400 text-lg md:text-2xl font-bold mb-2 md:mb-3 group-hover:text-green-400 transition-colors">Corporate</h3>
-                        <p class="text-gray-300 text-sm md:text-lg group-hover:text-gray-200 transition-colors">80+ Package Available</p>
+                        <p class="text-gray-300 text-sm md:text-lg group-hover:text-gray-200 transition-colors">Custom Package Available</p>
                     </div>
 
                     <!-- Card 3 -->
@@ -1255,7 +1307,7 @@ onMounted(() => {
                         <div class="w-32 h-32 md:w-64 md:h-64 mx-auto mb-3 md:mb-6 bg-cover bg-center bg-no-repeat border-4 border-gray-400 rounded-full bg-[url('/img/gallery/event3.jpeg')] group-hover:scale-110 group-hover:border-green-400 transition-all duration-300">
                         </div>
                         <h3 class="text-green-400 text-lg md:text-2xl font-bold mb-2 md:mb-3 group-hover:text-green-300 transition-colors">Birthday Event</h3>
-                        <p class="text-gray-300 text-sm md:text-lg group-hover:text-gray-200 transition-colors">80+ Package Available</p>
+                        <p class="text-gray-300 text-sm md:text-lg group-hover:text-gray-200 transition-colors">Custom Package Available</p>
                     </div>
                 </div>
             </div>

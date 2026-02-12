@@ -251,7 +251,7 @@
         .restaurant-detail::before {
             content: '•';
             margin-right: 10px;
-            color: #f9de47;
+            color: #ffffff;
             font-size: 20px;
         }
         

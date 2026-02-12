@@ -30,6 +30,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'manage vacancies',
             'manage newsletters',
             'manage contacts',
+            'manage events',
         ];
 
         foreach ($permissions as $permission) {
@@ -50,6 +51,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'manage vacancies',
             'manage newsletters',
             'manage contacts',
+            'manage events',
         ]);
 
         $staffRole = Role::firstOrCreate(['name' => 'staff']);
