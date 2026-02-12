@@ -34,8 +34,8 @@
 
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        {{-- Instrument Sans is self-hosted in public/fonts to avoid Chrome slow-network intervention --}}
+        <link rel="preload" href="{{ asset('fonts/instrument-sans-latin-400-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Rubik+Mono+One&display=swap" rel="stylesheet">
