@@ -22,9 +22,12 @@ Route::get('/', function () {
         $q->whereIn('name', ['Starters', 'Jerk Dishes', 'Curry Dishes', 'Meals']);
     })->with('category')->get();
     
+    $featuredEvent = \App\Models\Event::getFeaturedForHomepage();
+    
     return Inertia::render('Welcome', [
         'dessertItems' => $dessertItems,
         'menuItems' => $menuItems,
+        'featuredEvent' => $featuredEvent,
     ]);
 })->name('home');
 
@@ -351,9 +354,17 @@ Route::get('/cursor-test', function () {
     return Inertia::render('CursorTest');
 })->name('cursor-test');
 
-// Test email template route (remove in production)
+// Test email template route – preview reservation confirmation (remove in production)
 Route::get('/test-email-template', function () {
-    $reservation = \App\Models\Reservation::latest()->first();
+    $reservation = new \App\Models\Reservation([
+        'customer_name' => 'Jane Smith',
+        'customer_email' => 'jane@example.com',
+        'customer_phone' => '07700 900123',
+        'reservation_date' => now()->addDays(3)->format('Y-m-d'),
+        'reservation_time' => '19:30',
+        'number_of_guest' => 4,
+        'special_request' => 'Window table if possible, celebrating a birthday',
+    ]);
     return view('emails.reservation-confirmation', ['reservation' => $reservation]);
 });
 
@@ -369,6 +380,11 @@ Route::delete('/vacancy/{vacancy}', [App\Http\Controllers\VacancyController::cla
 // Newsletter API routes for frontend
 Route::post('/api/newsletters/subscribe', [NewsletterController::class, 'subscribe']);
 Route::post('/api/newsletters/unsubscribe', [NewsletterController::class, 'unsubscribe']);
+
+// Newsletter unsubscribe (signed link from email)
+Route::get('/newsletter/unsubscribe', App\Http\Controllers\NewsletterUnsubscribeController::class)
+    ->name('newsletter.unsubscribe')
+    ->middleware('signed');
 
 // Contact form submission route
 Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');

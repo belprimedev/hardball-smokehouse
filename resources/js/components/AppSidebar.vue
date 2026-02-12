@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Folder, LayoutGrid, Moon, Sun, Calendar, Users, Shield, Briefcase, Mail, MessageSquare } from 'lucide-vue-next';
+import { Folder, LayoutGrid, Moon, Sun, Calendar, Users, Shield, Briefcase, Mail, MessageSquare, Send } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { useAppearance } from '@/composables/useAppearance';
 import { computed } from 'vue';
@@ -159,7 +159,23 @@ const footerNavItems: NavItem[] = [
                         <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
                             <Link :href="route('admin.newsletters.index')" class="text-gray-900 dark:text-white">
                                 <Mail class="text-gray-700 dark:text-gray-300" />
-                                <span>Newsletter Management</span>
+                                <span>Newsletter Subscribers</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem v-if="isAdminOrManager">
+                        <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <Link :href="route('admin.newsletter-editions.index')" class="text-gray-900 dark:text-white">
+                                <Send class="text-gray-700 dark:text-gray-300" />
+                                <span>Newsletter Editions</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem v-if="isAdminOrManager">
+                        <SidebarMenuButton as-child class="hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <Link :href="route('admin.events.index')" class="text-gray-900 dark:text-white">
+                                <Calendar class="text-gray-700 dark:text-gray-300" />
+                                <span>Event Management</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

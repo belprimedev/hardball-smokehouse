@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             BeveragesSeeder::class,
             ReservationSettingsSeeder::class,
             GeneralSettingsSeeder::class,
+            EventSeeder::class,
         ]);
     }
 }
