@@ -4,7 +4,7 @@
 
 1. **SSH / server** – Can you reach the server? (`ssh forge@YOUR_SERVER_IP`)
 2. **Branch** – Forge should deploy from `development` (or your main branch).
-3. **Build** – `npm run build` must run so Vite assets exist; otherwise 500 or blank page.
+3. **Build** – `npm run build:prod` (or `npm run build`) must run so Vite assets exist; use `build:prod` on low-memory servers to avoid "Killed".
 4. **Migrations** – Run `php artisan migrate --force` on deploy.
 5. **Env** – `.env` on server has correct `APP_ENV`, `APP_DEBUG=false`, DB, Redis, Pusher, Mail.
 6. **Scheduler** – Cron: `* * * * * cd /home/forge/SITE && php artisan schedule:run >> /dev/null 2>&1`
@@ -26,7 +26,7 @@ composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
     echo 'Restarting FPM...'; sudo -S service php8.2-fpm reload ) 9>/tmp/fpmlock
 
 npm ci
-npm run build
+npm run build:prod
 
 php artisan migrate --force
 php artisan config:cache
@@ -53,6 +53,42 @@ php artisan horizon:terminate  # if using Horizon; otherwise restart your queue 
 | Migrations fail | DB credentials or version mismatch | Check `.env` DB_*; run `php artisan migrate --force` manually and read error |
 | SSH timeout | Firewall or wrong IP | Open port 22 for your IP in cloud firewall; confirm server IP in Forge |
 | Event image upload stuck on "Updating..." | Upload too large or timeout | Nginx: `client_max_body_size 10M;` PHP: `upload_max_filesize` and `post_max_size` ≥ 10M. Use image &lt; 5MB or image path instead. After ~55s the page shows a hint to try a smaller image. |
+| Deploy fails with "Killed" during build | Server runs out of memory (OOM) during Vite build | Use `npm run build:prod` in deploy script (sets Node heap 4GB). Or add swap on server, or build locally and commit `public/build`. |
+
+---
+
+## Fix: "Permission denied" on deploy (hardballsmokehouse.co.uk)
+
+If deploy fails because `public` is read-only or some files are root-owned (e.g. "cannot create directory at 'public/fonts'", "unable to unlink old 'public/...'"):
+
+**1. SSH in and fix permissions (run once, you’ll be prompted for your sudo password):**
+
+```bash
+ssh forge@159.223.188.251
+cd /home/forge/hardballsmokehouse.co.uk
+sudo chown -R forge:forge public
+sudo chmod -R u+w public
+```
+
+**2. Set Forge to deploy from `development`**
+
+In Forge → Site → App → **Branch**, set to `development` (not `main`).
+
+**3. Deploy again from Forge** (or run manually):
+
+```bash
+cd /home/forge/hardballsmokehouse.co.uk
+git fetch origin development
+git checkout -B development FETCH_HEAD
+composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+npm ci
+npm run build:prod
+php artisan migrate --force
+php artisan config:cache
+php artisan horizon:terminate   # if you use Horizon
+```
+
+In **Forge → Site → App**, set **Branch** to `development` so future "Deploy Now" uses this branch.
 
 ---
 

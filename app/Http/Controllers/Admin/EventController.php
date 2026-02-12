@@ -46,9 +46,17 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
+        $titleSegments = $request->title_segments;
+        if (is_string($titleSegments)) {
+            $titleSegments = json_decode($titleSegments, true) ?: [];
+        }
+        $contentBlocks = $request->content_blocks;
+        if (is_string($contentBlocks)) {
+            $contentBlocks = json_decode($contentBlocks, true) ?: [];
+        }
         $request->merge([
-            'title_segments' => $request->title_segments && is_array($request->title_segments) && count($request->title_segments) > 0 ? $request->title_segments : null,
-            'content_blocks' => $request->content_blocks && is_array($request->content_blocks) && count($request->content_blocks) > 0 ? $request->content_blocks : null,
+            'title_segments' => is_array($titleSegments) && count($titleSegments) > 0 ? $titleSegments : [],
+            'content_blocks' => is_array($contentBlocks) && count($contentBlocks) > 0 ? $contentBlocks : [],
         ]);
         $request->validate(Event::rules());
 
@@ -125,9 +133,19 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
+        // Decode JSON when sent as string (FormData can't send arrays; client may send JSON strings)
+        $titleSegments = $request->title_segments;
+        if (is_string($titleSegments)) {
+            $titleSegments = json_decode($titleSegments, true) ?: [];
+        }
+        $contentBlocks = $request->content_blocks;
+        if (is_string($contentBlocks)) {
+            $contentBlocks = json_decode($contentBlocks, true) ?: [];
+        }
+
         $request->merge([
-            'title_segments' => $request->title_segments && is_array($request->title_segments) && count($request->title_segments) > 0 ? $request->title_segments : null,
-            'content_blocks' => $request->content_blocks && is_array($request->content_blocks) && count($request->content_blocks) > 0 ? $request->content_blocks : null,
+            'title_segments' => is_array($titleSegments) && count($titleSegments) > 0 ? $titleSegments : [],
+            'content_blocks' => is_array($contentBlocks) && count($contentBlocks) > 0 ? $contentBlocks : [],
         ]);
         $request->validate(Event::updateRules($event));
 

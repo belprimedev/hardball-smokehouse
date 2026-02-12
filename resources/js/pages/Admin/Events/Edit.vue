@@ -118,8 +118,16 @@ const submit = () => {
     submitTimedOut.value = false;
     clearSubmitTimeout();
 
-    const options: { forceFormData?: boolean; onFinish?: () => void } = {};
-    if (form.image) options.forceFormData = true;
+    const options: { forceFormData?: boolean; onFinish?: () => void; transform?: (data: Record<string, unknown>) => Record<string, unknown> } = {};
+    if (form.image) {
+        options.forceFormData = true;
+        // FormData omits empty arrays; send as JSON strings so server receives them and validation works
+        options.transform = (data: Record<string, unknown>) => ({
+            ...data,
+            title_segments: JSON.stringify(data.title_segments ?? []),
+            content_blocks: JSON.stringify(data.content_blocks ?? []),
+        });
+    }
     options.onFinish = () => {
         clearSubmitTimeout();
     };
