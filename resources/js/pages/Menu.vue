@@ -2,6 +2,10 @@
 import MainLayout from '@/layouts/MainLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { useCartStore } from '@/stores/cart';
+import { useToast } from '@/components/ui/toast/use-toast';
+import { Button } from '@/components/ui/button';
+import { Plus, Minus, Check, ShoppingBag } from 'lucide-vue-next';
 
 interface MenuCategory {
     id: number;
@@ -27,9 +31,12 @@ const props = defineProps<{
     menuItems: MenuItem[];
 }>();
 
+const cartStore = useCartStore();
+const { toast } = useToast();
 const activeCategory = ref<string>('');
 const observer = ref<IntersectionObserver | null>(null);
 const activeFilter = ref<string>('all');
+const quantities = ref<Record<number, number>>({});
 
 // Filter out beverage categories
 const filteredCategories = computed(() => {
@@ -92,8 +99,29 @@ const scrollToCategory = (categoryId: number) => {
     }
 };
 
+const getQty = (itemId: number) => quantities.value[itemId] || 1;
+
+const setQty = (itemId: number, delta: number) => {
+    const current = getQty(itemId);
+    const next = Math.max(1, Math.min(20, current + delta));
+    quantities.value[itemId] = next;
+};
+
+const addToCart = async (item: MenuItem) => {
+    if (!item.is_available) return;
+    const qty = getQty(item.id);
+    try {
+        await cartStore.addItem({ menu_item_id: item.id, quantity: qty });
+        toast({ title: 'Added to cart', description: `${qty} × ${item.name}` });
+        quantities.value[item.id] = 1;
+    } catch (e: any) {
+        toast({ title: 'Error', description: e.message || 'Could not add item', variant: 'destructive' });
+    }
+};
+
 onMounted(() => {
     setupIntersectionObserver();
+    cartStore.fetchCart();
 });
 
 onUnmounted(() => {
@@ -226,6 +254,41 @@ onUnmounted(() => {
                                                 </svg>
                                                 Chef's Special
                                             </span>
+                                        </div>
+
+                                        <!-- Add to Cart Section -->
+                                        <div class="mt-4 pt-4 border-t border-gray-100 dark:border-neutral-700">
+                                            <div class="flex items-center gap-3">
+                                                <div class="flex items-center border rounded-lg">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        class="h-8 w-8"
+                                                        @click="setQty(item.id, -1)"
+                                                        :disabled="getQty(item.id) <= 1"
+                                                    >
+                                                        <Minus class="w-4 h-4" />
+                                                    </Button>
+                                                    <span class="w-10 text-center font-medium">{{ getQty(item.id) }}</span>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        class="h-8 w-8"
+                                                        @click="setQty(item.id, 1)"
+                                                        :disabled="getQty(item.id) >= 20"
+                                                    >
+                                                        <Plus class="w-4 h-4" />
+                                                    </Button>
+                                                </div>
+                                                <Button
+                                                    class="flex-1"
+                                                    :disabled="!item.is_available"
+                                                    @click="addToCart(item)"
+                                                >
+                                                    <ShoppingBag class="w-4 h-4 mr-2" />
+                                                    Add to Cart
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

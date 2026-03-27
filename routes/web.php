@@ -354,6 +354,22 @@ Route::get('/cursor-test', function () {
     return Inertia::render('CursorTest');
 })->name('cursor-test');
 
+// Online Ordering Routes
+Route::get('/order/checkout', function () {
+    return Inertia::render('Order/Checkout');
+})->name('order.checkout');
+
+Route::get('/order/track/{order}', function (\App\Models\Order $order) {
+    return Inertia::render('Order/Track', [
+        'order' => $order->only(['id', 'order_number', 'status', 'estimated_ready_at']),
+    ]);
+})->name('order.track');
+
+// Kitchen Dashboard (Admin only)
+Route::get('/admin/kitchen', function () {
+    return Inertia::render('Admin/KitchenDashboard');
+})->middleware(['auth', 'verified'])->name('admin.kitchen');
+
 // Test email template route – preview reservation confirmation (remove in production)
 Route::get('/test-email-template', function () {
     $reservation = new \App\Models\Reservation([

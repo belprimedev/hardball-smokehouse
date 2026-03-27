@@ -4,6 +4,8 @@
 import { ref, onMounted } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import CartFab from '@/components/CartFab.vue';
+import { Toaster } from '@/components/ui/toast';
 
 const showingNavigationDropdown = ref(false);
 
@@ -443,7 +445,7 @@ body {
             </div>
 
             <!-- Scroll to Top Button -->
-            <button 
+            <button
                 @click="scrollToTop"
                 class="fixed bottom-8 right-8 w-12 h-12 bg-yellow-400 text-dark-900 rounded-full flex items-center justify-center hover:bg-yellow-400 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110 z-50"
             >
@@ -452,7 +454,10 @@ body {
                 </svg>
             </button>
 
-            
+            <!-- Cart Floating Action Button -->
+            <CartFab />
         </footer>
+
+        <Toaster />
     </div>
 </template>
