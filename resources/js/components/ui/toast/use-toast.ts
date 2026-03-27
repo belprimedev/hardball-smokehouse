@@ -24,11 +24,11 @@ export interface ToastProps {
     id: string;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
-    variant?: ToastVariants['variant'];
+    variant?: ToastVariants['variant'] | 'default' | 'destructive';
     title?: string;
-    description?: string;
-    action?: string;
-    class?: string;
+    description?: StringOrVNode;
+    action?: Component;
+    class?: HTMLAttributes['class'];
 }
 
 const TOAST_LIMIT = 1
@@ -38,17 +38,6 @@ type StringOrVNode =
   | string
   | Component
   | (() => Component)
-
-type ToastProps = {
-  id: string
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
-  title?: string
-  description?: StringOrVNode
-  action?: Component
-  variant?: 'default' | 'destructive'
-  class?: HTMLAttributes['class']
-}
 
 const actionTypes = {
   ADD_TOAST: 'ADD_TOAST',
