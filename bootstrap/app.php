@@ -40,6 +40,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             VerifyCsrfToken::class,
         ]);
+
+        // Add session support to API routes for cart functionality
+        $middleware->api(prepend: [
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
